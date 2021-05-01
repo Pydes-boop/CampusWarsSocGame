@@ -18,8 +18,10 @@
 <br />
 <p align="center">
   <a href="https://gitlab.lrz.de/klitzner/socgam21_group18">
-    <img src="images/logo.png" alt="Logo" width="80" height="80">
+    
   </a>
+
+  <!--<img src="images/logo.png" alt="Logo" width="80" height="80">-->
 
   <h3 align="center">Social Gaming 2021 | Group 18 </h3>
 
@@ -89,7 +91,7 @@ Of course you dont have to believe my word. Explore the (Still WIP) project your
 * [Android Studio](https://developer.android.com/studio)
 * [Firebase](https://firebase.google.com/)
 * [Gitlab](https://gitlab.lrz.de/)
-* [Google Maps API](https://console.developers.google.com/apis a)
+* [Google Maps API](https://console.developers.google.com/apis)
 * [Mongo DB](https://www.mongodb.com/de)
 
 
@@ -97,7 +99,7 @@ Of course you dont have to believe my word. Explore the (Still WIP) project your
 <!-- GETTING STARTED -->
 ## Getting Started
 
-We are still getting started ourselfs. Dont expect too much.
+We are still getting started ourselfs.
 
 ### Prerequisites
 
@@ -123,6 +125,7 @@ Im sure well get to this later as well.
 ## Roadmap
 
 See the [open issues](https://gitlab.lrz.de/klitzner/socgam21_group18/-/issues) for a list of proposed features (and known issues).
+
 (Spoiler: We dont have any as we are the best)
 
 
@@ -136,7 +139,7 @@ We work alone.
 <!-- LICENSE -->
 ## License
 
-Im not quite sure, TUM probably owns us in some way. (Its called excellence)
+Im not quite sure, TUM probably owns this in some way.
 
 
 <!-- CONTACT -->
