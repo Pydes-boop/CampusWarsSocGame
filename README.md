@@ -16,12 +16,13 @@
 
 <!-- PROJECT LOGO -->
 <br />
+<div align="center">
 <p align="center">
   <a href="https://gitlab.lrz.de/klitzner/socgam21_group18">
     
   </a>
 
-  <img src="images/logo.jpg" alt="Logo" width="80" height="80">
+  <img src="images/logo.jpg" alt="Logo" width="120" height="120">
 
   <h3 align="center">Social Gaming 2021 | Group 18 </h3>
 
@@ -40,6 +41,7 @@
     (We dont have any so far)
   </p>
 </p>
+</div>
 
 
 
