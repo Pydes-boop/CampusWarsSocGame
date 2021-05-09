@@ -21,7 +21,7 @@
     
   </a>
 
-  <!--<img src="images/logo.png" alt="Logo" width="80" height="80">-->
+  <img src="images/logo.png" alt="Logo" width="80" height="80">
 
   <h3 align="center">Social Gaming 2021 | Group 18 </h3>
 
