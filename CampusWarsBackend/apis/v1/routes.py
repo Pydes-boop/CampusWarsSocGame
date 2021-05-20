@@ -12,6 +12,7 @@ from flask_restful import Resource
 from apis.v1 import v1, api
 import databaseInterface
 import groupCreation
+from apis.v1.decorators import request_requires
 
 
 @api.resource('/lecturehalls/<int:number>')
@@ -46,6 +47,7 @@ class Quiz(Resource):
 
 @api.resource('/roomdetection')
 class RoomDetection(Resource):
+    @request_requires(headers=['latitude', 'longitude'])
     def post(self):
         return jsonify(databaseInterface.room_detection(request.headers["latitude"], request.headers["longitude"]))
 
