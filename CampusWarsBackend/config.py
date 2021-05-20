@@ -11,13 +11,13 @@ from dotenv import dotenv_values
 from pathlib import Path
 
 SECRETS_PATH: Path = Path('.secrets')
-if not SECRETS_PATH.exists():
-    raise FileNotFoundError(f'The file "{SECRETS_PATH}" is missing! It is not in the repository, request it!') from None
-secrets = dotenv_values(SECRETS_PATH)
 
 
 class Config:
-    print('Config')
+    if not SECRETS_PATH.exists():
+        raise FileNotFoundError(
+            f'The file "{SECRETS_PATH}" is missing! It is not in the repository, request it!') from None
+    secrets = dotenv_values(SECRETS_PATH)
     DEBUG: bool = False
     TESTING: bool = False
     CSRF_ENABLED: bool = True
