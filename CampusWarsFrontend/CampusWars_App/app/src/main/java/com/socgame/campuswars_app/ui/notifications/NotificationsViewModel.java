@@ -1,4 +1,4 @@
-package com.example.campuswars_app.ui.notifications;
+package com.socgame.campuswars_app.ui.notifications;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;

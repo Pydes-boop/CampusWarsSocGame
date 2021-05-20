@@ -1,4 +1,4 @@
-package com.example.campuswars_app;
+package com.socgame.campuswars_app;
 
 import org.junit.Test;
 
