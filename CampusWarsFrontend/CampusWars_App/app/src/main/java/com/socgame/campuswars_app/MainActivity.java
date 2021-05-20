@@ -1,4 +1,4 @@
-package com.example.campuswars_app;
+package com.socgame.campuswars_app;
 
 import android.os.Bundle;
 
@@ -10,7 +10,7 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
-import com.example.campuswars_app.databinding.ActivityMainBinding;
+import com.socgame.campuswars_app.databinding.ActivityMainBinding;
 
 public class MainActivity extends AppCompatActivity {
 
