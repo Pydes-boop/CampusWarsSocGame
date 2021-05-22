@@ -7,12 +7,17 @@ __version__ = "0.0.1"
 
 __all__ = ('v1',)
 
-from flask import jsonify, request
+from flask import jsonify, request, make_response
 from flask_restful import Resource
 from apis.v1 import v1, api
 import databaseInterface
 import groupCreation
 from apis.v1.decorators import request_requires
+
+
+@v1.app_errorhandler(404)
+def error_404(_):
+    return make_response(jsonify({'exception': 'Not found!', 'code': 404}), 404)
 
 
 @api.resource('/lecturehalls/<int:number>')
