@@ -26,7 +26,7 @@ public class HttpSingleton {
     private HttpSingleton(Context context) {
         ctx = context;
         requestQueue = getRequestQueue();
-        url = "http://8.8.8.8:25565/";
+        url = "http://127.0.0.1:5000/";
     }
 
     public String getUrl(){
@@ -36,7 +36,8 @@ public class HttpSingleton {
     /*
     public URL getUrl() throws MalformedURLException {
         return new URL(this.url);
-    }*/
+    }
+    */
 
     public static synchronized HttpSingleton getInstance(Context context) {
         if (instance == null) {
@@ -54,7 +55,7 @@ public class HttpSingleton {
         return requestQueue;
     }
 
-    public <T> void addToRequestQueue(Request<T> req) {
+    private <T> void addToRequestQueue(Request<T> req) {
         getRequestQueue().add(req);
     }
 
