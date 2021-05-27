@@ -6,9 +6,11 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.net.MalformedURLException;
@@ -24,7 +26,7 @@ public class HttpSingleton {
     private HttpSingleton(Context context) {
         ctx = context;
         requestQueue = getRequestQueue();
-        url = "http://8.8.8.8:25565";
+        url = "http://8.8.8.8:25565/";
     }
 
     public String getUrl(){
@@ -59,11 +61,11 @@ public class HttpSingleton {
     public void getRequest(){
         Context context; //TODO add Context
 
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
-                (Request.Method.GET, this.url, null, new Response.Listener<JSONObject>() {
+        JsonArrayRequest jsonObjectRequest = new JsonArrayRequest
+                (Request.Method.GET, this.url, null, new Response.Listener<JSONArray>() {
 
                     @Override
-                    public void onResponse(JSONObject response) {
+                    public void onResponse(JSONArray response) {
                         //TODO: On response
                         //textView.setText("Response: " + response.toString());
                     }
