@@ -2,12 +2,10 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="364dp"
-    android:layout_height="123dp"
-    android:gravity="center"
-    app:layout_constraintBottom_toTopOf="@+id/linearLayout"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintStart_toStartOf="parent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background"
+    tools:context=".ui.Teamplate">
 
 
     <androidx.appcompat.widget.Toolbar
@@ -35,7 +33,7 @@
             android:textStyle="bold"
 
             app:autoSizeTextType="uniform"
-        />
+            />
     </androidx.appcompat.widget.Toolbar>
 
 
@@ -50,7 +48,7 @@
 
         android:background="@color/shadow"
         android:elevation="40sp"
-    >
+        >
 
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/tabLayout"
@@ -65,7 +63,7 @@
             app:tabIndicator="@color/background"
             app:tabIndicatorColor="@color/lightAccent"
             app:tabIndicatorGravity="stretch"
-        >
+            >
 
             <com.google.android.material.tabs.TabItem
                 android:layout_width="wrap_content"
