@@ -53,8 +53,5 @@ public class HttpHandler {
             //TODO EXCEPTION HANDLING
             e.printStackTrace();
         }
-
-
-
     }
 }
