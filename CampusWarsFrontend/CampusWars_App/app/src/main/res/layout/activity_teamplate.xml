@@ -7,42 +7,80 @@
     android:background="@color/background"
     tools:context=".ui.Teamplate">
 
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="70sp"
-        android:orientation="horizontal"
-        android:background="@color/lightAccent"
-        android:elevation="30sp"
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/action_bar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+
+        android:background="@color/background"
+        android:elevation="20sp"
+
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/textView"
+
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+
+            android:gravity="center"
+            android:text="@string/app_name"
+
+            android:textColor="@color/highlight"
+            android:textStyle="bold"
+
+            app:autoSizeTextType="uniform"
+        />
+    </androidx.appcompat.widget.Toolbar>
+
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/tab_bar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
+        app:layout_constraintStart_toStartOf="parent"
 
+        android:background="@color/shadow"
+        android:elevation="40sp"
+    >
 
-        <Button
-            android:id="@+id/quizTabButton"
-            android:layout_width="0dp"
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tabLayout"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:textSize="20sp"
-            android:text="@string/title_quiz" />
 
-        <Button
-            android:id="@+id/mapTabButton"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:textSize="20sp"
-            android:text="@string/title_area" />
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
 
-        <Button
-            android:id="@+id/teamTabButton"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:textSize="20sp"
-            android:text="@string/title_team" />
-    </LinearLayout>
+            app:tabBackground="@color/background"
+            app:tabIndicator="@color/background"
+            app:tabIndicatorColor="@color/lightAccent"
+            app:tabIndicatorGravity="stretch"
+        >
+
+            <com.google.android.material.tabs.TabItem
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:icon="@drawable/ic_home_black_24dp" />
+
+            <com.google.android.material.tabs.TabItem
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:icon="@drawable/ic_home_black_24dp" />
+
+            <com.google.android.material.tabs.TabItem
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:icon="@drawable/ic_home_black_24dp" />
+
+        </com.google.android.material.tabs.TabLayout>
+
+    </androidx.appcompat.widget.Toolbar>
 </androidx.constraintlayout.widget.ConstraintLayout>
