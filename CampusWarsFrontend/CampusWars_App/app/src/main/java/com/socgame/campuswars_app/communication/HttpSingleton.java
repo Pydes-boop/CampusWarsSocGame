@@ -1,6 +1,7 @@
 package com.socgame.campuswars_app.communication;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -8,13 +9,17 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.JsonRequest;
 import com.android.volley.toolbox.Volley;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
 public class HttpSingleton {
     //https://developer.android.com/training/volley/requestqueue
@@ -23,27 +28,28 @@ public class HttpSingleton {
     private static Context ctx;
     private static String url;
 
+    //For HTTP Requests
+    private JSONArray response;
+    private boolean success;
+
     private HttpSingleton(Context context) {
         ctx = context;
         requestQueue = getRequestQueue();
-        url = "http://127.0.0.1:5000/";
+        url = "http://10.0.2.2:5000/";
+        response = null;
+        //Refer to this for testing with localhost
+        //https://developer.android.com/studio/run/emulator-networking.html
     }
-
-    public String getUrl(){
-        return this.url;
-    }
-
-    /*
-    public URL getUrl() throws MalformedURLException {
-        return new URL(this.url);
-    }
-    */
 
     public static synchronized HttpSingleton getInstance(Context context) {
         if (instance == null) {
             instance = new HttpSingleton(context);
         }
         return instance;
+    }
+
+    public String getUrl(){
+        return this.url;
     }
 
     public RequestQueue getRequestQueue() {
@@ -59,33 +65,75 @@ public class HttpSingleton {
         getRequestQueue().add(req);
     }
 
-    public void getRequest(){
-        Context context; //TODO add Context
+    public void getRequest(String route, Response.Listener<JSONArray> listener, Response.ErrorListener errlsn){
+        /**
+         * create get request of string: url + route
+         * @param route String for route to take ob HTTP Server
+         * @param listener implement new Listener with overwrite OnResponse to get Data
+         * @param errlsn implement new Error Listener with overwrite OnErrorResponse to get Data
+         * getRequest(route, new Response.Listener<JSONArray>() {
+         *      @Override
+         *      public void onResponse(JSONArray Response) {
+         *      //On Response
+         *      //Handle Data
+         *      Log.d("HTTP", "Success: " + Response.toString());
+         *      }
+         * }, new Response.ErrorListener() {
+         *      @Override
+         *      public void onErrorResponse(VolleyError error) {
+         *      //Error Handling
+         *      Log.d("HTTP", "Error: " + error.getMessage());
+         *      }
+         * });
+         * @return void
+         */
 
-        JsonArrayRequest jsonObjectRequest = new JsonArrayRequest
-                (Request.Method.GET, this.url, null, new Response.Listener<JSONArray>() {
-
-                    @Override
-                    public void onResponse(JSONArray response) {
-                        //TODO: On response
-                        //textView.setText("Response: " + response.toString());
-                    }
-                }, new Response.ErrorListener() {
-
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        // TODO: Handle error
-
-                    }
-                });
-
-        // Access the RequestQueue through your singleton class.
-        // TODO: Add Context
-        HttpSingleton.getInstance(null).addToRequestQueue(jsonObjectRequest);
+        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest
+                (Request.Method.GET, this.url + route,null, listener, errlsn);
+        HttpSingleton.getInstance(ctx).addToRequestQueue(jsonArrayRequest);
     }
 
-    public void postRequest(){
-        //TODO: Post Request
+    public void postRequest(String route, Response.Listener<JSONArray> listener, Response.ErrorListener errlsn) throws JSONException {
+        /**
+         * create get request of string: url + route
+         * @param route String for route to take ob HTTP Server
+         * @param params HashMap<String, String> params will be used as post Parameters; fill with params.put("token", "token_value");
+         * @param listener implement new Listener with overwrite OnResponse to get Data
+         * @param errlsn implement new Error Listener with overwrite OnErrorResponse to get Data
+         * postRequest(route, new Response.Listener<JSONArray>() {
+         *      @Override
+         *      public void onResponse(JSONArray Response) {
+         *      //On Response
+         *      //Handle Data
+         *      Log.d("HTTP", "Success: " + Response.toString());
+         *      }
+         * }, new Response.ErrorListener() {
+         *      @Override
+         *      public void onErrorResponse(VolleyError error) {
+         *      //Error Handling
+         *      Log.d("HTTP", "Error: " + error.getMessage());
+         *      }
+         * });
+         * @return void
+         */
+
+        //creating JSON array from Hashmap for post
+        /*JSONObject obj = new JSONObject(params);
+        JSONArray arr = new JSONArray();
+        arr.put(obj);*/
+        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest
+                (Request.Method.POST, this.url + route, null, listener, errlsn) {    //this is the part, that adds the header to the request
+            @Override
+            public Map<String, String> getHeaders() {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("latitude", "21");
+                params.put("longitude", "21");
+                params.put("robin", "21");
+                params.put("test", "21");
+                return params;
+            }
+        };
+        HttpSingleton.getInstance(ctx).addToRequestQueue(jsonArrayRequest);
     }
 
 
