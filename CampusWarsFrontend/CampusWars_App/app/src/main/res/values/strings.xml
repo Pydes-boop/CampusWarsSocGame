@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">CampusWars</string>
+    <string name="app_name">Campus Wars</string>
     <string name="title_logIn">Log In</string>
     <string name="title_area">Local Area</string>
     <string name="title_quiz">Quiz</string>

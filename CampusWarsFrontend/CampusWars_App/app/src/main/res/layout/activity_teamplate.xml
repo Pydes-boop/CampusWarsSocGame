@@ -40,15 +40,15 @@
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/tab_bar"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        android:layout_height="wrap_content"
 
         android:background="@color/shadow"
         android:elevation="40sp"
-        >
+
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.444"
+        app:layout_constraintStart_toStartOf="parent">
 
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/tabLayout"
@@ -58,27 +58,27 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
+            
 
             app:tabBackground="@color/background"
             app:tabIndicator="@color/background"
             app:tabIndicatorColor="@color/lightAccent"
-            app:tabIndicatorGravity="stretch"
-            >
+            app:tabIndicatorGravity="stretch">
 
             <com.google.android.material.tabs.TabItem
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:icon="@drawable/ic_home_black_24dp" />
+                android:icon="@drawable/ic_quiz_icon" />
 
             <com.google.android.material.tabs.TabItem
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:icon="@drawable/ic_home_black_24dp" />
+                android:icon="@drawable/ic_map_icon" />
 
             <com.google.android.material.tabs.TabItem
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:icon="@drawable/ic_home_black_24dp" />
+                android:icon="@drawable/ic_group_icon" />
 
         </com.google.android.material.tabs.TabLayout>
 
