@@ -93,7 +93,7 @@ public class HttpSingleton {
         HttpSingleton.getInstance(ctx).addToRequestQueue(jsonArrayRequest);
     }
 
-    public void postRequest(String route, Response.Listener<JSONArray> listener, Response.ErrorListener errlsn) throws JSONException {
+    public void postRequest(String route, HashMap<String, String> params, Response.Listener<JSONArray> listener, Response.ErrorListener errlsn) throws JSONException {
         /**
          * create get request of string: url + route
          * @param route String for route to take ob HTTP Server
@@ -116,21 +116,13 @@ public class HttpSingleton {
          * });
          * @return void
          */
-
-        //creating JSON array from Hashmap for post
-        /*JSONObject obj = new JSONObject(params);
-        JSONArray arr = new JSONArray();
-        arr.put(obj);*/
         JsonArrayRequest jsonArrayRequest = new JsonArrayRequest
-                (Request.Method.POST, this.url + route, null, listener, errlsn) {    //this is the part, that adds the header to the request
+                (Request.Method.POST, this.url + route, null, listener, errlsn) {
+            //this is the part, that adds the header to the request
             @Override
             public Map<String, String> getHeaders() {
-                Map<String, String> params = new HashMap<String, String>();
-                params.put("latitude", "21");
-                params.put("longitude", "21");
-                params.put("robin", "21");
-                params.put("test", "21");
-                return params;
+                Map<String, String> parameters = params;
+                return parameters;
             }
         };
         HttpSingleton.getInstance(ctx).addToRequestQueue(jsonArrayRequest);
@@ -141,4 +133,41 @@ public class HttpSingleton {
     //https://www.itsalif.info/content/android-volley-tutorial-http-get-post-put
     //https://stackoverflow.com/questions/33573803/how-to-send-a-post-request-using-volley-with-string-body
 
+    //Test for Http Singleton get
+    /*HttpSingleton http = HttpSingleton.getInstance(this.getApplicationContext());
+    JSONArray response = null;
+        http.getRequest("v1/quiz", new Response.Listener<JSONArray>() {
+        @Override
+        public void onResponse(JSONArray Response) {
+            Log.d("HTTP", "Success: " + Response.toString());
+        }
+    }, new Response.ErrorListener() {
+        @Override
+        public void onErrorResponse(VolleyError error) {
+            //Error Handling
+            Log.d("HTTP", "Error: " + error.getMessage());
+        }
+    });
+
+    //Test for Http Singleton post
+    response = null;
+        try {
+        http.postRequest("v1/roomdetection", null, new Response.Listener<JSONArray>() {
+            @Override
+            public void onResponse(JSONArray Response) {
+                Log.d("HTTP", "Success: " + Response.toString());
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                //Error Handling
+                Log.d("HTTP", "Error: " + error.getMessage());
+            }
+        });
+    } catch (Exception e){
+        Log.d("Exception", e.toString());
+    }*/
+
 }
+
+
