@@ -12,18 +12,46 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <androidx.constraintlayout.utils.widget.MockView
-            android:id="@+id/mockView"
+        <TextView
+            android:id="@+id/topicText"
+            android:text="Topic Title"
+
             android:layout_width="match_parent"
             android:layout_height="83sp"
-            android:layout_marginTop="40sp" />
+            android:layout_marginTop="40sp"
 
-        <androidx.constraintlayout.utils.widget.MockView
-            android:id="@+id/mockView2"
+            android:gravity="center"
+
+            android:autoSizeTextType="uniform"
+            android:autoSizeMaxTextSize="30sp"
+
+            android:textColor="@color/text"
+            android:background="@color/lightAccent"
+            android:textStyle="bold"
+            android:elevation="40sp"
+            />
+
+
+
+        <TextView
+            android:id="@+id/questionText"
+            android:text="Question test "
+
             android:layout_width="match_parent"
             android:layout_height="317sp"
             android:layout_marginTop="40sp"
-            android:layout_marginBottom="40sp" />
+            android:layout_marginBottom="40sp"
+
+            android:gravity="center"
+
+            android:autoSizeTextType="uniform"
+            android:autoSizeMaxTextSize="30sp"
+
+            android:textColor="@color/text"
+            android:background="@color/lightAccent"
+            android:textStyle="bold"
+            android:elevation="40sp"
+            />
 
         <TableLayout
             android:id="@+id/tableLayout"
@@ -42,6 +70,7 @@
 
                 android:layout_gravity="center"
                 android:gravity="center"
+                android:minHeight="100sp"
                 >
 
                 <Button
@@ -72,6 +101,7 @@
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
                 android:gravity="center"
+                android:minHeight="100sp"
                 >
 
                 <Button
