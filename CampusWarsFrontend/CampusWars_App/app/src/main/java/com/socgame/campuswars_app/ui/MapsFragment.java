@@ -1,4 +1,4 @@
-package com.socgame.campuswars_app;
+package com.socgame.campuswars_app.ui;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -15,6 +15,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.socgame.campuswars_app.R;
 
 public class MapsFragment extends Fragment {
 

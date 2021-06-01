@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".QuizFragment">
+    tools:context=".ui.QuizFragment">
 
 
     <LinearLayout
@@ -47,8 +47,8 @@
             android:autoSizeTextType="uniform"
             android:autoSizeMaxTextSize="30sp"
 
-            android:textColor="@color/text"
-            android:background="@color/lightAccent"
+            android:textColor="@color/textInverted"
+            android:background="@color/highlight"
             android:textStyle="bold"
             android:elevation="40sp"
             />
