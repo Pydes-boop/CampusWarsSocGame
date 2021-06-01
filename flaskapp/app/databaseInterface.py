@@ -1,16 +1,45 @@
-# todo: marina pls connect to database
+__all__ = ('application', 'get_all_rooms', 'add_room')
+
+import os
+
+from flask import Flask, request, jsonify
+from flask_pymongo import PyMongo
+
+max_distance = 30
+
+application = Flask(__name__)
+
+application.config["MONGO_URI"] = 'mongodb://' + os.environ['MONGODB_USERNAME'] + ':' + os.environ[
+    'MONGODB_PASSWORD'] + '@' + os.environ['MONGODB_HOSTNAME'] + ':27017/' + os.environ['MONGODB_DATABASE']
+
+mongo = PyMongo(application)
+db = mongo.db
+
+
 def room_detection(lat, lon):
-    ...
-    # return {"room_name": "null", "occupier": "null"}
-    return {"room_name": "test", "occupier": "Jonas und Robin"}
+    return db.room.findOne({"location": {"$near": {"$geometry": {"type": "Point", "coordinates": [lat, lon]}}}})
+
+
+def add_room(room_name, longitude, latitude):
+    item = {
+        "type": "Point",
+        "coordinates": [longitude, latitude],
+        "roomName": room_name,
+        "occupier": None
+    }
+    db.room.insert_one(item)
 
 
 def get_all_rooms():
-    ...
-    return [{'name': 'MW-1', 'location': [50, 10], "occupier": "Jonas und Robin"},
-            {'name': 'MW-2', 'location': [51, 9], "occupier": "Jonas und Robin"},
-            {'name': 'MI-1', 'location': [50, 9], "occupier": "Jonas und Robin"},
-            {'name': 'MI-2', 'location': [51, 10], "occupier": "Jonas und Robin"}]
+    item = {}
+    data = []
+    for entry in db.room.find({}):
+        item = {
+            'id': str(entry['_id']),
+            'room_name': entry['roomName']
+        }
+        data.append(item)
+    return data
 
 
 def get_all_groups():
@@ -26,4 +55,9 @@ def set_user_groups(user, groups):
 
 
 def add_question(question, right_answer, wrong_answers):
+    ...
+
+
+# returns closest room, if any is close enough, otherwise null
+def find_next_room(longitude, latitude):
     ...

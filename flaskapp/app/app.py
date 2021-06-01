@@ -5,22 +5,14 @@ __author__ = "Robin 'r0w' Weiland"
 __date__ = "2021-05-13"
 __version__ = "0.0.1"
 
-__all__ = ('application',)
+__all__ = ('app',)
 
 from apis.v1.routes import v1
 from apis.v1 import db
 
 import os
 from flask import Flask, request, jsonify
-from flask_pymongo import PyMongo
-
-application = Flask(__name__)
-
-application.config["MONGO_URI"] = 'mongodb://' + os.environ['MONGODB_USERNAME'] + ':' + os.environ[
-    'MONGODB_PASSWORD'] + '@' + os.environ['MONGODB_HOSTNAME'] + ':27017/' + os.environ['MONGODB_DATABASE']
-
-mongo = PyMongo(application)
-db = mongo.db
+from databaseInterface import application, get_all_rooms, add_room
 
 
 @application.route('/')
@@ -31,37 +23,30 @@ def index():
     )
 
 
-@application.route('/todo')
-def todo():
-    _todos = db.todo.find()
-
-    item = {}
-    data = []
-    for todo in _todos:
-        item = {
-            'id': str(todo['_id']),
-            'todo': todo['todo']
-        }
-        data.append(item)
-
+@application.route('/room/')
+def get_rooms():
     return jsonify(
         status=True,
-        data=data
+        data=get_all_rooms()
     )
 
 
-@application.route('/todo', methods=['POST'])
-def createTodo():
-    data = request.get_json(force=True)
-    item = {
-        'todo': data['todo']
-    }
-    db.todo.insert_one(item)
-
+@application.route('/add_room/')
+def add_new_room():
+    add_room("Test", 50, 40)
     return jsonify(
         status=True,
-        message='To-do saved successfully!'
-    ), 201
+        data=get_all_rooms()
+    )
+
+
+@application.route('/room_detection/')
+def room_detection():
+    add_room("Test", 30, 112)
+    return jsonify(
+        status=True,
+        data=get_all_rooms()
+    )
 
 
 if __name__ == "__main__":
