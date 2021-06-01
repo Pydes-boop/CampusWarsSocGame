@@ -1,4 +1,4 @@
-package com.socgame.campuswars_app.communication;
+URpackage com.socgame.campuswars_app.communication;
 
 import android.content.Context;
 import android.util.Log;

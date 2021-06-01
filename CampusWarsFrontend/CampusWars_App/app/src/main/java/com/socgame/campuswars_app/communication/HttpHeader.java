@@ -14,7 +14,7 @@ public class HttpHeader {
         return header;
     }
 
-    public void addUniqueId(){
+    public void addUId(){
         //TODO -> is this necessary? Should this be private?
     }
 
