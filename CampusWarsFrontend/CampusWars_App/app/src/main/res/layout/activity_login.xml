@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background"
-    tools:context=".LoginActivity">
+    tools:context=".ui.LoginActivity">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/action_bar"
@@ -61,12 +61,14 @@
             android:layout_height="35sp"
 
             android:layout_marginBottom="20sp"
-
-            android:background="@color/lightAccent"
             android:ems="15"
 
             android:inputType="textEmailAddress"
-            android:textColor="@color/text" />
+
+            android:background="@color/lightAccent"
+            android:textColor="@color/text"
+            android:elevation="20sp"
+            />
 
 
         <EditText
@@ -75,13 +77,13 @@
             android:layout_height="35sp"
 
             android:layout_marginBottom="20sp"
-
-            android:background="@color/lightAccent"
             android:ems="15"
 
-
             android:inputType="textPassword"
-            android:textColor="@color/text" />
+
+            android:background="@color/lightAccent"
+            android:textColor="@color/text"
+            android:elevation="20sp"/>
 
         <Button
             android:id="@+id/forgotButton"
@@ -102,20 +104,22 @@
 
             android:layout_marginBottom="20sp"
 
-            android:background="@color/highlight"
-
             android:text="@string/title_logIn"
-            android:textColor="@color/textInverted" />
+
+            android:textColor="@color/textInverted"
+            android:background="@color/highlight"
+            android:elevation="15sp"/>
 
         <Button
             android:id="@+id/registerButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@color/highlight"
-
 
             android:text="Register"
-            android:textColor="@color/textInverted" />
+
+            android:textColor="@color/textInverted"
+            android:background="@color/highlight"
+            android:elevation="15sp"/>
     </LinearLayout>
 
 
