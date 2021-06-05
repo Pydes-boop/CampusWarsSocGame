@@ -11,9 +11,9 @@ services:
       APP_ENV: "prod"
       APP_DEBUG: "False"
       APP_PORT: 5000
-      MONGODB_DATABASE: flaskdb
+      MONGODB_DATABASE: campuswarsdb
       MONGODB_USERNAME: marina
-      MONGODB_PASSWORD: vmNJcn%tLwoi
+      MONGODB_PASSWORD: vmNJcntLwoi
       MONGODB_HOSTNAME: mongodb
    
     depends_on:
@@ -28,7 +28,7 @@ services:
     command: mongod --auth
     environment:
       MONGO_INITDB_ROOT_USERNAME: marina
-      MONGO_INITDB_ROOT_PASSWORD: o1!ng%Ayr&Ta
+      MONGO_INITDB_ROOT_PASSWORD: o1ngAyrTa
       MONGO_INITDB_DATABASE: campuswarsdb
       MONGODB_DATA_DIR: /data/db
       MONDODB_LOG_DIR: /dev/null
