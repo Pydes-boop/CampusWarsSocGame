@@ -19,7 +19,7 @@ public class LoginActivity extends AppCompatActivity {
         Button next = (Button) findViewById(R.id.loginButton);
         next.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-                Intent myIntent = new Intent(view.getContext(), Teamplate.class);
+                Intent myIntent = new Intent(view.getContext(), MainScreenActivity.class);
                 startActivityForResult(myIntent, 0);
             }
         });
