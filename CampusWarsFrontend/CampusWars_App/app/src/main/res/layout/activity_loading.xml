@@ -28,7 +28,7 @@
         android:layout_height="wrap_content"
 
         android:background="@null"
-        android:text="Loading.."
+        android:text="Loading..."
         android:textAlignment="center"
         android:textColor="@color/darkAccent"
         app:layout_constraintBottom_toBottomOf="parent"

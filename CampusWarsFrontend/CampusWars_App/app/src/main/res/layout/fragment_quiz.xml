@@ -26,7 +26,7 @@
             android:autoSizeMaxTextSize="30sp"
 
             android:textColor="@color/text"
-            android:background="@color/lightAccent"
+            android:background="@drawable/button_rounded"
             android:textStyle="bold"
             android:elevation="40sp"
             />
@@ -48,7 +48,7 @@
             android:autoSizeMaxTextSize="30sp"
 
             android:textColor="@color/textInverted"
-            android:background="@color/highlight"
+            android:background="@drawable/button_rounded_highlight"
             android:textStyle="bold"
             android:elevation="40sp"
             />
@@ -79,8 +79,10 @@
                     android:layout_height="match_parent"
                     android:text="Answer A"
 
+                    android:layout_margin="5sp"
+
                     android:textColor="@color/text"
-                    android:backgroundTint="@color/lightAccent"
+                    android:background="@drawable/button_rounded"
                     android:elevation="20sp"
                     />
 
@@ -90,8 +92,10 @@
                     android:layout_height="match_parent"
                     android:text="Answer B"
 
+                    android:layout_margin="5sp"
+
                     android:textColor="@color/text"
-                    android:backgroundTint="@color/lightAccent"
+                    android:background="@drawable/button_rounded"
                     android:elevation="20sp"
                     />
             </TableRow>
@@ -110,8 +114,10 @@
                     android:layout_height="match_parent"
                     android:text="Answer C"
 
+                    android:layout_margin="5sp"
+
                     android:textColor="@color/text"
-                    android:backgroundTint="@color/lightAccent"
+                    android:background="@drawable/button_rounded"
                     android:elevation="20sp"
                     />
 
@@ -121,8 +127,10 @@
                     android:layout_height="match_parent"
                     android:text="Answer D"
 
+                    android:layout_margin="5sp"
+
                     android:textColor="@color/text"
-                    android:backgroundTint="@color/lightAccent"
+                    android:background="@drawable/button_rounded"
                     android:elevation="20sp"
                     />
             </TableRow>

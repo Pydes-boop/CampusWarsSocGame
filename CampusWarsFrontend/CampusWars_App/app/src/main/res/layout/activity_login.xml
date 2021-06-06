@@ -46,8 +46,8 @@
 
         <ImageView
             android:id="@+id/logo"
-            android:layout_width="288sp"
-            android:layout_height="185sp"
+            android:layout_width="224dp"
+            android:layout_height="145dp"
 
             android:layout_marginTop="40sp"
             android:layout_marginBottom="40sp"
@@ -58,14 +58,14 @@
         <EditText
             android:id="@+id/editTextTextEmailAddress"
             android:layout_width="wrap_content"
-            android:layout_height="35sp"
+            android:layout_height="45sp"
 
             android:layout_marginBottom="20sp"
             android:ems="15"
 
             android:inputType="textEmailAddress"
 
-            android:background="@color/lightAccent"
+            android:background="@drawable/button_rounded"
             android:textColor="@color/text"
             android:elevation="20sp"
             />
@@ -74,14 +74,14 @@
         <EditText
             android:id="@+id/editTextTextPassword"
             android:layout_width="wrap_content"
-            android:layout_height="35sp"
+            android:layout_height="45sp"
 
             android:layout_marginBottom="20sp"
             android:ems="15"
 
             android:inputType="textPassword"
 
-            android:background="@color/lightAccent"
+            android:background="@drawable/button_rounded"
             android:textColor="@color/text"
             android:elevation="20sp"/>
 
@@ -99,7 +99,7 @@
 
         <Button
             android:id="@+id/loginButton"
-            android:layout_width="wrap_content"
+            android:layout_width="150sp"
             android:layout_height="wrap_content"
 
             android:layout_marginBottom="20sp"
@@ -107,18 +107,20 @@
             android:text="@string/title_logIn"
 
             android:textColor="@color/textInverted"
-            android:background="@color/highlight"
+            android:background="@drawable/button_rounded_highlight"
             android:elevation="15sp"/>
 
         <Button
             android:id="@+id/registerButton"
-            android:layout_width="wrap_content"
+            android:layout_width="150sp"
             android:layout_height="wrap_content"
+
+            android:layout_marginBottom="40sp"
 
             android:text="Register"
 
             android:textColor="@color/textInverted"
-            android:background="@color/highlight"
+            android:background="@drawable/button_rounded_highlight"
             android:elevation="15sp"/>
     </LinearLayout>
 
