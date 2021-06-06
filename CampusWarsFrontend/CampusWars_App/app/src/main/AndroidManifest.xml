@@ -18,7 +18,7 @@
         android:theme="@style/Theme.AppCompat.NoActionBar">
 
 
-        <activity android:name=".ui.Teamplate">
+        <activity android:name=".ui.MainScreenActivity">
 
         </activity>
 
