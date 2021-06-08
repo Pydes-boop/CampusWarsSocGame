@@ -1,5 +1,5 @@
 # todo: marina pls connect to database
-def room_detection(lat, lon):
+def room_detection(lat, lon, uid):
     ...
     # return {"room_name": "null", "occupier": "null"}
     return {"room_name": "test", "occupier": "Jonas und Robin"}
@@ -26,4 +26,8 @@ def set_user_groups(user, groups):
 
 
 def add_question(question, right_answer, wrong_answers):
+    ...
+
+
+def register(user):
     ...

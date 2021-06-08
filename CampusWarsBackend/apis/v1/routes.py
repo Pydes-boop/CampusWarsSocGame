@@ -54,7 +54,8 @@ class Quiz(Resource):
 class RoomDetection(Resource):
     @request_requires(headers=['latitude', 'longitude'])
     def post(self):
-        return jsonify(databaseInterface.room_detection(request.headers["latitude"], request.headers["longitude"]))
+        return jsonify(databaseInterface.room_detection(request.headers["latitude"], request.headers["longitude"],
+                                                        request.headers["uid"]))
 
     def get(self):
         return jsonify(databaseInterface.get_all_rooms())
@@ -92,5 +93,10 @@ class Question(Resource):
         return "ok", 200
 
 
+@api.resource('/register')
+class Register(Resource):
+    def post(self):
+        databaseInterface.register(request.headers["user"])
+        return "ok", 200
 if __name__ == '__main__':
     pass
