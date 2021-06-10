@@ -9,6 +9,7 @@ __all__ = ('request_requires',)
 
 from flask import request
 from functools import wraps
+from apis.v1.errorhandler import RequiredRequestEntryMissing
 
 from typing import Any, Callable
 
@@ -20,7 +21,7 @@ def request_requires(**dec_kwargs) -> Callable:
             for section, names in dec_kwargs.items():
                 for name in map(lambda x: x.lower(), names):
                     if name not in map(lambda x: x.lower(), getattr(request, section).keys()):
-                        raise Exception(f'Request was missing the {section}.{name} entry;')
+                        raise RequiredRequestEntryMissing(f'Request was missing the {section}.{name} entry;')
             return method(*args, **kwargs)
         return wrapper
     return decorator

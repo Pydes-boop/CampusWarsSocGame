@@ -14,6 +14,7 @@ RUN pip install flask
 RUN pip install flask-restful
 RUN pip install flask-pymongo
 RUN pip install flask-mongoengine
+RUN pip install python-dotenv
 ADD . /var/www/
 ADD ./wsgi.py /var/www/wsgi.py
 ADD . /var/www/app
