@@ -7,7 +7,9 @@ __version__ = "0.0.1"
 
 __all__ = ('db',)
 
-from apis.v1 import db
+from apis.v1 import db, mongo
+
+print(f'-----------------------------------------------------{db}')
 
 
 if __name__ == '__main__': pass
