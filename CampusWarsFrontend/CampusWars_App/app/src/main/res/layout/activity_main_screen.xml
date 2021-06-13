@@ -50,7 +50,7 @@
         app:layout_constraintRight_toRightOf="parent"></androidx.appcompat.widget.Toolbar>
 
     <com.google.android.material.tabs.TabLayout
-        android:id="@+id/tabLayout"
+        android:id="@+id/tab_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
 
@@ -77,32 +77,16 @@
 
         app:tabRippleColor="@color/darkAccent">
 
-        <com.google.android.material.tabs.TabItem
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:icon="@drawable/ic_quiz_icon" />
-
-        <com.google.android.material.tabs.TabItem
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:icon="@drawable/ic_map_icon" />
-
-        <com.google.android.material.tabs.TabItem
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:icon="@drawable/ic_group_icon" />
-
     </com.google.android.material.tabs.TabLayout>
 
-    <androidx.viewpager2.widget.ViewPager2
+    <com.socgame.campuswars_app.custom.CustomViewPager
+        android:id="@+id/view_pager"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="1dp"
         app:layout_constraintBottom_toTopOf="@id/tab_bar"
         app:layout_constraintTop_toBottomOf="@+id/action_bar"
         app:layout_constraintVertical_bias="0.444"
-        tools:layout_editor_absoluteX="-27dp">
-
-    </androidx.viewpager2.widget.ViewPager2>
+        tools:layout_editor_absoluteX="-27dp"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

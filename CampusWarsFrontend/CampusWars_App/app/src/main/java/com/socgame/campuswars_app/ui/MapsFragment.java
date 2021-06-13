@@ -19,6 +19,7 @@ import com.socgame.campuswars_app.R;
 
 public class MapsFragment extends Fragment {
 
+
     private OnMapReadyCallback callback = new OnMapReadyCallback() {
 
         /**
