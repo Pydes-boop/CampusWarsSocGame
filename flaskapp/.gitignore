@@ -253,7 +253,7 @@ $RECYCLE.BIN/
 *.lnk
 
 ### Custom
-.secrets
+
 .idea
 reqeust-tests
 sandbox
