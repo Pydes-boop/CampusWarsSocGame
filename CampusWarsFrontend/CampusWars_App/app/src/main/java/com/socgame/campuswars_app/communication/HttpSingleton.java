@@ -10,6 +10,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.JsonRequest;
+import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
 import org.json.JSONArray;
@@ -52,6 +53,10 @@ public class HttpSingleton {
         return this.url;
     }
 
+    public void setUrl(String url){
+        this.url = url;
+    }
+
     public RequestQueue getRequestQueue() {
         if (requestQueue == null) {
             // getApplicationContext() is key, it keeps you from leaking the
@@ -88,6 +93,10 @@ public class HttpSingleton {
          * @return void
          */
 
+        /*
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, this.url + route,null, listener, errlsn);
+        HttpSingleton.getInstance(ctx).addToRequestQueue(stringRequest);
+        */
         JsonArrayRequest jsonArrayRequest = new JsonArrayRequest
                 (Request.Method.GET, this.url + route,null, listener, errlsn);
         HttpSingleton.getInstance(ctx).addToRequestQueue(jsonArrayRequest);
@@ -126,6 +135,11 @@ public class HttpSingleton {
             }
         };
         HttpSingleton.getInstance(ctx).addToRequestQueue(jsonArrayRequest);
+    }
+
+    public void getRequestString(String route, Response.Listener<String> listener, Response.ErrorListener errlsn){
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, this.url + route, listener, errlsn);
+        HttpSingleton.getInstance(ctx).addToRequestQueue(stringRequest);
     }
 
 
