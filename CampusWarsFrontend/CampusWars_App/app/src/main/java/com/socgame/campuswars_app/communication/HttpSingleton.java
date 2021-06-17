@@ -28,6 +28,7 @@ public class HttpSingleton {
     private RequestQueue requestQueue;
     private static Context ctx;
     private static String url;
+    private static String tumUrl;
 
     //For HTTP Requests
     private JSONArray response;
@@ -37,6 +38,7 @@ public class HttpSingleton {
         ctx = context;
         requestQueue = getRequestQueue();
         url = "http://10.0.2.2:5000/";
+        tumUrl = "https://campus.tum.de/";
         response = null;
         //Refer to this for testing with localhost
         //https://developer.android.com/studio/run/emulator-networking.html
@@ -51,10 +53,6 @@ public class HttpSingleton {
 
     public String getUrl(){
         return this.url;
-    }
-
-    public void setUrl(String url){
-        this.url = url;
     }
 
     public RequestQueue getRequestQueue() {
@@ -140,6 +138,16 @@ public class HttpSingleton {
     public void getRequestString(String route, Response.Listener<String> listener, Response.ErrorListener errlsn){
         StringRequest stringRequest = new StringRequest(Request.Method.GET, this.url + route, listener, errlsn);
         HttpSingleton.getInstance(ctx).addToRequestQueue(stringRequest);
+    }
+
+    public void getRequestString(String route, Response.Listener<String> listener, Response.ErrorListener errlsn, boolean tum){
+        if(tum){
+            StringRequest stringRequest = new StringRequest(Request.Method.GET, this.tumUrl + route, listener, errlsn);
+            HttpSingleton.getInstance(ctx).addToRequestQueue(stringRequest);
+        } else {
+            StringRequest stringRequest = new StringRequest(Request.Method.GET, this.url + route, listener, errlsn);
+            HttpSingleton.getInstance(ctx).addToRequestQueue(stringRequest);
+        }
     }
 
 
