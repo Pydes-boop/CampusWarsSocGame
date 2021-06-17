@@ -8,8 +8,8 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 
 import com.google.android.material.tabs.TabLayout;
-import com.socgame.campuswars_app.R;
 import com.socgame.campuswars_app.custom.CustomViewPager;
+import com.socgame.campuswars_app.R;
 
 public class MainScreenActivity extends AppCompatActivity
 {
