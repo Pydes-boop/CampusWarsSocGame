@@ -68,6 +68,9 @@
             android:background="@drawable/button_rounded"
             android:textColor="@color/text"
             android:elevation="20sp"
+
+            android:drawableLeft="@drawable/ic_email"
+            android:drawablePadding="10sp"
             />
 
 
@@ -83,7 +86,11 @@
 
             android:background="@drawable/button_rounded"
             android:textColor="@color/text"
-            android:elevation="20sp"/>
+            android:elevation="20sp"
+
+            android:drawableLeft="@drawable/ic_lock"
+            android:drawablePadding="10sp"
+            />
 
         <Button
             android:id="@+id/forgotButton"
