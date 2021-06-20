@@ -17,18 +17,25 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.NoActionBar">
         <activity
-            android:name=".ui.TestActivity"
-            android:label="@string/title_activity_test"
-            android:theme="@style/NoActionBar"></activity>
-        <activity android:name=".ui.MainScreenActivity"></activity>
-        <activity android:name=".ui.LoadingActivity">
+            android:name=".ui.QuizActivity"
+            android:label="@string/title_activity_quiz"
+            android:theme="@style/NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        />
         </activity>
-        <activity android:name=".ui.LoginActivity"></activity>
+        <activity
+            android:name=".ui.TestActivity"
+            android:label="@string/title_activity_test"
+            android:theme="@style/NoActionBar" />
+        <activity android:name=".ui.MainScreenActivity" />
+        <activity android:name=".ui.LoadingActivity">
+
+        </activity>
+        <activity android:name=".ui.LoginActivity" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
