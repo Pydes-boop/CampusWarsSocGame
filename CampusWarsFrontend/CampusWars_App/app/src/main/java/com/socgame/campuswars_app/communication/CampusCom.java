@@ -32,7 +32,7 @@ public class CampusCom {
     }
 
     public void generateToken(String tumId){
-        String test = "https://campus.tum.de/tumonline/wbservicesbasic.secretUpload?pToken=32DCF2A7D06330F56AB7956292A50E2C&pSecret=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDqFFH5SPie6PwptkuAL7dzgQaryN7ymRFRJOaN%250AeLz72mIkWnFQq0zxpQCm%252B1UOO0BgHLERPuI4m76p0%252F1elSJKVJDhL%252F6ewfuqbGKzNnmOYr3jPDUm%250AECPkKQDc2PTh9eqNx%252FbhvjT%252BGZS%252BHiOHflIqHweDojj%252BPmrkbvV5K7gDkQIDAQAB&pToken=32DCF2A7D06330F56AB7956292A50E2C"
+        String test = "https://campus.tum.de/tumonline/wbservicesbasic.secretUpload?pToken=32DCF2A7D06330F56AB7956292A50E2C&pSecret=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDqFFH5SPie6PwptkuAL7dzgQaryN7ymRFRJOaN%250AeLz72mIkWnFQq0zxpQCm%252B1UOO0BgHLERPuI4m76p0%252F1elSJKVJDhL%252F6ewfuqbGKzNnmOYr3jPDUm%250AECPkKQDc2PTh9eqNx%252FbhvjT%252BGZS%252BHiOHflIqHweDojj%252BPmrkbvV5K7gDkQIDAQAB&pToken=32DCF2A7D06330F56AB7956292A50E2C";
         HttpSingleton http = HttpSingleton.getInstance(this.ctx);
         String response = null;
         http.getRequestString("tumonline/wbservicesbasic.requestToken?pUsername=" + tumId + "&pTokenName=CampusWarsApp", new Response.Listener<String>() {
