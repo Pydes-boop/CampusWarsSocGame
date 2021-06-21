@@ -66,7 +66,7 @@ public class CampusCom {
 
         //Campus com now gets the general instance of Http Singleton
         //HttpSingleton http = HttpSingleton.getInstance(this.ctx);
-        http.getRequestString("tumonline/wbservicesbasic.requestToken?pUsername=" + tumId + "&pTokenName=CampusWarsApp", new Response.Listener<String>() {
+        http.getRequestString("tumonline/wbservicesbasic.requestToken?pUsername=" + Id + "&pTokenName=CampusWarsApp", new Response.Listener<String>() {
             @Override
             public void onResponse(String Response) {
                 //Remove Log.d ?
@@ -91,7 +91,7 @@ public class CampusCom {
                 //Not knowing the key is the most secure method and we dont need data like matr Number anyways
                 KeyGenerator kg = null;
                 try {
-                    kg = KeyGenerator.getInstance("AES", "AndroidKeyStore");
+                    kg = KeyGenerator.getInstance("AES");
                 } catch (Exception e) {
                     Log.d("HTTP", "Secret Key generation failed: " + e.toString());
                 }
@@ -139,29 +139,27 @@ public class CampusCom {
     public void getLectures(){
         //https://campus.tum.de/tumonline/wbservicesbasic.veranstaltungenEigene?pToken=pToken
 
+        //pToken = "32DCF2A7D06330F56AB7956292A50E2C";
         //Campus com now gets the general instance of Http Singleton
         //HttpSingleton http = HttpSingleton.getInstance(this.ctx);
         http.getRequestString("tumonline/wbservicesbasic.veranstaltungenEigene?pToken=" + pToken, new Response.Listener<String>() {
             @Override
             public void onResponse(String Response) {
-                //TODO How do you handle the respone
-                //How will i send this data?
-
                 //Remove Log.d ?
                 Log.d("HTTP", "Success: " + Response);
 
                 try {
                     XmlToJson xmlToJson = new XmlToJson.Builder(Response).build();
                     JSONObject jsonObject = xmlToJson.toJson();
-                    //jsonObject = jsonObject.getJSONObject("rowset").getJSONObject("row");
 
-                    Log.d("HTTP", "Success: " + jsonObject.toString());
+                    HttpHeader head = new HttpHeader();
+                    head.buildPersonalLecturesHeader(jsonObject);
+                    //TODO SEND DATA to backend
+
+                    Log.d("HTTP", "Success: " + "converted JSON Object and gave it to HTTP Header");
                 } catch (Exception e) {
                     Log.d("Failure to Convert", e.toString());
                 }
-
-
-
             }
         }, new Response.ErrorListener() {
             @Override
@@ -174,36 +172,13 @@ public class CampusCom {
     }
 
     public void getLectureTime(){
-
         //TODO besprechen --> sehr kompliziert hierfür vlt erstmal eine andere lösung suchen?
         //Vorlesungs basierte Fragen erstmal lassen und fragen nur location basiert machen?
     }
 
-
-
-    public void test() {
-        HttpSingleton http = HttpSingleton.getInstance(this.ctx);
-        String response = null;
-        http.getRequestString("tumonline/wbservicesbasic.id?pToken=" + pToken, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String Response) {
-                Log.d("HTTP", "Success: " + Response);
-                try {
-                    XmlToJson xmlToJson = new XmlToJson.Builder(Response).build();
-                    JSONObject jsonObject = xmlToJson.toJson();
-                    jsonObject = jsonObject.getJSONObject("rowset").getJSONObject("row");
-                    Log.d("HTTP", "Success: " + jsonObject.get("kennung").toString());
-                } catch (Exception e) {
-                    Log.d("Failure to Convert", e.toString());
-                }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                //Error Handling
-                Log.d("HTTP", "Error: " + error.getMessage());
-            }
-        });
-    }
+    //Test this with
+    //CampusCom com = CampusCom.getInstance(this.getApplicationContext());
+    //com.generateToken("ge75lod");
+    //com.getLectures();
 
 }
