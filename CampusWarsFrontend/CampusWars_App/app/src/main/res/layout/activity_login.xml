@@ -64,6 +64,8 @@
             android:ems="15"
 
             android:inputType="textEmailAddress"
+            android:hint="Max.Mustmann@EMail.com"
+            android:textColorHint="@color/darkAccent"
 
             android:background="@drawable/button_rounded"
             android:textColor="@color/text"
@@ -83,6 +85,8 @@
             android:ems="15"
 
             android:inputType="textPassword"
+            android:hint="Password"
+            android:textColorHint="@color/darkAccent"
 
             android:background="@drawable/button_rounded"
             android:textColor="@color/text"
