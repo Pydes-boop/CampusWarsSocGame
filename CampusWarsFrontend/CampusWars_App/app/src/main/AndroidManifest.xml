@@ -18,8 +18,7 @@
         android:theme="@style/Theme.AppCompat.NoActionBar">
         <activity
             android:name=".ui.QuizActivity"
-            android:label="@string/title_activity_quiz"
-            android:theme="@style/NoActionBar">
+            android:label="@string/title_activity_quiz">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -27,10 +26,6 @@
             </intent-filter>
         />
         </activity>
-        <activity
-            android:name=".ui.TestActivity"
-            android:label="@string/title_activity_test"
-            android:theme="@style/NoActionBar" />
         <activity android:name=".ui.MainScreenActivity" />
         <activity android:name=".ui.LoadingActivity">
 
