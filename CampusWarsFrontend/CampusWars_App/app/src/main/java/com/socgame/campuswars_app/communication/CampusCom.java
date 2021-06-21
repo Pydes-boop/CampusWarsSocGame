@@ -1,6 +1,7 @@
 package com.socgame.campuswars_app.communication;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.android.volley.Response;
@@ -8,20 +9,33 @@ import com.android.volley.VolleyError;
 
 import org.json.JSONObject;
 
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.util.Map;
+
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
 
 import fr.arnaudguyon.xmltojsonlib.XmlToJson;
 
 public class CampusCom {
-    private static String pToken = "INSERTTOKENHERE";
+    private static String pToken;
+    private static String tumId;
     private static Context ctx;
     private static CampusCom instance;
+
+    private static HttpSingleton http;
 
     private Map<String, String> params;
     private String[] lectures;
 
     private CampusCom(Context context) {
-        ctx = context;
+        this.ctx = context;
+        // Get from the SharedPreferences
+        SharedPreferences settings = ctx.getSharedPreferences("userdata", 0);
+        this.pToken = settings.getString("pToken", "empty");
+        this.tumId = settings.getString("tumId", "empty");
+        this.http = HttpSingleton.getInstance(this.ctx);
     }
 
     public static synchronized CampusCom getInstance(Context context) {
@@ -31,29 +45,63 @@ public class CampusCom {
         return instance;
     }
 
-    public void generateToken(String tumId){
-        String test = "https://campus.tum.de/tumonline/wbservicesbasic.secretUpload?pToken=32DCF2A7D06330F56AB7956292A50E2C&pSecret=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDqFFH5SPie6PwptkuAL7dzgQaryN7ymRFRJOaN%250AeLz72mIkWnFQq0zxpQCm%252B1UOO0BgHLERPuI4m76p0%252F1elSJKVJDhL%252F6ewfuqbGKzNnmOYr3jPDUm%250AECPkKQDc2PTh9eqNx%252FbhvjT%252BGZS%252BHiOHflIqHweDojj%252BPmrkbvV5K7gDkQIDAQAB&pToken=32DCF2A7D06330F56AB7956292A50E2C";
-        HttpSingleton http = HttpSingleton.getInstance(this.ctx);
-        String response = null;
+    private void saveUserData(String tumId, String pToken){
+        //This is not the safest way to store User Data, but it should work
+        //Saving User Data:
+        SharedPreferences settings = ctx.getSharedPreferences("userdata", 0);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putString("tumId", tumId);
+        editor.putString("pToken", pToken);
+        // Apply the edits!
+        editor.apply();
+
+        //Overwriting our Variables so we can use it in other methods easily
+        this.pToken = settings.getString("pToken", "empty");
+        this.tumId = settings.getString("tumId", "empty");
+    }
+
+    public void generateToken(String Id){
+
+        //You should only call this Method once
+
+        //Campus com now gets the general instance of Http Singleton
+        //HttpSingleton http = HttpSingleton.getInstance(this.ctx);
         http.getRequestString("tumonline/wbservicesbasic.requestToken?pUsername=" + tumId + "&pTokenName=CampusWarsApp", new Response.Listener<String>() {
             @Override
             public void onResponse(String Response) {
+                //Remove Log.d ?
                 Log.d("HTTP", "Success: " + Response);
                 try {
+                    //Extracting Key from XML Response
                     XmlToJson xmlToJson = new XmlToJson.Builder(Response).build();
                     JSONObject jsonObject = xmlToJson.toJson();
-                    //jsonObject = jsonObject.getJSONObject("rowset").getJSONObject("row");
-                    pToken = jsonObject.get("token").toString();
+
+                    //Converting
+                    String token = jsonObject.get("token").toString();
+                    //Saving User Data
+                    //Im unsure if this works correctly, but i hope it does
+                    saveUserData(Id, token);
                     Log.d("HTTP", "Success: Token must be activated via TumOnline");
                 } catch (Exception e) {
                     Log.d("Failure to Convert", e.toString());
                 }
 
+                //DONE Secret Generation
+                //We just use key.toString() because we dont care
+                //Not knowing the key is the most secure method and we dont need data like matr Number anyways
+                KeyGenerator kg = null;
+                try {
+                    kg = KeyGenerator.getInstance("AES", "AndroidKeyStore");
+                } catch (Exception e) {
+                    Log.d("HTTP", "Secret Key generation failed: " + e.toString());
+                }
+                kg.init(128);
+                SecretKey key = kg.generateKey();
+                //We honestly dont care about the Key here because we dont need it anyways
+                //The securest encryption is the one we dont know
 
                 //Secret Upload
-                //TODO: SECRET GENERATION
-
-                http.getRequestString("tumonline/wbservicesbasic.secretUpload?pToken=" + pToken + "&pSecret=" + "INSERTSECRETHERE" + "&pToken=" + pToken, new Response.Listener<String>() {
+                http.getRequestString("tumonline/wbservicesbasic.secretUpload?pToken=" + pToken + "&pSecret=" + kg.toString() + "&pToken=" + pToken, new Response.Listener<String>() {
                     @Override
                     public void onResponse(String Response) {
                         Log.d("HTTP", "Success: " + Response);
@@ -61,8 +109,8 @@ public class CampusCom {
                             XmlToJson xmlToJson = new XmlToJson.Builder(Response).build();
                             JSONObject jsonObject = xmlToJson.toJson();
 
-                            //TODO HOW DO YOU COMPARE STRINGS?
-                            if(jsonObject.get("confirmed").toString() == "true"){
+                            //DONE Is this String Comparison okay?
+                            if(jsonObject.get("confirmed").toString().equals("true")){
                                 Log.d("HTTP", "Success: Token is valid and Secret was uploaded");
                             }
 
@@ -90,7 +138,39 @@ public class CampusCom {
 
     public void getLectures(){
         //https://campus.tum.de/tumonline/wbservicesbasic.veranstaltungenEigene?pToken=pToken
-        //TODO empty method stub
+
+        //Campus com now gets the general instance of Http Singleton
+        //HttpSingleton http = HttpSingleton.getInstance(this.ctx);
+        http.getRequestString("tumonline/wbservicesbasic.veranstaltungenEigene?pToken=" + pToken, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String Response) {
+                //TODO How do you handle the respone
+                //How will i send this data?
+
+                //Remove Log.d ?
+                Log.d("HTTP", "Success: " + Response);
+
+                try {
+                    XmlToJson xmlToJson = new XmlToJson.Builder(Response).build();
+                    JSONObject jsonObject = xmlToJson.toJson();
+                    //jsonObject = jsonObject.getJSONObject("rowset").getJSONObject("row");
+
+                    Log.d("HTTP", "Success: " + jsonObject.toString());
+                } catch (Exception e) {
+                    Log.d("Failure to Convert", e.toString());
+                }
+
+
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                //Error Handling
+                Log.d("HTTP", "Error: " + error.getMessage());
+            }
+        }, true);
+
     }
 
     public void getLectureTime(){
