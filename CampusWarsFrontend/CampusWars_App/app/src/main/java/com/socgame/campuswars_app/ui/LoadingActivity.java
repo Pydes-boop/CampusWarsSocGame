@@ -46,7 +46,7 @@ public class LoadingActivity extends AppCompatActivity
          */
 
         //There should be actual loading happening here
-        //maybe establish http connection or something
+        //TODO: maybe establish http connection or something
 
 
         //Mock Up Loading
