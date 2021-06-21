@@ -51,7 +51,7 @@ public class LoadingActivity extends AppCompatActivity
 
         //Mock Up Loading
         //Just waits before it changes the screen
-        
+
         Handler handler = new Handler();
         handler.postDelayed
         (
