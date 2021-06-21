@@ -17,12 +17,24 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        Button next = (Button) findViewById(R.id.loginButton);
-        next.setOnClickListener(new View.OnClickListener() {
+        Button login = (Button) findViewById(R.id.loginButton);
+        login.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
+
+                //TODO: chech info here
+
                 Intent myIntent = new Intent(view.getContext(), MainScreenActivity.class);
                 startActivityForResult(myIntent, 0);
             }
         });
+
+        Button next = (Button) findViewById(R.id.registerButton);
+            next.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View view) {
+                    Intent myIntent = new Intent(view.getContext(), RegisterActivity.class);
+                    startActivityForResult(myIntent, 0);
+                }
+            });
+
     }
 }
