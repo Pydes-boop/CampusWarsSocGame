@@ -17,6 +17,7 @@ public class MainScreenActivity extends AppCompatActivity
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private CustomViewPager mViewPager;
 
+    //Icons in Tab Bar
     private int[] tabIcons = {
             R.drawable.ic_quiz_icon,
             R.drawable.ic_map_icon,
@@ -37,7 +38,7 @@ public class MainScreenActivity extends AppCompatActivity
         // Set up the ViewPager with the sections adapter.
         mViewPager = findViewById(R.id.view_pager);
         //Disable Swiping
-        mViewPager.setPagingEnabled(false);
+        mViewPager.setPagingEnabled(false);//Swiping
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
 
@@ -71,12 +72,14 @@ public class MainScreenActivity extends AppCompatActivity
             return fragment;
         }
         @Override
-        public int getCount() {
+        public int getCount() //Number of possible Fragments
+        {
             // Show 3 total pages.
             return 3;
         }
         @Override
-        public CharSequence getPageTitle(int position) {
+        public CharSequence getPageTitle(int position) //Page Title
+        {
             //No Text, only Picture >.<
             /*switch (position) {
                 case 0:
