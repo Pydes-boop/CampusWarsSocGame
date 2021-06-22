@@ -10,6 +10,8 @@ python-dotenv = "*"
 pymongo = "*"
 mongoengine = "*"
 flask-pymongo = "*"
+networkx = "*"
+numpy = "*"
 
 [dev-packages]
 

@@ -37,13 +37,20 @@ def get_all_rooms():
 
 
 def get_all_groups():
+    # might be unnecessary because the tum online interface gets the possible groups
     return [{'name': 'IMGE 2019'},
             {'name': 'DS 2021'}]
 
 
 def set_user_groups(user, groups):
-    return "User Group X"
-    # return "null"
+    uid = user
+    lectures = groups.split(",")
+    for i in range(len(lectures)):
+        lectures[i] = lectures[i][1:-1]
+    # todo: @Marina add uid{str} and lectures{list{str}} to database
+
+
+    return "you did it i guess?"
 
 
 def add_question(question, right_answer, wrong_answers):
