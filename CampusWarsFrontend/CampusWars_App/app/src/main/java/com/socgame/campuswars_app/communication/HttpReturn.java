@@ -23,10 +23,6 @@ public class HttpReturn {
         switch(type){
             case ROOMDETECTION:
                 break;
-            case ROOMFINDER:
-                break;
-            case GROUPS:
-                break;
             case QUESTION:
                 break;
         }
