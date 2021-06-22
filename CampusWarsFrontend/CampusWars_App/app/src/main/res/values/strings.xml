@@ -9,4 +9,6 @@
     <string name="title_territory">Territory</string>
 
     <string name="title_activity_test">ActivityTest</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

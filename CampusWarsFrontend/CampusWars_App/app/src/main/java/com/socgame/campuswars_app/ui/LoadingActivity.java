@@ -34,7 +34,7 @@ public class LoadingActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_loading);
 
-        /*
+        
         //Only for Debug
         Button next = (Button) findViewById(R.id.LoadingText);
         next.setOnClickListener(new View.OnClickListener() {
@@ -43,7 +43,7 @@ public class LoadingActivity extends AppCompatActivity
                 startActivityForResult(myIntent, 0);
             }
         });
-         */
+
 
         //There should be actual loading happening here
         //TODO: maybe establish http connection or something
@@ -55,16 +55,16 @@ public class LoadingActivity extends AppCompatActivity
         Handler handler = new Handler();
         handler.postDelayed
         (
-                new Runnable()
+            new Runnable()
+            {
+                @Override
+                public void run()
                 {
-                    @Override
-                    public void run()
-                    {
-                        Intent myIntent = new Intent(LoadingActivity.this, LoginActivity.class);
-                        startActivityForResult(myIntent, 0);
-                    }
+                    Intent myIntent = new Intent(LoadingActivity.this, LoginActivity.class);
+                    startActivityForResult(myIntent, 0);
                 }
-                , 2000
+            }
+            , 1000
         );
     }
 }

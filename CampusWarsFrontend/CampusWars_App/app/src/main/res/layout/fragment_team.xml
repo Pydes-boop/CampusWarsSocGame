@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.TeamFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        >
+
+        <TextView
+            android:id="@+id/lectureHall"
+            android:layout_width="match_parent"
+
+            android:layout_height="45sp"
+            android:layout_marginTop="20sp"
+            android:autoSizeMaxTextSize="30sp"
+
+            android:autoSizeTextType="uniform"
+
+            android:background="@drawable/button_rounded"
+            android:drawableLeft="@drawable/ic_group_icon"
+
+            android:elevation="40sp"
+            android:gravity="center"
+            android:text="Your Team Name"
+            android:textColor="@color/text"
+
+            android:textStyle="bold" />
+
+        <Space
+            android:layout_width="1dp"
+            android:layout_height="0dp"
+            android:layout_weight="0.5" >
+        </Space>
+
+        <TableLayout
+            android:id="@+id/tableLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            android:layout_gravity="center"
+            android:gravity="center"
+
+            android:stretchColumns="0,1"
+            android:background="@drawable/button_rounded"
+            android:elevation="20sp"
+            android:layout_weight="0.4"
+            >
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:minHeight="10sp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+
+                    android:text="Current Members:"
+                    android:textStyle="bold"
+
+                    android:layout_margin="5sp"
+                    android:gravity="center"
+                    android:textColor="@color/text"
+                    />
+
+                <TextView
+                    android:id="@+id/textCurrentMembers"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="5 People"
+
+                    android:layout_margin="5sp"
+                    android:gravity="center"
+                    android:textColor="@color/text"
+                    />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:minHeight="70sp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+
+                    android:text="Current Controll:"
+                    android:textStyle="bold"
+
+                    android:layout_margin="5sp"
+                    android:gravity="center"
+                    android:textColor="@color/text"
+                    />
+
+                <TextView
+                    android:id="@+id/textCurrentControll"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="10%"
+
+                    android:layout_margin="5sp"
+                    android:gravity="center"
+                    android:textColor="@color/text"
+                    />
+            </TableRow>
+        </TableLayout>
+
+        <Space
+            android:layout_width="1dp"
+            android:layout_height="0dp"
+            android:layout_weight="0.2" >
+        </Space>
+
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="THIS LIST WORKS, NOTHING TO DISPLAY YET"
+            android:textColor="@color/text"
+            android:gravity="center"
+            android:background="@drawable/button_rounded"
+            android:elevation="20sp"
+            android:textStyle="bold"
+            />
+        <ListView
+            android:id="@+id/memberList"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+
+            android:background="@drawable/button_rounded"
+            android:elevation="20sp"
+
+            android:textColor="@color/text"
+
+            android:layout_weight="4"
+            >
+
+
+        </ListView>
+
+        <Space
+            android:layout_width="1dp"
+            android:layout_height="0dp"
+            android:layout_weight="0.2" >
+        </Space>
+
+        <Button
+            android:id="@+id/raidButton"
+            android:layout_width="150sp"
+            android:layout_height="wrap_content"
+
+            android:layout_marginBottom="20sp"
+
+            android:background="@drawable/button_rounded_highlight"
+
+            android:elevation="15sp"
+            android:text="Rally Team"
+            android:textColor="@color/textInverted" />
+
+        <Space
+            android:layout_width="1dp"
+            android:layout_height="0dp"
+            android:layout_weight="0.2" >
+        </Space>
+
+
+    </LinearLayout>
+
+</FrameLayout>
