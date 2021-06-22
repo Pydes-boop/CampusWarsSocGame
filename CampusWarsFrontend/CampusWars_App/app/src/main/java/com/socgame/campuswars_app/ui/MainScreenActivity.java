@@ -19,7 +19,7 @@ public class MainScreenActivity extends AppCompatActivity
 
     //Icons in Tab Bar
     private int[] tabIcons = {
-            R.drawable.ic_quiz_icon,
+            R.drawable.ic_territory,
             R.drawable.ic_map_icon,
             R.drawable.ic_group_icon
     };
@@ -60,13 +60,13 @@ public class MainScreenActivity extends AppCompatActivity
             Fragment fragment = null;
             switch (position) {
                 case 0:
-                    fragment = new QuizFragment().newInstance("Hello", "Ciao");
+                    fragment = new TerritoryFragment();//new QuizFragment().newInstance("Hello", "Ciao");
                     break;
                 case 1:
                     fragment = new MapsFragment();
                     break;
                 case 2:
-                    fragment = new TerritoryFragment();
+                    fragment = new TeamFragment();//new TerritoryFragment();
                     break;
             }
             return fragment;
