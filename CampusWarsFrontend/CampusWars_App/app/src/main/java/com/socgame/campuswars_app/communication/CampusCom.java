@@ -139,7 +139,6 @@ public class CampusCom {
     public void getLectures(){
         //https://campus.tum.de/tumonline/wbservicesbasic.veranstaltungenEigene?pToken=pToken
 
-        //pToken = "32DCF2A7D06330F56AB7956292A50E2C";
         //Campus com now gets the general instance of Http Singleton
         //HttpSingleton http = HttpSingleton.getInstance(this.ctx);
         http.getRequestString("tumonline/wbservicesbasic.veranstaltungenEigene?pToken=" + pToken, new Response.Listener<String>() {
