@@ -83,11 +83,12 @@ class Echo(Resource):
 class Groups(Resource):
     def get(self):
         # todo: frontend pls define what to return
+        # might be unnecessary because the tum online interface gets the possible groups
         return jsonify(get_all_groups())
 
     def post(self):
-        # todo: get user selected groups from body not header
-        return jsonify(set_user_groups(request.headers["user"], request.headers["groups"]))
+        set_user_groups(request.headers["UID"], request.headers["Lectures"])
+        return
 
 
 @api.resource('/start')
