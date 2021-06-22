@@ -51,4 +51,7 @@ dependencies {
     //This dependency sadly must be added this way as using the normal maven download causes Issues because of Android Studio nonsense
     implementation 'org.json:json:20210307'
     implementation 'com.github.smart-fun:XmlToJson:1.5.1'
+    //Firebase
+    implementation platform('com.google.firebase:firebase-bom:28.1.0')
+    implementation 'com.google.firebase:firebase-auth'
 }

@@ -1,11 +1,13 @@
 package com.socgame.campuswars_app.communication;
 
+import android.content.SharedPreferences;
 import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 
 import fr.arnaudguyon.xmltojsonlib.XmlToJson;
@@ -25,7 +27,9 @@ public class HttpHeader {
 
     private void addUId(){
         //TODO add Uid, from Firebase
-        header.put("UID", "42TODO13");
+        //SharedPreferences settings = ctx.getSharedPreferences("userdata", 0);
+        //this.UID = settings.getString("UID", "empty");
+        header.put("\"UID\"", "\"42TODO13\"");
     }
 
     public void buildRoomFinderHeader(double latitude, double longitude){
@@ -37,14 +41,17 @@ public class HttpHeader {
         String lectures = "[";
         JSONArray arr = pLectures.getJSONObject("rowset").getJSONArray("row");
 
-        for(int i = 0; i < arr.length(); i++){
-            lectures += "\"" + arr.getJSONObject(i).get("stp_sp_titel") + ": " + arr.getJSONObject(i).get("semester_id") + "\",";
+        lectures += "\"" + arr.getJSONObject(0).get("stp_sp_titel") + ": " + arr.getJSONObject(0).get("semester_id") + "\"";
+        for(int i = 1; i < arr.length(); i++){
+            //fixme letztes komma zu viel
+            lectures += ",\"" + arr.getJSONObject(i).get("stp_sp_titel") + ": " + arr.getJSONObject(i).get("semester_id") + "\"";
         }
         lectures += "]";
-        header.put("Lectures", lectures);
+        header.put("\"Lectures\"", lectures);
+
 
         //Remove Log ?
-        //Log.d("Test", header.toString());
+        Log.d("Test", header.toString());
     }
 
     public void buildGroupsHeader(){
