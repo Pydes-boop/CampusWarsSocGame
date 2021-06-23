@@ -12,6 +12,8 @@ import android.widget.Button;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.socgame.campuswars_app.R;
+import com.socgame.campuswars_app.communication.BackendCom;
+import com.socgame.campuswars_app.communication.CampusCom;
 import com.socgame.campuswars_app.communication.HttpSingleton;
 
 import org.json.JSONObject;
@@ -33,6 +35,12 @@ public class LoadingActivity extends AppCompatActivity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_loading);
+
+        //BackendCom com = BackendCom.getInstance(this.getApplicationContext());
+        //com.echo();
+        //CampusCom comCampus = CampusCom.getInstance(this.getApplicationContext());
+        //com.generateToken("ge75lod");
+        //comCampus.getLectures();
 
         
         //Only for Debug
