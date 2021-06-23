@@ -57,13 +57,16 @@ public class FirebaseCom{
         if (user != null) {
             SharedPreferences settings = ctx.getSharedPreferences("userdata", 0);
             SharedPreferences.Editor editor = settings.edit();
-            editor.putString("name", user.getDisplayName());
             editor.putString("email", user.getEmail());
-            editor.putString("UID", user.getIdToken(false).toString());
-            // Apply the edits!
             editor.apply();
+            //Getting Id Token For User
+            user.getIdToken(false).addOnSuccessListener(result -> {
+                String idToken = result.getToken();
+                editor.putString("UID", idToken);
+                editor.apply();
+                //Log.d(TAG, settings.getString("UID", "empty"));
+            });
 
-            this.name = settings.getString("name", "empty");
             this.email = settings.getString("email", "empty");
             this.UID = settings.getString("UID", "empty");
 
@@ -81,16 +84,20 @@ public class FirebaseCom{
 
     public void getUserProfile() {
         SharedPreferences settings = ctx.getSharedPreferences("userdata", 0);
-        this.name = settings.getString("name", "empty");
+        //this.name = settings.getString("name", "empty");
         this.email = settings.getString("email", "empty");
         this.UID = settings.getString("UID", "empty");
+
+        //Log.d("Firebase: Email:", this.email);
+        //Log.d("Firebase: UID:", this.UID);
+
     }
 
     public String getUID(){
         return this.UID;
     }
 
-    private void createAccount(String email, String password) {
+    public void createAccount(String email, String password) {
         mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
@@ -98,6 +105,7 @@ public class FirebaseCom{
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "createUserWithEmail:success");
                             FirebaseUser user = mAuth.getCurrentUser();
+                            instance.setUserProfile();
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "createUserWithEmail:failure", task.getException());
@@ -107,7 +115,7 @@ public class FirebaseCom{
                 });
     }
 
-    private void signIn(String email, String password) {
+    public void signIn(String email, String password) {
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
@@ -116,6 +124,7 @@ public class FirebaseCom{
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithEmail:success");
                             FirebaseUser user = mAuth.getCurrentUser();
+                            instance.setUserProfile();
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithEmail:failure", task.getException());

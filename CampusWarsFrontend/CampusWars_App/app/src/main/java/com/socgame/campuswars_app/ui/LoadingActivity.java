@@ -14,6 +14,7 @@ import com.android.volley.VolleyError;
 import com.socgame.campuswars_app.R;
 import com.socgame.campuswars_app.communication.BackendCom;
 import com.socgame.campuswars_app.communication.CampusCom;
+import com.socgame.campuswars_app.communication.FirebaseCom;
 import com.socgame.campuswars_app.communication.HttpSingleton;
 
 import org.json.JSONObject;
@@ -41,6 +42,12 @@ public class LoadingActivity extends AppCompatActivity
         //CampusCom comCampus = CampusCom.getInstance(this.getApplicationContext());
         //com.generateToken("ge75lod");
         //comCampus.getLectures();
+        //FirebaseCom fCom = FirebaseCom.getInstance(this.getApplicationContext());
+        //fCom.createAccount("testing@test.com", "testingthis");
+        //fCom.signIn("testing@test.com", "testingthis");
+        //fCom.getUserProfile();
+
+
 
         
         //Only for Debug
