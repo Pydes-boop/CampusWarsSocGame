@@ -16,12 +16,16 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.socgame.campuswars_app.R;
+import com.socgame.campuswars_app.communication.GpsLocationManager;
 
-public class MapsFragment extends Fragment {
 
+public class MapsFragment extends Fragment
+{
 
-    private OnMapReadyCallback callback = new OnMapReadyCallback() {
+    private LatLng position;
 
+    private OnMapReadyCallback callback = new OnMapReadyCallback()
+    {
         /**
          * Manipulates the map once available.
          * This callback is triggered when the map is ready to be used.
@@ -31,17 +35,30 @@ public class MapsFragment extends Fragment {
          * install it inside the SupportMapFragment. This method will only be triggered once the
          * user has installed Google Play services and returned to the app.
          */
+
         @Override
-        public void onMapReady(GoogleMap googleMap) {
+        public void onMapReady(GoogleMap googleMap)
+        {
+
+            //Set marker at pos
+            googleMap.addMarker(new MarkerOptions().position(position).title("You"));
+            googleMap.moveCamera(CameraUpdateFactory.newLatLng(position));
+
+            //Zoom in
+            if(position.latitude != 0 && position.longitude != 0)//dont zoom in on ocean debug
+                googleMap.animateCamera( CameraUpdateFactory.zoomTo( 17.0f ) );
+
+            /*
             LatLng sydney = new LatLng(-34, 151);
 
             //TODO: Add custom markers for our lecture halls
-            //TODO: register our app with google cloud console
 
             googleMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
             googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+            */
         }
     };
+
 
     @Nullable
     @Override
@@ -52,12 +69,18 @@ public class MapsFragment extends Fragment {
     }
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
+    {
         super.onViewCreated(view, savedInstanceState);
-        SupportMapFragment mapFragment =
-                (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
-        if (mapFragment != null) {
+        SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
+
+        if (mapFragment != null)
+        {
             mapFragment.getMapAsync(callback);
+
+
+            //TODO: call this a lot, cause it does NOT auto update
+            position = GpsLocationManager.getPosition(getActivity(), getContext());
         }
     }
 }
