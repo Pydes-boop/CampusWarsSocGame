@@ -37,7 +37,7 @@ public class HttpSingleton {
     private HttpSingleton(Context context) {
         ctx = context;
         requestQueue = getRequestQueue();
-        url = "http://10.0.2.2:5000/";
+        url = "http://167.71.33.65";
         tumUrl = "https://campus.tum.de/";
         response = null;
         //Refer to this for testing with localhost
