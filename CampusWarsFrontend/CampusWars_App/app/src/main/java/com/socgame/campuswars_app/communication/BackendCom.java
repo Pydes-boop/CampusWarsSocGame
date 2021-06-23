@@ -14,10 +14,18 @@ import org.json.JSONObject;
 public class BackendCom {
     private static Context ctx;
     private static HttpSingleton http;
+    private static BackendCom instance;
 
     private BackendCom(Context ctx){
         this.ctx = ctx;
         this.http = HttpSingleton.getInstance(ctx);
+    }
+
+    public static synchronized BackendCom getInstance(Context context) {
+        if (instance == null) {
+            instance = new BackendCom(context);
+        }
+        return instance;
     }
 
     public void FirebaseRegister(String UID){
@@ -32,13 +40,15 @@ public class BackendCom {
     }
 
     public void echo(){
-        http.getRequestString("echo", new Response.Listener<String>() {
+        http.getRequestString("/v1/echo", new Response.Listener<String>() {
             @Override
             public void onResponse(String Response) {
                 //On Response
-                if(Response.equals("Hallo Echo!")){
-                    Log.d("HTTP", "Success Echo: " + Response.toString()); } else {
-                    Log.d("HTTP", "Fail Echo: " + Response.toString()); }
+                if(Response.toString().contains("Hallo Echo!")){
+                    Log.d("HTTP", "Success Echo: " + Response.toString());
+                } else {
+                    Log.d("HTTP", "Fail Echo: " + Response.toString());
+                }
             }
          }, new Response.ErrorListener() {
               @Override
