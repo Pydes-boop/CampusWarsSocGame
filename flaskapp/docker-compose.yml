@@ -15,7 +15,8 @@ services:
       MONGODB_USERNAME: marina
       MONGODB_PASSWORD: vmNJcntLwoi
       MONGODB_HOSTNAME: mongodb
-   
+    ports:
+      - "5000:5000"
     depends_on:
       - mongodb
     networks:
