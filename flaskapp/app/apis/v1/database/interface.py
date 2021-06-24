@@ -43,11 +43,6 @@ def get_all_rooms():
     return data
 
 
-def get_all_groups():
-    # might be unnecessary because the tum online interface gets the possible groups
-    return mongo.db.group.find({})
-
-
 def add_lecture_group(name, term, room_id, timetable):
     item = {
         "name": name,
@@ -59,7 +54,7 @@ def add_lecture_group(name, term, room_id, timetable):
     return mongo.db.group.insert_one(item)['acknowledged']
 
 
-def add_group(name, term, supergroup, room_id):
+def add_group(name, term, supergroup, room_id, timetable):
     item = {
         "name": name,
         "term": term,
@@ -70,8 +65,8 @@ def add_group(name, term, supergroup, room_id):
     return mongo.db.group.insert_one(item)['acknowledged']
 
 
-# todo add unique identifier for players
-def add_user(firebase_id, first_name, last_name, groups):
+# todo @Marina use name instaed of first and last name
+def add_user(firebase_id, name):
     if groups is None:
         groups = []
     item = {
@@ -83,18 +78,12 @@ def add_user(firebase_id, first_name, last_name, groups):
     return mongo.db.firebase_users.insert_one(item)['acknowledged']
 
 
-# todo wie converten @Felix???
-def set_user_groups_group_string(firebase_id, groups):
-    lectures = groups.split(",")
+def set_user_lectures(firebase_id, lectures):
+    lectures = lectures.split(",")
     for i in range(len(lectures)):
         lectures[i] = lectures[i][1:-1]
-    # todo: @Marina add uid{str} and lectures{list{str}} to database
 
-    return set_user_groups(firebase_id, lectures)
-
-
-def set_user_groups(firebase_id, groups):
-    return mongo.db.user.update({"firebaseID": firebase_id}, {"$set": {"groups": groups}})
+    return mongo.db.user.update({"firebaseID": firebase_id}, {"$set": {"groups": lectures}})
 
 
 def add_question_to_quiz(question, right_answer, wrong_answers, lecture_id, quiz_id):
