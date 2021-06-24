@@ -47,7 +47,7 @@ def get_all_groups():
     return mongo.db.group.find({})
 
 
-def add_lecture_group(name, term, room_id, timetable):
+def add_main_lecture(name, term, room_id, timetable):
     item = {
         "name": name,
         "term": term,
@@ -55,10 +55,10 @@ def add_lecture_group(name, term, room_id, timetable):
         "roomID": room_id,
         "timetable": timetable
     }
-    return mongo.db.group.insert_one(item)['acknowledged']
+    return mongo.db.lecture.insert_one(item)['acknowledged']
 
 
-def add_group(name, term, supergroup, room_id):
+def add_lecture(name, term, supergroup, room_id):
     item = {
         "name": name,
         "term": term,
@@ -66,18 +66,18 @@ def add_group(name, term, supergroup, room_id):
         "roomID": room_id,
         "timetable": timetable
     }
-    return mongo.db.group.insert_one(item)['acknowledged']
+    return mongo.db.lecture.insert_one(item)['acknowledged']
 
 
 # todo add unique identifier for players
-def add_user(firebase_id, first_name, last_name, groups):
-    if groups is None:
-        groups = []
+def add_user(firebase_id, first_name, last_name, lectures):
+    if lectures is None:
+        lectures = []
     item = {
         "firebaseID": firebase_id,
         "firstName": first_name,
         "lastName": last_name,
-        "groups": groups
+        "lectures": lectures
     }
     return mongo.db.firebase_users.insert_one(item)['acknowledged']
 
