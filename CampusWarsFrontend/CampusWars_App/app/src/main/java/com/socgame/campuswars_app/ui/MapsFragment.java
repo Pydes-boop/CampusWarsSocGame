@@ -41,7 +41,7 @@ public class MapsFragment extends Fragment
         public void onMapReady(GoogleMap googleMap)
         {
             //Make it viusally fit our UI style
-            //googleMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(R.raw.styöe_json));
+            googleMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(getContext(), R.raw.mapsstyle_json));
 
 
             //Set marker at pos
