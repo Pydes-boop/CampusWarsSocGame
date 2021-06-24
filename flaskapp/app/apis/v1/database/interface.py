@@ -12,7 +12,7 @@ from datetime import datetime
 from time import time
 
 
-def room_detection(lat, lon, max_distance):
+def room_finder(lat, lon, max_distance):
     return mongo.db.room.find_one({"location": {"$near": {"$geometry": {"type": "Point", "coordinates": [lat, lon]},
                                                           "$maxDistance": max_distance}}})
 
@@ -62,7 +62,6 @@ def add_lecture(name, term, supergroup, room_id, timetable):
     return mongo.db.lecture.insert_one(item)['acknowledged']
 
 
-# todo @Marina use name instaed of first and last name
 def add_user(firebase_id, name, lectures=[]):
     if lectures is None:
         lectures = []

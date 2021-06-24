@@ -12,6 +12,7 @@ from flask_restful import Resource
 from apis.v1 import v1, api
 import groupCreation
 from apis.v1.decorators import request_requires
+
 from apis.v1.database.interface import get_all_rooms, room_detection, add_lectures_to_user, \
     add_question_to_quiz, add_user
 
@@ -51,11 +52,11 @@ class Quiz(Resource):
         )
 
 
-@api.resource('/roomdetection')
-class RoomDetection(Resource):
+@api.resource('/roomfinder')
+class RoomFinder(Resource):
     @request_requires(headers=['latitude', 'longitude'])
     def post(self):
-        return jsonify(room_detection(request.headers["latitude"], request.headers["longitude"], 30))
+        return jsonify(room_finder(request.headers["latitude"], request.headers["longitude"], 30))
 
     def get(self):
         return jsonify(get_all_rooms())
@@ -70,7 +71,7 @@ class Echo(Resource):
 @api.resource('/lectures')
 class Lectures(Resource):
     def post(self):
-        add_lectures_to_user(request.headers["UID"], request.headers["Lectures"])
+        set_user_lectures(request.headers["uid"], request.headers["lectures"])
         return
 
 
@@ -92,8 +93,9 @@ class Question(Resource):
 @api.resource('/register')
 class Register(Resource):
     def post(self):
-        add_user(request.headers["UID"], request.headers["Name"])
+        add_user(request.headers["uid"], request.headers["name"])
         return "ok", 200
+
 
 if __name__ == '__main__':
     pass
