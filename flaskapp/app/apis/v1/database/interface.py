@@ -33,7 +33,6 @@ def get_all_rooms():
     data = []
     for entry in mongo.db.room.find({}):
         item = {
-            'id': str(entry['_id']),
             'room_name': entry['roomName'],
             'longitude': entry['coordinates'][0],
             'latitude': entry['coordinates'][1],
@@ -111,7 +110,9 @@ def add_question_to_quiz(question, right_answer, wrong_answers, lecture_id, quiz
 # todo we need to ask between certain times
 def get_current_quizzes(room_id):
     current_time = round(time.time() * 1000)
-    return mongo.db.quiz.find_all({"roomID": room_id},
+    indices = mongo.db.groups.find_all({"roomID": room_id})
+    indices_quizzes = mongo.db.groups.find_all({"groupID": {"$in": indices}})
+    return mongo.db.quiz.find_all({"_id": {"$in": indices_quizzes}},
                                   {"timetable": {
                                       "$elemMatch": {"start": {"$lt": current_time}, "end": {"$gte": current_time}}}})
 
@@ -120,7 +121,7 @@ def add_quiz(name, created_by, group):
     item = {
         "name": name,
         "createdBy": created_by,
-        "group": group,
+        "groupID": group,
         "creationDate": datetime.now().isoformat(),
     }
     return mongo.db.quiz.insert_one(item)['acknowledged']
