@@ -52,8 +52,14 @@ public class FirebaseCom{
         return instance;
     }
 
-    private void setUserProfile() {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+    public FirebaseAuth getMAuth(){
+        return this.mAuth;
+    }
+
+    public void setUserProfile() {
+        FirebaseUser user = mAuth.getCurrentUser();
+        //Dont know which one is correct but i hope the first one is
+        //user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
             SharedPreferences settings = ctx.getSharedPreferences("userdata", 0);
             SharedPreferences.Editor editor = settings.edit();
@@ -64,11 +70,10 @@ public class FirebaseCom{
                 String idToken = result.getToken();
                 editor.putString("UID", idToken);
                 editor.apply();
-                //Log.d(TAG, settings.getString("UID", "empty"));
+                this.UID = settings.getString("UID", "empty");
             });
 
             this.email = settings.getString("email", "empty");
-            this.UID = settings.getString("UID", "empty");
 
             // TODO?
             // Check if user's email is verified
@@ -97,40 +102,12 @@ public class FirebaseCom{
         return this.UID;
     }
 
-    public void createAccount(String email, String password) {
-        mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
-                            Log.d(TAG, "createUserWithEmail:success");
-                            FirebaseUser user = mAuth.getCurrentUser();
-                            instance.setUserProfile();
-                        } else {
-                            // If sign in fails, display a message to the user.
-                            Log.w(TAG, "createUserWithEmail:failure", task.getException());
-                            //Toast.makeText(FirebaseCom.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
+    public void createAccount(String email, String password, OnCompleteListener<AuthResult> listener) {
+        mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(listener);
     }
 
-    public void signIn(String email, String password) {
-        mAuth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
-                            Log.d(TAG, "signInWithEmail:success");
-                            FirebaseUser user = mAuth.getCurrentUser();
-                            instance.setUserProfile();
-                        } else {
-                            // If sign in fails, display a message to the user.
-                            Log.w(TAG, "signInWithEmail:failure", task.getException());
-                        }
-                    }
-                });
+    public void signIn(String email, String password, OnCompleteListener<AuthResult> listener) {
+        mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(listener);
     }
 
     private void sendEmailVerification() {
