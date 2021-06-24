@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 
+import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.material.tabs.TabLayout;
 import com.socgame.campuswars_app.custom.CustomViewPager;
 import com.socgame.campuswars_app.R;
@@ -63,7 +64,7 @@ public class MainScreenActivity extends AppCompatActivity
                     fragment = new TerritoryFragment();//new QuizFragment().newInstance("Hello", "Ciao");
                     break;
                 case 1:
-                    fragment = new MapsFragment();
+                    fragment = new MapsFragment();//.newInstance(new GoogleMapOptions().mapId("e28f2141bdd678c1"));
                     break;
                 case 2:
                     fragment = new TeamFragment();//new TerritoryFragment();
