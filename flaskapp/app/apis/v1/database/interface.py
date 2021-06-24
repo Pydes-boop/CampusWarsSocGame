@@ -12,7 +12,7 @@ from datetime import datetime
 from time import time
 
 
-def room_finder(lat, lon, max_distance):
+def find_closest_room(lat, lon, max_distance):
     return mongo.db.room.find_one({"location": {"$near": {"$geometry": {"type": "Point", "coordinates": [lat, lon]},
                                                           "$maxDistance": max_distance}}})
 
@@ -116,11 +116,12 @@ def add_question_to_quiz(question, right_answer, wrong_answers, lecture_id, quiz
 
 def get_current_quizzes(room_id):
     current_time = round(time.time() * 1000)
-    indices_lectures = mongo.db.lecture.find_all({"roomID": room_id})
-    indices_quizzes = mongo.db.quiz.find_all({"lectureID": {"$in": indices_lectures}})
-    return mongo.db.quiz.find_all({"_id": {"$in": indices_quizzes}},
-                                  {"timetable": {
-                                      "$elemMatch": {"start": {"$lt": current_time}, "end": {"$gte": current_time}}}})
+    index_lecture = mongo.db.lecture.find_one({"roomID": room_id,
+                                               "timetable": {"$elemMatch": {"start": {"$lt": current_time},
+                                                                            "end": {"$gte": current_time}}}},
+                                              {"_id": 1})
+    indices_quizzes = mongo.db.quiz.find_all({"lectureID": index_lecture})
+    return mongo.db.quiz.find_all({"_id": {"$in": indices_quizzes}})
 
 
 def add_quiz(name, created_by, lecture):

@@ -13,7 +13,7 @@ from apis.v1 import v1, api
 import groupCreation
 from apis.v1.decorators import request_requires
 
-from apis.v1.database.interface import get_all_rooms, room_detection, add_lectures_to_user, \
+from apis.v1.database.interface import get_all_rooms, find_closest_room, add_lectures_to_user, \
     add_question_to_quiz, add_user
 
 
@@ -56,7 +56,7 @@ class Quiz(Resource):
 class RoomFinder(Resource):
     @request_requires(headers=['latitude', 'longitude'])
     def post(self):
-        return jsonify(room_finder(request.headers["latitude"], request.headers["longitude"], 30))
+        return jsonify(find_closest_room(request.headers["latitude"], request.headers["longitude"], 30))
 
     def get(self):
         return jsonify(get_all_rooms())
