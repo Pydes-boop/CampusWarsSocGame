@@ -12,7 +12,8 @@ from flask_restful import Resource
 from apis.v1 import v1, api
 import groupCreation
 from apis.v1.decorators import request_requires
-from apis.v1.database.interface import get_all_rooms, room_detection, get_all_groups, set_user_groups, add_question
+from apis.v1.database.interface import get_all_rooms, room_detection, get_all_groups, set_user_groups, \
+    add_question_to_quiz
 
 
 @v1.app_errorhandler(404)
