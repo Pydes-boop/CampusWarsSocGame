@@ -12,26 +12,13 @@ from flask_restful import Resource
 from apis.v1 import v1, api
 import groupCreation
 from apis.v1.decorators import request_requires
-from apis.v1.database.interface import get_all_rooms, room_detection, get_all_groups, set_user_groups, \
-    add_question_to_quiz
+from apis.v1.database.interface import get_all_rooms, room_detection, add_lectures_to_user, \
+    add_question_to_quiz, add_user
 
 
 @v1.app_errorhandler(404)
 def error_404(_):
     return make_response(jsonify({'exception': 'Not found!', 'code': 404}), 404)
-
-
-@api.resource('/room/<string:types>')
-class Room(Resource):
-    def get(self, types):
-        if types == 'all':
-            return jsonify(get_all_rooms())
-        return jsonify({'failed': 'invalid type'})
-
-    def post(self, types):
-        if types == 'find':
-            return jsonify(room_detection(request.headers["latitude"], request.headers["longitude"]))
-        return jsonify({'failed': 'invalid type'})
 
 
 @api.resource('/lecturehalls/<int:number>')
@@ -68,7 +55,7 @@ class Quiz(Resource):
 class RoomDetection(Resource):
     @request_requires(headers=['latitude', 'longitude'])
     def post(self):
-        return jsonify(room_detection(request.headers["latitude"], request.headers["longitude"]))
+        return jsonify(room_detection(request.headers["latitude"], request.headers["longitude"], 30))
 
     def get(self):
         return jsonify(get_all_rooms())
@@ -80,15 +67,10 @@ class Echo(Resource):
         return "Hallo Echo!", 200
 
 
-@api.resource('/groups')
-class Groups(Resource):
-    def get(self):
-        # todo: frontend pls define what to return
-        # might be unnecessary because the tum online interface gets the possible groups
-        return jsonify(get_all_groups())
-
+@api.resource('/lectures')
+class Lectures(Resource):
     def post(self):
-        set_user_groups(request.headers["UID"], request.headers["Lectures"])
+        add_lectures_to_user(request.headers["UID"], request.headers["Lectures"])
         return
 
 
@@ -103,9 +85,15 @@ class Start(Resource):
 class Question(Resource):
     def post(self):
         # todo: get questions from body and process to database
-        add_question(1, 2, 3)
+        add_question_to_quiz(1, 2, 3, 4)
         return "ok", 200
 
+
+@api.resource('/register')
+class Register(Resource):
+    def post(self):
+        add_user(request.headers["UID"], request.headers["Name"])
+        return "ok", 200
 
 if __name__ == '__main__':
     pass
