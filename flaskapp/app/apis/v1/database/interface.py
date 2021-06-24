@@ -18,6 +18,7 @@ def room_detection(lat, lon, max_distance):
 
 
 # todo evtl occupier live im Überblick behalten weil wegen regelmäßiges update ähnlich der location vom user
+#  @Felix,Robin
 def add_room(room_name, longitude, latitude):
     item = {
         "type": "Point",
@@ -44,7 +45,7 @@ def get_all_rooms():
 
 def get_all_groups():
     # might be unnecessary because the tum online interface gets the possible groups
-    return mongo.db.group.find()
+    return mongo.db.group.find({})
 
 
 def add_lecture_group(name, term, room_id, timetable):
