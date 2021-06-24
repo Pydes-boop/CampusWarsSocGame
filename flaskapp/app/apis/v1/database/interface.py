@@ -8,12 +8,17 @@ __version__ = "0.0.1"
 __all__ = ()
 
 from apis.v1.database import mongo, db
+from datetime import datetime
+from time import time
 
 
-def room_detection(lat, lon):
-    return mongo.db.room.findOne({"location": {"$near": {"$geometry": {"type": "Point", "coordinates": [lat, lon]}}}})
+def room_detection(lat, lon, max_distance):
+    return mongo.db.room.find_one({"location": {"$near": {"$geometry": {"type": "Point", "coordinates": [lat, lon]},
+                                                          "$maxDistance": max_distance}}})
 
 
+# todo evtl occupier live im Überblick behalten weil wegen regelmäßiges update ähnlich der location vom user
+#  @Felix,Robin
 def add_room(room_name, longitude, latitude):
     item = {
         "type": "Point",
@@ -21,38 +26,105 @@ def add_room(room_name, longitude, latitude):
         "roomName": room_name,
         "occupier": None
     }
-    mongo.db.room.insert_one(item)
+    return mongo.db.room.insert_one(item)['acknowledged']
 
 
 def get_all_rooms():
-    item = {}
     data = []
     for entry in mongo.db.room.find({}):
         item = {
             'id': str(entry['_id']),
-            'room_name': entry['roomName']
+            'room_name': entry['roomName'],
+            'longitude': entry['coordinates'][0],
+            'latitude': entry['coordinates'][1],
+            'occupier': entry['occupier']
         }
         data.append(item)
     return data
 
 
 def get_all_groups():
-    return [{'name': 'IMGE 2019'},
-            {'name': 'DS 2021'}]
+    # might be unnecessary because the tum online interface gets the possible groups
+    return mongo.db.group.find({})
 
 
-def set_user_groups(user, groups):
-    return "User Group X"
-    # return "null"
+def add_lecture_group(name, term, room_id, timetable):
+    item = {
+        "name": name,
+        "term": term,
+        "subgroup_of": None,
+        "roomID": room_id,
+        "timetable": timetable
+    }
+    return mongo.db.group.insert_one(item)['acknowledged']
 
 
-def add_question(question, right_answer, wrong_answers):
+def add_group(name, term, supergroup, room_id):
+    item = {
+        "name": name,
+        "term": term,
+        "subgroup_of": supergroup,
+        "roomID": room_id,
+        "timetable": timetable
+    }
+    return mongo.db.group.insert_one(item)['acknowledged']
+
+
+# todo add unique identifier for players
+def add_user(firebase_id, first_name, last_name, groups):
+    if groups is None:
+        groups = []
+    item = {
+        "firebaseID": firebase_id,
+        "firstName": first_name,
+        "lastName": last_name,
+        "groups": groups
+    }
+    return mongo.db.firebase_users.insert_one(item)['acknowledged']
+
+
+# todo wie converten @Felix???
+def set_user_groups_group_string(firebase_id, groups):
+    lectures = groups.split(",")
+    for i in range(len(lectures)):
+        lectures[i] = lectures[i][1:-1]
+    # todo: @Marina add uid{str} and lectures{list{str}} to database
+
+    return set_user_groups(firebase_id, lectures)
+
+
+def set_user_groups(firebase_id, groups):
+    return mongo.db.user.update({"firebaseID": firebase_id}, {"$set": {"groups": groups}})
+
+
+def add_question_to_quiz(question, right_answer, wrong_answers, lecture_id, quiz_id):
+    item = {
+        "question": question,
+        "rightAnswer": right_answer,
+        "wrongAnswers": wrong_answers,
+        "lectureID": lecture_id,
+        "quizID": quiz_id
+    }
+    return mongo.db.question.insert_one(item)['acknowledged']
+
+
+# todo we need to ask between certain times
+def get_current_quizzes(room_id):
+    current_time = round(time.time() * 1000)
+    return mongo.db.quiz.find_all({"roomID": room_id},
+                                  {"timetable": {
+                                      "$elemMatch": {"start": {"$lt": current_time}, "end": {"$gte": current_time}}}})
+
+
+def add_quiz(name, created_by, group):
+    item = {
+        "name": name,
+        "createdBy": created_by,
+        "group": group,
+        "creationDate": datetime.now().isoformat(),
+    }
+    return mongo.db.quiz.insert_one(item)['acknowledged']
+
+
+if __name__ == '__main__':
     pass
-
-
-# returns closest room, if any is close enough, otherwise null
-def find_next_room(longitude, latitude):
-    pass
-
-
-if __name__ == '__main__': pass
