@@ -56,7 +56,7 @@ class Quiz(Resource):
 class RoomFinder(Resource):
     @request_requires(headers=['latitude', 'longitude'])
     def post(self):
-        return jsonify(find_closest_room(request.headers["latitude"], request.headers["longitude"], 30))
+        return jsonify(find_closest_room(request.headers["longitude"], request.headers["latitude"], 30))
 
     def get(self):
         return jsonify(get_all_rooms())

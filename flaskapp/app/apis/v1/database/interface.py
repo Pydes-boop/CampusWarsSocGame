@@ -12,8 +12,8 @@ from datetime import datetime
 from time import time
 
 
-def find_closest_room(lat, lon, max_distance):
-    return mongo.db.room.find_one({"location": {"$near": {"$geometry": {"type": "Point", "coordinates": [lat, lon]},
+def find_closest_room(lon, lat, max_distance):
+    return mongo.db.room.find_one({"location": {"$near": {"$geometry": {"type": "Point", "coordinates": [lon, lat]},
                                                           "$maxDistance": max_distance}}})
 
 
