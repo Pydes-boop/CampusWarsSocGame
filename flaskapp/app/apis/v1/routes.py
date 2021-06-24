@@ -70,7 +70,7 @@ class Echo(Resource):
 @api.resource('/lectures')
 class Lectures(Resource):
     def post(self):
-        set_user_lectures(request.headers["UID"], request.headers["Lectures"])
+        set_user_lectures(request.headers["uid"], request.headers["lectures"])
         return
 
 
@@ -92,7 +92,7 @@ class Question(Resource):
 @api.resource('/register')
 class Register(Resource):
     def post(self):
-        add_user(request.headers["UID"], request.headers["Name"])
+        add_user(request.headers["uid"], request.headers["name"])
         return "ok", 200
 
 if __name__ == '__main__':
