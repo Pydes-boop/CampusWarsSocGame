@@ -28,17 +28,6 @@ public class BackendCom {
         return instance;
     }
 
-    public void FirebaseRegister(String UID){
-        SharedPreferences settings = ctx.getSharedPreferences("userdata", 0);
-        SharedPreferences.Editor editor = settings.edit();
-        editor.putString("UID", UID);
-        // Apply the edits!
-        editor.apply();
-
-        //Overwriting our Variables so we can use it in other methods easily
-        UID = settings.getString("UID", "empty");
-    }
-
     public void echo(){
         http.getRequestString("/v1/echo", new Response.Listener<String>() {
             @Override
@@ -50,13 +39,13 @@ public class BackendCom {
                     Log.d("HTTP", "Fail Echo: " + Response.toString());
                 }
             }
-         }, new Response.ErrorListener() {
-              @Override
-              public void onErrorResponse(VolleyError error) {
-              //Error Handling
-              Log.d("HTTP", "Error: " + error.getMessage());
-              }
-         });
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                //Error Handling
+                Log.d("HTTP", "Error: " + error.getMessage());
+            }
+        });
     }
 
     public void register(){
