@@ -24,7 +24,6 @@ def add_room(room_name, longitude, latitude):
         "type": "Point",
         "coordinates": [longitude, latitude],
         "roomName": room_name,
-        "occupier": None
     }
     return mongo.db.room.insert_one(item)['acknowledged']
 
@@ -36,64 +35,73 @@ def get_all_rooms():
             'room_name': entry['roomName'],
             'longitude': entry['coordinates'][0],
             'latitude': entry['coordinates'][1],
-            'occupier': entry['occupier']
         }
         data.append(item)
     return data
 
 
-def get_all_groups():
-    # might be unnecessary because the tum online interface gets the possible groups
-    return mongo.db.group.find({})
-
-
-def add_main_lecture(name, term, room_id, timetable):
+def add_main_lecture(name, term, room_id=None, timetable=[]):
     item = {
         "name": name,
         "term": term,
-        "subgroup_of": None,
+        "sublectureOf": None,
         "roomID": room_id,
         "timetable": timetable
     }
     return mongo.db.lecture.insert_one(item)['acknowledged']
 
 
-def add_lecture(name, term, supergroup, room_id):
+def add_lecture(name, term, supergroup, room_id, timetable):
     item = {
         "name": name,
         "term": term,
-        "subgroup_of": supergroup,
+        "sublectureOf": supergroup,
         "roomID": room_id,
         "timetable": timetable
     }
     return mongo.db.lecture.insert_one(item)['acknowledged']
 
 
-# todo add unique identifier for players
-def add_user(firebase_id, first_name, last_name, lectures):
+# todo @Marina use name instaed of first and last name
+def add_user(firebase_id, name, lectures=[]):
     if lectures is None:
         lectures = []
     item = {
         "firebaseID": firebase_id,
-        "firstName": first_name,
-        "lastName": last_name,
+        "name": name,
         "lectures": lectures
     }
     return mongo.db.firebase_users.insert_one(item)['acknowledged']
 
 
-# todo wie converten @Felix???
-def set_user_groups_group_string(firebase_id, groups):
-    lectures = groups.split(",")
+def add_lectures_to_user(firebase_id, lectures):
+    lectures = lectures.split(",")
     for i in range(len(lectures)):
         lectures[i] = lectures[i][1:-1]
-    # todo: @Marina add uid{str} and lectures{list{str}} to database
+        split_string = lectures[i].split(":")
+        name = split_string[0].split()
+        term = split_string[1].split()
+        entry_exists = mongo.db.lectures.count({"name": name, "term": term}, {limit: 1})
+        lecture_id = None
+        if entry_exists == 0:
+            item = {
+                "name": name,
+                "term": term,
+                "sublectureOf": None,
+                "roomID": None,
+                "timetable": []
+            }
+            result = mongo.db.lecture.insert_one(item)
+            if not result['acknowledged']:
+                return False
+            lecture_id = result['insertedId']
+        else:
+            lecture_id = mongo.db.lectures.find_one({"name": name, "term": term}, {"_id": 1})["_id"]
+        if not mongo.db.firebase_users.update({"firebaseID": firebase_id},
+                                              {"$push": {"lectures": lecture_id}})['acknowledged']:
+            return False
 
-    return set_user_groups(firebase_id, lectures)
-
-
-def set_user_groups(firebase_id, groups):
-    return mongo.db.user.update({"firebaseID": firebase_id}, {"$set": {"groups": groups}})
+    return True
 
 
 def add_question_to_quiz(question, right_answer, wrong_answers, lecture_id, quiz_id):
@@ -107,21 +115,20 @@ def add_question_to_quiz(question, right_answer, wrong_answers, lecture_id, quiz
     return mongo.db.question.insert_one(item)['acknowledged']
 
 
-# todo we need to ask between certain times
 def get_current_quizzes(room_id):
     current_time = round(time.time() * 1000)
-    indices = mongo.db.groups.find_all({"roomID": room_id})
-    indices_quizzes = mongo.db.groups.find_all({"groupID": {"$in": indices}})
+    indices_lectures = mongo.db.lecture.find_all({"roomID": room_id})
+    indices_quizzes = mongo.db.quiz.find_all({"lectureID": {"$in": indices_lectures}})
     return mongo.db.quiz.find_all({"_id": {"$in": indices_quizzes}},
                                   {"timetable": {
                                       "$elemMatch": {"start": {"$lt": current_time}, "end": {"$gte": current_time}}}})
 
 
-def add_quiz(name, created_by, group):
+def add_quiz(name, created_by, lecture):
     item = {
         "name": name,
         "createdBy": created_by,
-        "groupID": group,
+        "lectureID": lecture,
         "creationDate": datetime.now().isoformat(),
     }
     return mongo.db.quiz.insert_one(item)['acknowledged']
