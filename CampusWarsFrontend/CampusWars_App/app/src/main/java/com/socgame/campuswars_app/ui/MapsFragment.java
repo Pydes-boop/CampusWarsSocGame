@@ -4,7 +4,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,11 +13,8 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptor;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.socgame.campuswars_app.R;
 import com.socgame.campuswars_app.communication.GpsLocationManager;
@@ -28,15 +24,6 @@ public class MapsFragment extends Fragment
 {
 
     private LatLng position;
-
-    //Thanks StackOverflow
-    //https://stackoverflow.com/questions/19076124/android-map-marker-color
-    private static BitmapDescriptor hexToHSV(String hexColor)
-    {
-        float[] hsv = new float[3];
-        Color.colorToHSV(Color.parseColor(hexColor), hsv);
-        return BitmapDescriptorFactory.defaultMarker(hsv[0]);
-    }
 
     private OnMapReadyCallback callback = new OnMapReadyCallback()
     {
@@ -62,27 +49,13 @@ public class MapsFragment extends Fragment
             googleMap.moveCamera(CameraUpdateFactory.newLatLng(position));
 
             //Zoom in
-            //if(position.latitude != 0 && position.longitude != 0)//dont zoom in on ocean debug
+            if(position.latitude != 0 && position.longitude != 0)//dont zoom in on ocean debug
                 googleMap.animateCamera( CameraUpdateFactory.zoomTo( 17.0f ) );
-
-
-
-            //TODO: Get actual lecture halls
-            // Add custom markers for our lecture halls
-            double range = 0.005;
-            for(int i = 0; i < 20; i++)
-            {
-                LatLng hall = new LatLng(position.latitude+(Math.random()*2-1)*range, position.longitude+(Math.random()*2-1)*range);
-
-                Marker marker = googleMap.addMarker
-                (
-                        new MarkerOptions().position(hall).title("Lecture Hall " + i)
-                        .icon(hexToHSV(/*"#" + Integer.toString(R.color.highlight)*/"#4275A8"))
-                );
-            }
 
             /*
             LatLng sydney = new LatLng(-34, 151);
+
+            //TODO: Add custom markers for our lecture halls
 
             googleMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
             googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));

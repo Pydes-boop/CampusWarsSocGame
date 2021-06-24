@@ -1,5 +1,6 @@
 package com.socgame.campuswars_app.communication;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
@@ -15,8 +16,10 @@ import fr.arnaudguyon.xmltojsonlib.XmlToJson;
 public class HttpHeader {
 
     private HashMap<String, String> header;
+    private Context ctx;
 
-    public HttpHeader(){
+    public HttpHeader(Context ctx){
+        this.ctx = ctx;
         header = new HashMap<String, String>();
         this.addUId();
     }
@@ -27,14 +30,16 @@ public class HttpHeader {
 
     private void addUId(){
         //TODO add Uid, from Firebase
-        //SharedPreferences settings = ctx.getSharedPreferences("userdata", 0);
-        //this.UID = settings.getString("UID", "empty");
-        header.put("\"UID\"", "\"42TODO13\"");
+        SharedPreferences settings = ctx.getSharedPreferences("userdata", 0);
+        String UID = settings.getString("UID", "empty");
+        String name = settings.getString("name", "empty");
+        header.put("\"uid\"", "\"" + UID + "\"");
+        header.put("\"name\"", "\"" + name + "\"");
     }
 
     public void buildRoomFinderHeader(double latitude, double longitude){
-        header.put("latitude", Double.toString(latitude));
-        header.put("longitude", Double.toString(longitude));
+        header.put("latitude", "\"" + Double.toString(latitude) + "\"");
+        header.put("longitude", "\"" + Double.toString(longitude) + "\"");
     }
 
     public void buildPersonalLecturesHeader(JSONObject pLectures) throws JSONException {
@@ -47,7 +52,7 @@ public class HttpHeader {
             lectures += ",\"" + arr.getJSONObject(i).get("stp_sp_titel") + ": " + arr.getJSONObject(i).get("semester_id") + "\"";
         }
         lectures += "]";
-        header.put("\"Lectures\"", lectures);
+        header.put("\"lectures\"", lectures);
 
 
         //Remove Log ?

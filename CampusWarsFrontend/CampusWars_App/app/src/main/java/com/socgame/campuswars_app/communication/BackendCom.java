@@ -29,7 +29,7 @@ public class BackendCom {
     }
 
     public void echo(){
-        http.getRequestString("/v1/echo", new Response.Listener<String>() {
+        http.getRequestString("v1/echo", new Response.Listener<String>() {
             @Override
             public void onResponse(String Response) {
                 //On Response
@@ -49,9 +49,9 @@ public class BackendCom {
     }
 
     public void register(){
-        HttpHeader head = new HttpHeader();
+        HttpHeader head = new HttpHeader(ctx);
         try {
-            http.postRequest("groups",head.getHeaders(), new Response.Listener<JSONArray>() {
+            http.postRequest("register",head.getHeaders(), new Response.Listener<JSONArray>() {
                 @Override
                 public void onResponse(JSONArray Response) {
                     //On Response
@@ -71,11 +71,10 @@ public class BackendCom {
     }
 
     public void groups(JSONObject lectures){
-        HttpHeader head = new HttpHeader();
-
+        HttpHeader head = new HttpHeader(this.ctx);
         try {
             head.buildPersonalLecturesHeader(lectures);
-            http.postRequest("groups",head.getHeaders(), new Response.Listener<JSONArray>() {
+            http.postRequest("lectures",head.getHeaders(), new Response.Listener<JSONArray>() {
                 @Override
                 public void onResponse(JSONArray Response) {
                     //On Response

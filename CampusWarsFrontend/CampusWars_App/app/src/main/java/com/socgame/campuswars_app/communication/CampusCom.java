@@ -45,7 +45,7 @@ public class CampusCom {
         return instance;
     }
 
-    private void saveUserData(String tumId, String pToken){
+    public void saveUserData(String tumId, String pToken){
         //This is not the safest way to store User Data, but it should work
         //Saving User Data:
         SharedPreferences settings = ctx.getSharedPreferences("userdata", 0);
@@ -60,80 +60,33 @@ public class CampusCom {
         this.tumId = settings.getString("tumId", "empty");
     }
 
-    public void generateToken(String Id){
+    public String generateSecret(){
+        //DONE Secret Generation
+        //We just use key.toString() because we dont care
+        //Not knowing the key is the most secure method and we dont need data like matr Number anyways
+        KeyGenerator kg = null;
+        try {
+            kg = KeyGenerator.getInstance("AES");
+        } catch (Exception e) {
+            Log.d("HTTP", "Secret Key generation failed: " + e.toString());
+        }
+        kg.init(128);
+        SecretKey key = kg.generateKey();
+        //We honestly dont care about the Key here because we dont need it anyways
+        //The securest encryption is the one we dont know
+        return key.toString();
+    }
 
+    public HttpSingleton getHttp(){
+        return http;
+    }
+
+    public void generateToken(String Id, Response.Listener<String> listener, Response.ErrorListener error){
         //You should only call this Method once
 
         //Campus com now gets the general instance of Http Singleton
         //HttpSingleton http = HttpSingleton.getInstance(this.ctx);
-        http.getRequestString("tumonline/wbservicesbasic.requestToken?pUsername=" + Id + "&pTokenName=CampusWarsApp", new Response.Listener<String>() {
-            @Override
-            public void onResponse(String Response) {
-                //Remove Log.d ?
-                Log.d("HTTP", "Success: " + Response);
-                try {
-                    //Extracting Key from XML Response
-                    XmlToJson xmlToJson = new XmlToJson.Builder(Response).build();
-                    JSONObject jsonObject = xmlToJson.toJson();
-
-                    //Converting
-                    String token = jsonObject.get("token").toString();
-                    //Saving User Data
-                    //Im unsure if this works correctly, but i hope it does
-                    saveUserData(Id, token);
-                    Log.d("HTTP", "Success: Token must be activated via TumOnline");
-                } catch (Exception e) {
-                    Log.d("Failure to Convert", e.toString());
-                }
-
-                //DONE Secret Generation
-                //We just use key.toString() because we dont care
-                //Not knowing the key is the most secure method and we dont need data like matr Number anyways
-                KeyGenerator kg = null;
-                try {
-                    kg = KeyGenerator.getInstance("AES");
-                } catch (Exception e) {
-                    Log.d("HTTP", "Secret Key generation failed: " + e.toString());
-                }
-                kg.init(128);
-                SecretKey key = kg.generateKey();
-                //We honestly dont care about the Key here because we dont need it anyways
-                //The securest encryption is the one we dont know
-
-                //Secret Upload
-                http.getRequestString("tumonline/wbservicesbasic.secretUpload?pToken=" + pToken + "&pSecret=" + kg.toString() + "&pToken=" + pToken, new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String Response) {
-                        Log.d("HTTP", "Success: " + Response);
-                        try {
-                            XmlToJson xmlToJson = new XmlToJson.Builder(Response).build();
-                            JSONObject jsonObject = xmlToJson.toJson();
-
-                            //DONE Is this String Comparison okay?
-                            if(jsonObject.get("confirmed").toString().equals("true")){
-                                Log.d("HTTP", "Success: Token is valid and Secret was uploaded");
-                            }
-
-                        } catch (Exception e) {
-                            Log.d("Failure to Convert", e.toString());
-                        }
-                    }
-                }, new Response.ErrorListener() {
-                    @Override
-                public void onErrorResponse(VolleyError error) {
-                    //Error Handling
-                    Log.d("HTTP", "Error: " + error.getMessage());
-                }
-                }, true);
-
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                //Error Handling
-                Log.d("HTTP", "Error: " + error.getMessage());
-            }
-        }, true);
+        http.getRequestString("tumonline/wbservicesbasic.requestToken?pUsername=" + Id + "&pTokenName=CampusWarsApp", listener, error, true);
     }
 
     public void getLectures(){
@@ -149,11 +102,12 @@ public class CampusCom {
 
                 try {
                     XmlToJson xmlToJson = new XmlToJson.Builder(Response).build();
-                    JSONObject jsonObject = xmlToJson.toJson();
+                    JSONObject lectures = xmlToJson.toJson();
 
-                    HttpHeader head = new HttpHeader();
-                    head.buildPersonalLecturesHeader(jsonObject);
-                    //TODO SEND DATA to backend
+                    HttpHeader head = new HttpHeader(ctx);
+
+                    BackendCom bCom = BackendCom.getInstance(ctx);
+                    bCom.groups(lectures);
 
                     Log.d("HTTP", "Success: " + "converted JSON Object and gave it to HTTP Header");
                 } catch (Exception e) {
