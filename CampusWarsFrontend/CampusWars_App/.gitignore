@@ -75,7 +75,7 @@ hs_err_pid*
 .externalNativeBuild
 
 # Google services configuration file
-google-services.json
+# google-services.json
 
 # Attributes of the parent folder on macOS
 .DS_Store
