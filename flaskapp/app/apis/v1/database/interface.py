@@ -9,12 +9,12 @@ __all__ = ()
 
 from apis.v1.database import mongo, db
 from datetime import datetime
-from time import time
+from apis.v1.database.time_functions import get_current_time_in_millis, get_current_term
 
 
 def find_closest_room(lon, lat, max_distance):
     return mongo.db.room.find_one({"location": {"$near": {"$geometry": {"type": "Point", "coordinates": [lon, lat]},
-                                                          "$maxDistance": max_distance}}})
+                                                          "$maxDistance": max_distance}}}, {"_id": 0})
 
 
 # todo evtl occupier live im Überblick behalten weil wegen regelmäßiges update ähnlich der location vom user
@@ -29,33 +29,13 @@ def add_room(room_name, longitude, latitude):
 
 
 def get_all_rooms():
-    data = []
-    for entry in mongo.db.room.find({}):
-        item = {
-            'room_name': entry['roomName'],
-            'longitude': entry['coordinates'][0],
-            'latitude': entry['coordinates'][1],
-        }
-        data.append(item)
-    return data
+    return list(mongo.db.room.find({}, {"_id": 0}))
 
 
-def add_main_lecture(name, term, room_id=None, timetable=[]):
+def add_lecture(name, term, room_id=None, timetable=[]):
     item = {
         "name": name,
         "term": term,
-        "sublectureOf": None,
-        "roomID": room_id,
-        "timetable": timetable
-    }
-    return mongo.db.lecture.insert_one(item)['acknowledged']
-
-
-def add_lecture(name, term, supergroup, room_id, timetable):
-    item = {
-        "name": name,
-        "term": term,
-        "sublectureOf": supergroup,
         "roomID": room_id,
         "timetable": timetable
     }
@@ -78,15 +58,14 @@ def add_lectures_to_user(firebase_id, lectures):
     for i in range(len(lectures)):
         lectures[i] = lectures[i][1:-1]
         split_string = lectures[i].split(":")
-        name = split_string[0].split()
-        term = split_string[1].split()
+        name = split_string[0]
+        term = split_string[1]
         entry_exists = mongo.db.lectures.count({"name": name, "term": term}, {limit: 1})
         lecture_id = None
         if entry_exists == 0:
             item = {
                 "name": name,
                 "term": term,
-                "sublectureOf": None,
                 "roomID": None,
                 "timetable": []
             }
@@ -103,25 +82,24 @@ def add_lectures_to_user(firebase_id, lectures):
     return True
 
 
-def add_question_to_quiz(question, right_answer, wrong_answers, lecture_id, quiz_id):
+def add_question_to_quiz(question, right_answer, wrong_answers, quiz_id):
     item = {
         "question": question,
         "rightAnswer": right_answer,
         "wrongAnswers": wrong_answers,
-        "lectureID": lecture_id,
         "quizID": quiz_id
     }
     return mongo.db.question.insert_one(item)['acknowledged']
 
 
 def get_current_quizzes(room_id):
-    current_time = round(time.time() * 1000)
-    index_lecture = mongo.db.lecture.find_one({"roomID": room_id,
+    current_time = get_current_time_in_millis()
+    index_lecture = mongo.db.lecture.find_one({"roomID": room_id, "term": get_current_term(),
                                                "timetable": {"$elemMatch": {"start": {"$lt": current_time},
                                                                             "end": {"$gte": current_time}}}},
                                               {"_id": 1})
-    indices_quizzes = mongo.db.quiz.find_all({"lectureID": index_lecture})
-    return mongo.db.quiz.find_all({"_id": {"$in": indices_quizzes}})
+    indices_quizzes = mongo.db.quiz.find({"lectureID": index_lecture})
+    return list(mongo.db.quiz.find({"_id": {"$in": indices_quizzes}}))
 
 
 def add_quiz(name, created_by, lecture):
@@ -132,6 +110,14 @@ def add_quiz(name, created_by, lecture):
         "creationDate": datetime.now().isoformat(),
     }
     return mongo.db.quiz.insert_one(item)['acknowledged']
+
+
+def get_lectures_of_user(firebase_id):
+    return mongo.db.users.find_one({"firebaseID": firebase_id})["lectures"]
+
+
+def get_users_of_lecture(lecture_id):
+    return list(mongo.db.users.find({"lectures": lecture_id}, {"firebaseID": 1}))
 
 
 if __name__ == '__main__':
