@@ -14,6 +14,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.socgame.campuswars_app.R;
 import com.socgame.campuswars_app.communication.GpsLocationManager;
@@ -39,6 +40,9 @@ public class MapsFragment extends Fragment
         @Override
         public void onMapReady(GoogleMap googleMap)
         {
+            //Make it viusally fit our UI style
+            //googleMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(R.raw.styöe_json));
+
 
             //Set marker at pos
             googleMap.addMarker(new MarkerOptions().position(position).title("You"));
@@ -78,8 +82,12 @@ public class MapsFragment extends Fragment
         {
             mapFragment.getMapAsync(callback);
 
+            mapFragment.setMenuVisibility(false);
+            mapFragment.setHasOptionsMenu(false);
 
             //TODO: call this a lot, cause it does NOT auto update
+            //Also this will crash if I call outside of this method
+            //FML
             position = GpsLocationManager.getPosition(getActivity(), getContext());
         }
     }

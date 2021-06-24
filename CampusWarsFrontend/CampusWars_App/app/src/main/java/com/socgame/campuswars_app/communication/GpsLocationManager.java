@@ -47,7 +47,7 @@ public class GpsLocationManager
             if(permitted(context))
                 //return dummy, if I dont have it
                 //TODO: log this error state
-                return new LatLng(0,0);
+                return new LatLng(48.2650,11.6716);
         }
 
 
@@ -65,7 +65,7 @@ public class GpsLocationManager
         }
         catch (Exception e)
         {
-            return new LatLng(0,0);
+            return new LatLng(48.2650,11.6716);
         }
     }
 }
