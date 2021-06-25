@@ -7,7 +7,7 @@ import android.view.MotionEvent;
 import androidx.viewpager.widget.ViewPager;
 
 public class CustomViewPager extends ViewPager {
-    
+
     /**
      * Custom Implementation for ViewPager1 which disables swiping
      *
