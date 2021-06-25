@@ -1,4 +1,4 @@
-package com.socgame.campuswars_app.communication;
+package com.socgame.campuswars_app.Sensor;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -14,6 +14,17 @@ import com.google.android.gms.maps.model.LatLng;
 
 public class GpsLocationManager
 {
+    /*
+
+
+    THIS IS LEGACY CODE!!!!!
+    DO NOT USE THIS!!!!!!!!
+
+    ONLY KEPT FOR REFERENCE
+
+     */
+
+    /*
     //Do I have the permission to get the location?
     private static boolean permitted(Context context)
     {
@@ -24,8 +35,8 @@ public class GpsLocationManager
     //Get current postion
     //https://stackoverflow.com/questions/2227292/how-to-get-latitude-and-longitude-of-the-mobile-device-in-android
 
-    //TODO: make it possible to call this from outside an acitvity (withoutthe activity and context parameter)
-    //FIXME: for some reason this works in the emulator, but crashes on my real phone
+    //make it possible to call this from outside an acitvity (withoutthe activity and context parameter)
+    //for some reason this works in the emulator, but crashes on my real phone
     public static LatLng getPosition(Activity activity, Context context)
     {
          LocationManager lm = (LocationManager) activity.getSystemService(context.LOCATION_SERVICE);
@@ -46,7 +57,6 @@ public class GpsLocationManager
             //lets see if I still dont have permission
             if(permitted(context))
                 //return dummy, if I dont have it
-                //TODO: log this error state
                 return new LatLng(48.2650,11.6716);
         }
 
@@ -68,4 +78,5 @@ public class GpsLocationManager
             return new LatLng(48.2650,11.6716);
         }
     }
+     */
 }
