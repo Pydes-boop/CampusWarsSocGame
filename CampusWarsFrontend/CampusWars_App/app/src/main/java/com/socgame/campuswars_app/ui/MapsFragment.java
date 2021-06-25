@@ -74,6 +74,7 @@ public class MapsFragment extends Fragment implements GpsObserver
 
             //Set cam to pos
             googleMap.moveCamera(CameraUpdateFactory.newLatLng(position));
+            
             //Zoom in
             googleMap.animateCamera( CameraUpdateFactory.zoomTo( 17.0f ) );
 

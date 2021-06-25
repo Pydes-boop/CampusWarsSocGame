@@ -64,6 +64,8 @@ public class FirebaseCom{
             SharedPreferences settings = ctx.getSharedPreferences("userdata", 0);
             SharedPreferences.Editor editor = settings.edit();
             editor.putString("email", user.getEmail());
+            String name = user.getEmail().split("@")[0];
+            editor.putString("name", name);
             editor.apply();
             //Getting Id Token For User
             user.getIdToken(false).addOnSuccessListener(result -> {
@@ -74,6 +76,7 @@ public class FirebaseCom{
             });
 
             this.email = settings.getString("email", "empty");
+            this.name = settings.getString("name", "empty");
 
             // TODO?
             // Check if user's email is verified
