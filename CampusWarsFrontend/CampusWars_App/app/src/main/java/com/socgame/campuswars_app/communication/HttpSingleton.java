@@ -23,6 +23,23 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class HttpSingleton {
+
+    /**
+     * provides Structure for Http Calls
+     *
+     * follows Singleton Pattern like all of our Main Communication Classes
+     *
+     * we have 2 Urls we need and use, CampusOnline and our Server
+     *
+     * we have methods for standart Get and Post Requests to our Backend in which we get JSON back
+     *
+     * we also have a more general getRequestString Method which can receive a String for further processing
+     * we have 2 versions of this, one with a boolean which is set true if we want to call tum, which provides Data in XML format
+     *
+     * written by Daniel
+     */
+
+
     //https://developer.android.com/training/volley/requestqueue
     private static HttpSingleton instance;
     private RequestQueue requestQueue;
@@ -149,47 +166,6 @@ public class HttpSingleton {
             HttpSingleton.getInstance(ctx).addToRequestQueue(stringRequest);
         }
     }
-
-
-
-    //https://www.itsalif.info/content/android-volley-tutorial-http-get-post-put
-    //https://stackoverflow.com/questions/33573803/how-to-send-a-post-request-using-volley-with-string-body
-
-    //Test for Http Singleton get
-    /*HttpSingleton http = HttpSingleton.getInstance(this.getApplicationContext());
-    JSONArray response = null;
-        http.getRequest("v1/quiz", new Response.Listener<JSONArray>() {
-        @Override
-        public void onResponse(JSONArray Response) {
-            Log.d("HTTP", "Success: " + Response.toString());
-        }
-    }, new Response.ErrorListener() {
-        @Override
-        public void onErrorResponse(VolleyError error) {
-            //Error Handling
-            Log.d("HTTP", "Error: " + error.getMessage());
-        }
-    });
-
-    //Test for Http Singleton post
-    response = null;
-        try {
-        http.postRequest("v1/roomdetection", null, new Response.Listener<JSONArray>() {
-            @Override
-            public void onResponse(JSONArray Response) {
-                Log.d("HTTP", "Success: " + Response.toString());
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                //Error Handling
-                Log.d("HTTP", "Error: " + error.getMessage());
-            }
-        });
-    } catch (Exception e){
-        Log.d("Exception", e.toString());
-    }*/
-
 }
 
 

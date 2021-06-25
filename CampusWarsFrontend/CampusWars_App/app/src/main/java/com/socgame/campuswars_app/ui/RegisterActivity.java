@@ -48,6 +48,8 @@ public class RegisterActivity extends AppCompatActivity {
      * if successful we generate a secret for user sensitive data and upload it -> we dont save or know this secret, because we dont need the user-sensitive data
      *
      * If everything was successful so far we switch to the TokenActivationActivity
+     *
+     * written by Daniel
      */
 
     @Override

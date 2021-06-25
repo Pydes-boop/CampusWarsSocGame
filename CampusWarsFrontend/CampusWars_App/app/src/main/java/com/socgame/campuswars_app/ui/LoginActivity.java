@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -20,15 +21,16 @@ import com.socgame.campuswars_app.R;
 import com.socgame.campuswars_app.communication.BackendCom;
 import com.socgame.campuswars_app.communication.FirebaseCom;
 import com.socgame.campuswars_app.communication.HttpSingleton;
-/*
-    The standard Login happens here
-    User enters info
-    One Button sends it to firebase
-    The other to the register screen
-
-    written by both Daniel and Jonas
-*/
 public class LoginActivity extends AppCompatActivity {
+    /**
+     *     The standard Login happens here
+     *     User enters info
+     *     One Button sends it to firebase
+     *     The other to the register screen
+     *     we save the registered state of the user
+     *
+     *     written by both Daniel and Jonas
+     */
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,7 +57,13 @@ public class LoginActivity extends AppCompatActivity {
                                 // Sign in success, update UI with the signed-in user's information
                                 FirebaseUser user = fCom.getMAuth().getCurrentUser();
                                 fCom.setUserProfile();
-                                BackendCom bCom = BackendCom.getInstance(ctx);
+
+                                //Saving Logged in State
+                                SharedPreferences settings = ctx.getSharedPreferences("userdata", 0);
+                                SharedPreferences.Editor editor = settings.edit();
+                                editor.putBoolean("loggedIn", true);
+                                editor.apply();
+
                                 Intent myIntent = new Intent(view.getContext(), MainScreenActivity.class);
                                 startActivityForResult(myIntent, 0);
                             } else {

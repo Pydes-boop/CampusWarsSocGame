@@ -12,6 +12,24 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class BackendCom {
+    /**
+     * provides standard calls for Communication with Backend
+     * we mostly have to create the listeners manually in the Activities because Android Studio Nonsense
+     *
+     * follows Singleton Pattern like all of our Main Communication Classes
+     *
+     * echo is a test Call to our Server
+     *
+     * register sends backend a User ID and adds that User to the Database
+     *
+     * groups gets a JsonObject with our lectures from a Campus Call, then parses the data and sends it to Backend With UID
+     *
+     *
+     * written by Daniel
+     *
+     */
+
+
     private static Context ctx;
     private static HttpSingleton http;
     private static BackendCom instance;

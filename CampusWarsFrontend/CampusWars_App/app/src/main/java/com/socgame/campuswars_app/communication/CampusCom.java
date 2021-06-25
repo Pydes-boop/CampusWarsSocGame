@@ -20,6 +20,21 @@ import javax.crypto.SecretKey;
 import fr.arnaudguyon.xmltojsonlib.XmlToJson;
 
 public class CampusCom {
+
+    /**
+     * provides standard calls to TumOnline
+     *
+     * follows Singleton Pattern like all of our Main Communication Classes
+     *
+     * we can generate a TumOnline Token, getLectures and test our Token with a getLectures Call
+     *
+     * we only save user data for tumId and Token for TumOnline locally
+     * this is so we could for example refresh our lectures after a semester and get new ones
+     *
+     * written by Daniel
+     */
+
+
     private static String pToken;
     private static String tumId;
     private static Context ctx;
@@ -47,7 +62,7 @@ public class CampusCom {
     }
 
     public void saveUserData(String tumId, String pToken){
-        //This is not the safest way to store User Data, but it should work
+        //This is not the safest way to store User Data, but it works in this case
         //Saving User Data:
         SharedPreferences settings = ctx.getSharedPreferences("userdata", 0);
         SharedPreferences.Editor editor = settings.edit();
@@ -74,6 +89,7 @@ public class CampusCom {
     }
 
     public HttpSingleton getHttp(){
+        //We dont necessarily need this because we follow singelton pattern but sometimes it saves a line of code
         return http;
     }
 
@@ -115,8 +131,8 @@ public class CampusCom {
 
     }
 
-    public void getLectureTime(){
-        //depricated -> data is unreadable because of missing consistent formatting by lecturers
+    private void getLectureTimeAndLocation(){
+        //depricated -> data is partly unreadable/not helpful because of missing consistent formatting by lecturers and professors, also Online Semester
     }
 
     public void test(Response.Listener<String> listener, Response.ErrorListener error){

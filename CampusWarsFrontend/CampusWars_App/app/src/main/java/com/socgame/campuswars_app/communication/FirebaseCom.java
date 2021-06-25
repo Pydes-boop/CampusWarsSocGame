@@ -17,14 +17,23 @@ import com.google.firebase.auth.FirebaseUser;
 
 public class FirebaseCom{
 
-    //from https://firebase.google.com/docs/auth/android/start but modified
+    /**
+     * from https://firebase.google.com/docs/auth/android/start but modified
+     *
+     * follows Singleton Pattern like all of our Main Communication Classes
+     *
+     * Communicates with our Firebase Console for User Creation, Email Login, and User Id Generation
+     *
+     * written by Daniel
+     */
+
 
     private static FirebaseCom instance;
 
-    private static final String TAG = "EmailPassword";
     private static Context ctx;
 
     private static FirebaseAuth mAuth;
+
     private static String name;
     private static String email;
     private static String UID;
@@ -33,16 +42,10 @@ public class FirebaseCom{
         this.ctx = ctx;
         this.mAuth = FirebaseAuth.getInstance();
 
-        //This needed?
         FirebaseUser currentUser = mAuth.getCurrentUser();
 
-        //Reloading User Profile and getting newest Data
+        //Getting User Data
         this.getUserProfile();
-
-        /*
-        if(currentUser != null){
-            reload();
-        }*/
     }
 
     public static synchronized FirebaseCom getInstance(Context context){
@@ -58,16 +61,16 @@ public class FirebaseCom{
 
     public void setUserProfile() {
         FirebaseUser user = mAuth.getCurrentUser();
-        //Dont know which one is correct but i hope the first one is
-        //user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
+            //writing User Data into fixed Storage
             SharedPreferences settings = ctx.getSharedPreferences("userdata", 0);
             SharedPreferences.Editor editor = settings.edit();
             editor.putString("email", user.getEmail());
             String name = user.getEmail().split("@")[0];
             editor.putString("name", name);
             editor.apply();
-            //Getting Id Token For User
+
+            //Getting Id Token For User and writing it into fixed Storage
             user.getIdToken(false).addOnSuccessListener(result -> {
                 String idToken = result.getToken();
                 editor.putString("UID", idToken);
@@ -75,30 +78,21 @@ public class FirebaseCom{
                 this.UID = settings.getString("UID", "empty");
             });
 
+            //Collecting User Data from Fixed Storage and putting it into our live Singleton
             this.email = settings.getString("email", "empty");
             this.name = settings.getString("name", "empty");
 
-            // TODO?
+            // Potential TODO, we dont need Email Confirmation right now
             // Check if user's email is verified
-            boolean emailVerified = user.isEmailVerified();
-
-            // The user's ID, unique to the Firebase project. Do NOT use this value to
-            // authenticate with your backend server, if you have one. Use
-            // FirebaseUser.getIdToken() instead.
-            // We dont use this
-            // String uid = user.getUid();
+            // boolean emailVerified = user.isEmailVerified();
         }
     }
 
     public void getUserProfile() {
+        //Gets Current User Profile Data, ie.: when this Singleton is created
         SharedPreferences settings = ctx.getSharedPreferences("userdata", 0);
-        //this.name = settings.getString("name", "empty");
         this.email = settings.getString("email", "empty");
         this.UID = settings.getString("UID", "empty");
-
-        //Log.d("Firebase: Email:", this.email);
-        //Log.d("Firebase: UID:", this.UID);
-
     }
 
     public String getUID(){
@@ -114,7 +108,7 @@ public class FirebaseCom{
     }
 
     private void sendEmailVerification() {
-        // Send verification email
+        // Send verification email, currently unused
         final FirebaseUser user = mAuth.getCurrentUser();
         user.sendEmailVerification()
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
