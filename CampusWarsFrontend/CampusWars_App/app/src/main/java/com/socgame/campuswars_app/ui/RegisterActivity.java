@@ -25,6 +25,7 @@ import com.socgame.campuswars_app.communication.CampusCom;
 import com.socgame.campuswars_app.communication.BackendCom;
 import com.socgame.campuswars_app.communication.HttpSingleton;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import javax.crypto.KeyGenerator;
@@ -35,6 +36,19 @@ import fr.arnaudguyon.xmltojsonlib.XmlToJson;
 import static com.socgame.campuswars_app.R.layout.activity_register;
 
 public class RegisterActivity extends AppCompatActivity {
+
+    /**
+     * In this class we Register the User
+     * First we get the Password and check if it matches confirm then we create a Firebase Account
+     * We save all the data of our User we need in setUserProfile()
+     *
+     * Paralell to that we generate a Token in TumOnline for the User:
+     * (we do these actions seperatly because otherwise a previously succesfull Firebase Create User could block out our generate Token if it failed on First Try)
+     * We get the TumId and send a HTTP Request to generate a Token
+     * if successful we generate a secret for user sensitive data and upload it -> we dont save or know this secret, because we dont need the user-sensitive data
+     *
+     * If everything was successful so far we switch to the TokenActivationActivity
+     */
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,13 +104,11 @@ public class RegisterActivity extends AppCompatActivity {
                                 cCom.saveUserData(tumId.getText().toString(), token);
 
                                 Log.d("HTTP", "Success: Token must be activated via TumOnline");
-                            } catch (NullPointerException e) {
+                            } catch (JSONException e) {
                                 //When we dont have token in answer XML we get Nullpointer -> this means our TumId was wrong
-                                Error = true;
-                                Toast.makeText(ctx, "TumToken failed, Wrong TumId: " + e.toString(), Toast.LENGTH_SHORT).show();
+                                Toast.makeText(ctx, "Your Token was not activated or doesnt work, please try again", Toast.LENGTH_SHORT).show();
                             } catch (Exception e) {
-                                Error = true;
-                                Log.d("Failure to Convert", e.toString());
+                                Toast.makeText(ctx, "Failure: " + e.toString(), Toast.LENGTH_LONG).show();
                             }
 
 
@@ -132,12 +144,8 @@ public class RegisterActivity extends AppCompatActivity {
 
 
                             if(!Error){
-                                //Register User on our own Server, runs paralell to Secret Upload
-                                bCom.register();
-                                //On Succesful Server Register
-                                //Switching to Main Activity on Success
-                                //TODO TOKEN ACTIVATION SCREEN AND THEN AFTERWARDS cCom getLectures() which automatically sends them to backende
-                                Intent myIntent = new Intent(view.getContext(), MainScreenActivity.class);
+                                //Switches to Screen For Token Activation, we send our backend data in TokenActivationScreen
+                                Intent myIntent = new Intent(view.getContext(), TokenActivationActivity.class);
                                 startActivityForResult(myIntent, 0);
                             }
                         }
