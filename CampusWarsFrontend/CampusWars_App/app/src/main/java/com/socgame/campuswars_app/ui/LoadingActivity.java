@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 
 import com.socgame.campuswars_app.R;
 
@@ -18,6 +19,10 @@ public class LoadingActivity extends AppCompatActivity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_loading);
+
+        ImageView logo = (ImageView) findViewById(R.id.logo);
+        int imageResource = getResources().getIdentifier("@drawable/main_campus_wars_logo", null, this.getPackageName());
+        logo.setImageResource(imageResource);
         
         //Only for Debug
         Button next = (Button) findViewById(R.id.LoadingText);

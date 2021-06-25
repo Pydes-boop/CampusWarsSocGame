@@ -17,6 +17,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseUser;
 import com.socgame.campuswars_app.R;
+import com.socgame.campuswars_app.communication.BackendCom;
 import com.socgame.campuswars_app.communication.FirebaseCom;
 import com.socgame.campuswars_app.communication.HttpSingleton;
 
@@ -37,21 +38,25 @@ public class LoginActivity extends AppCompatActivity {
         login.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 //DONE: check info here
-                fCom.signIn(email.getText().toString(), password.getText().toString(), new OnCompleteListener<AuthResult>(){
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
-                            FirebaseUser user = fCom.getMAuth().getCurrentUser();
-                            fCom.setUserProfile();
-                            Intent myIntent = new Intent(view.getContext(), MainScreenActivity.class);
-                            startActivityForResult(myIntent, 0);
-                        } else {
-                            Toast.makeText(ctx, "Login Failed: " + task.getException().toString(), Toast.LENGTH_SHORT).show();
+                if(email.getText().toString().length() == 0 || password.getText().toString().length() == 0){
+
+                }else{
+                    fCom.signIn(email.getText().toString(), password.getText().toString(), new OnCompleteListener<AuthResult>(){
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            if (task.isSuccessful()) {
+                                // Sign in success, update UI with the signed-in user's information
+                                FirebaseUser user = fCom.getMAuth().getCurrentUser();
+                                fCom.setUserProfile();
+                                BackendCom bCom = BackendCom.getInstance(ctx);
+                                Intent myIntent = new Intent(view.getContext(), MainScreenActivity.class);
+                                startActivityForResult(myIntent, 0);
+                            } else {
+                                Toast.makeText(ctx, "Login Failed: " + task.getException().toString(), Toast.LENGTH_SHORT).show();
+                            }
                         }
-                    }
-                });
-                //
+                    });
+                }
             }
         });
 
