@@ -5,7 +5,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import android.graphics.Color;
-import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -23,11 +22,7 @@ import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.socgame.campuswars_app.R;
-import com.socgame.campuswars_app.Sensor.GpsLocationManager;
 import com.socgame.campuswars_app.Sensor.GpsObserver;
-import com.socgame.campuswars_app.Sensor.LocationChangeListener;
-import com.socgame.campuswars_app.Sensor.OnLocationChangeInterface;
-
 
 public class MapsFragment extends Fragment implements GpsObserver
 {
