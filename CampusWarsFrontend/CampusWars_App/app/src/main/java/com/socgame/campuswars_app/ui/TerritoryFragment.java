@@ -41,6 +41,13 @@ public class TerritoryFragment extends Fragment //implements View.OnClickListene
         next.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 Intent myIntent = new Intent(view.getContext(), QuizActivity.class);
+                //We use bundles to give parameters to our QuizActivity
+                Bundle b = new Bundle();
+                b.putString("question", "Which one of these Sports typically requires a social Context?"); //Question
+                b.putStringArray("answers", new String[]{"Swimming", "Gaming", "Basketball", "Running"}); //Answer Options
+                b.putInt("correctAnswer", 3); //Correct Answer
+                b.putString("challenger", "Georg Groh"); //Challenger name
+                myIntent.putExtras(b);
                 startActivityForResult(myIntent, 0);
             }
         });
