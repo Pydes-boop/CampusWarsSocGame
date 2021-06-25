@@ -24,6 +24,14 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.socgame.campuswars_app.R;
 import com.socgame.campuswars_app.Sensor.GpsObserver;
 
+/*
+    Displays the world map
+    Uses custom design
+    Displays current position
+    Displays lecture halls
+
+    written by Jonas
+*/
 public class MapsFragment extends Fragment implements GpsObserver
 {
 
