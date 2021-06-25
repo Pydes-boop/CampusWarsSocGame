@@ -3,6 +3,7 @@ package com.socgame.campuswars_app.communication;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -61,19 +62,14 @@ public class CampusCom {
     }
 
     public String generateSecret(){
-        //DONE Secret Generation
-        //We just use key.toString() because we dont care
-        //Not knowing the key is the most secure method and we dont need data like matr Number anyways
         KeyGenerator kg = null;
         try {
             kg = KeyGenerator.getInstance("AES");
         } catch (Exception e) {
-            Log.d("HTTP", "Secret Key generation failed: " + e.toString());
+            Log.d("CampusCom", "Secret Key generation failed: " + e.toString());
         }
         kg.init(128);
         SecretKey key = kg.generateKey();
-        //We honestly dont care about the Key here because we dont need it anyways
-        //The securest encryption is the one we dont know
         return key.toString();
     }
 
@@ -83,17 +79,12 @@ public class CampusCom {
 
     public void generateToken(String Id, Response.Listener<String> listener, Response.ErrorListener error){
         //You should only call this Method once
-
-        //Campus com now gets the general instance of Http Singleton
-        //HttpSingleton http = HttpSingleton.getInstance(this.ctx);
+        //This Method is now integrated into Register Activity because of Android Studio NonSense
         http.getRequestString("tumonline/wbservicesbasic.requestToken?pUsername=" + Id + "&pTokenName=CampusWarsApp", listener, error, true);
     }
 
     public void getLectures(){
         //https://campus.tum.de/tumonline/wbservicesbasic.veranstaltungenEigene?pToken=pToken
-
-        //Campus com now gets the general instance of Http Singleton
-        //HttpSingleton http = HttpSingleton.getInstance(this.ctx);
         http.getRequestString("tumonline/wbservicesbasic.veranstaltungenEigene?pToken=" + pToken, new Response.Listener<String>() {
             @Override
             public void onResponse(String Response) {
@@ -104,10 +95,10 @@ public class CampusCom {
                     XmlToJson xmlToJson = new XmlToJson.Builder(Response).build();
                     JSONObject lectures = xmlToJson.toJson();
 
-                    HttpHeader head = new HttpHeader(ctx);
+                    //BackendCom bCom = BackendCom.getInstance(ctx);
+                    //bCom.groups(lectures);
 
-                    BackendCom bCom = BackendCom.getInstance(ctx);
-                    bCom.groups(lectures);
+                    Log.d("CampusCom", lectures.toString());
 
                     Log.d("HTTP", "Success: " + "converted JSON Object and gave it to HTTP Header");
                 } catch (Exception e) {
@@ -125,13 +116,12 @@ public class CampusCom {
     }
 
     public void getLectureTime(){
-        //TODO besprechen --> sehr kompliziert hierfür vlt erstmal eine andere lösung suchen?
-        //Vorlesungs basierte Fragen erstmal lassen und fragen nur location basiert machen?
+        //depricated -> data is unreadable because of missing consistent formatting by lecturers
     }
 
-    //Test this with
-    //CampusCom com = CampusCom.getInstance(this.getApplicationContext());
-    //com.generateToken("ge75lod");
-    //com.getLectures();
+    public void test(Response.Listener<String> listener, Response.ErrorListener error){
+        //Here we test if our token works, this does mean we send 2 requests for our lectures but we want to make sure
+        http.getRequestString("tumonline/wbservicesbasic.veranstaltungenEigene?pToken=" + pToken, listener, error, true);
+    }
 
 }
