@@ -13,13 +13,29 @@ from apis.v1 import v1, api
 import groupCreation
 from apis.v1.decorators import request_requires
 
-from apis.v1.database.interface import get_all_rooms, find_closest_room, add_lectures_to_user, \
-    add_question_to_quiz, add_user
+from apis.v1.database.interface import add_room, add_lecture, get_all_rooms, find_closest_room, add_lectures_to_user, \
+    add_question_to_quiz, add_user, get_users_of_lecture
+from bson.objectid import ObjectId
 
 
 @v1.app_errorhandler(404)
 def error_404(_):
     return make_response(jsonify({'exception': 'Not found!', 'code': 404}), 404)
+
+
+@api.resource('/lecturehalls/<int:number>')
+class LectureHalls(Resource):
+    def get(self, number):
+        # TODO replace with actual lookup
+        return jsonify(
+            [
+                number,
+                {'name': 'MW-1', 'location': [50, 10]},
+                {'name': 'MW-2', 'location': [51, 9]},
+                {'name': 'MI-1', 'location': [50, 9]},
+                {'name': 'MI-2', 'location': [51, 10]}
+            ]
+        )
 
 
 @api.resource('/lecturehalls/<int:number>')
@@ -95,6 +111,13 @@ class Register(Resource):
     def post(self):
         add_user(request.headers["uid"], request.headers["name"])
         return "ok", 200
+
+
+@api.resource('/marina')
+class Test(Resource):
+    def get(self):
+        add_user(1, "marina", [ObjectId("60d5dfe18343a7a71befce4b")])
+        return get_users_of_lecture("60d5dfe18343a7a71befce4b")
 
 
 if __name__ == '__main__':
