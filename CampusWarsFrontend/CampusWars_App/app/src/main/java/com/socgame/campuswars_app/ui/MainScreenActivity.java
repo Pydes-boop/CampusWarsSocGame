@@ -20,7 +20,7 @@ public class MainScreenActivity extends AppCompatActivity
      *
      *     uses custom ViewPager
      *
-     *     written by both Daniel and Jonas
+     *     written by Jonas and Daniel
      */
 
     private TabLayout tabLayout;
