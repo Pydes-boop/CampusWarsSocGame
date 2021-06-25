@@ -7,25 +7,29 @@ import org.json.JSONException;
 
 public class HttpReturn {
 
+    /**
+     * currently unused, maybe will be used in the future again for easier/automatic processing of BackendCalls
+     */
+
     private JSONArray arr;
-    private RequestType type;
 
     private double latitude;
     private double longitude;
 
-    public HttpReturn(RequestType type, JSONArray arr){
-        this.type = type;
+    public HttpReturn(JSONArray arr){
         this.arr = arr;
     }
 
     public void parseData() throws JSONException {
         //Does this make sense or do we have to solve this differently?
+        /*
         switch(type){
             case ROOMDETECTION:
                 break;
             case QUESTION:
                 break;
         }
+        */
     }
 
     private void parseRoomDetection(){
@@ -33,19 +37,4 @@ public class HttpReturn {
 
         }
     }
-
-
-    /*try {
-        tet = test.parseData();
-    } catch (JSONException e) {
-        Log.d("JSON Error", e.toString());
-    }
-        for(int i = 0; i < tet.length(); i++){
-        try {
-            Log.d("JSON Test", tet.getJSONObject(i).toString());
-            Log.d("JSON Test Location", tet.getJSONObject(i).get("location").toString());
-        } catch (JSONException e) {
-            Log.d("JSON Error", e.toString());
-        }
-    }*/
 }

@@ -15,6 +15,20 @@ import fr.arnaudguyon.xmltojsonlib.XmlToJson;
 
 public class HttpHeader {
 
+    /**
+     * This Class provides automatic processing/creation for HttpHeaders POST
+     *
+     * addUID, adds name and UID to every call for identification, gets added to probably all HttpPosts
+     *
+     * buildRoomFinderHeader, gives the Server our coordinates to get back if we are currently within a lecture hall
+     *
+     * buildPersonalLecturesHeader, creates a Header for sending our Backend all our Personal Lectures:
+     * creates an Array filled with lectures uniquely identifiable by their Name + Semester
+     * we sadly couldnt use the Tum Lecture Ids like "IN0011" because some lecturers dont provide them
+     *
+     * written by Daniel
+     */
+
     private HashMap<String, String> header;
     private Context ctx;
 
@@ -29,7 +43,6 @@ public class HttpHeader {
     }
 
     private void addUId(){
-        //TODO add Uid, from Firebase
         SharedPreferences settings = ctx.getSharedPreferences("userdata", 0);
         String UID = settings.getString("UID", "empty");
         String name = settings.getString("name", "empty");
@@ -48,15 +61,10 @@ public class HttpHeader {
 
         lectures += "\"" + arr.getJSONObject(0).get("stp_sp_titel") + ": " + arr.getJSONObject(0).get("semester_id") + "\"";
         for(int i = 1; i < arr.length(); i++){
-            //fixme letztes komma zu viel
             lectures += ",\"" + arr.getJSONObject(i).get("stp_sp_titel") + ": " + arr.getJSONObject(i).get("semester_id") + "\"";
         }
         lectures += "]";
         header.put("\"lectures\"", lectures);
-
-
-        //Remove Log ?
-        Log.d("Test", header.toString());
     }
 
     public void buildGroupsHeader(){

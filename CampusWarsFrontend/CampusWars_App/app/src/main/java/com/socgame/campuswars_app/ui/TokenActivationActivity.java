@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
@@ -25,6 +26,13 @@ import org.json.JSONObject;
 import fr.arnaudguyon.xmltojsonlib.XmlToJson;
 
 public class TokenActivationActivity extends AppCompatActivity {
+
+    /**
+     *  In this Activity we show the User how to activate their Token vie Imageviews
+     *  we provide a direct link to TumOnline and a Continue Button which checks if the getLectures Call we need works
+     *
+     *  written by Daniel
+     */
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +77,13 @@ public class TokenActivationActivity extends AppCompatActivity {
 
                             //Now we know the token works so we get the lectures and automatically send them to backend in this method
                             cCom.getLectures();
+
+                            //Saving Logged in State
+                            //We do this here and not earlier because the user needs to finish the registration for both TUM and Firebase
+                            SharedPreferences settings = ctx.getSharedPreferences("userdata", 0);
+                            SharedPreferences.Editor editor = settings.edit();
+                            editor.putBoolean("loggedIn", true);
+                            editor.apply();
 
                             //Continue
                             Intent myIntent = new Intent(view.getContext(), MainScreenActivity.class);

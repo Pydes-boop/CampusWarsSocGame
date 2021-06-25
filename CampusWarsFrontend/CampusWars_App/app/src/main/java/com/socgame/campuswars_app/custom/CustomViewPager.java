@@ -7,8 +7,15 @@ import android.view.MotionEvent;
 import androidx.viewpager.widget.ViewPager;
 
 public class CustomViewPager extends ViewPager {
-    //https://stackoverflow.com/questions/9650265/how-do-disable-paging-by-swiping-with-finger-in-viewpager-but-still-be-able-to-s
-    //Disables Swiping for our ViewPager
+    
+    /**
+     * Custom Implementation for ViewPager1 which disables swiping
+     *
+     * This is normally only a feature added in ViewPager2, but we wanted it and couldnt use ViewPager2 because of weird TabLayout Issues
+     *
+     * So this is the valid workaround:
+     * https://stackoverflow.com/questions/9650265/how-do-disable-paging-by-swiping-with-finger-in-viewpager-but-still-be-able-to-s
+     */
 
 
     private boolean enabled;
