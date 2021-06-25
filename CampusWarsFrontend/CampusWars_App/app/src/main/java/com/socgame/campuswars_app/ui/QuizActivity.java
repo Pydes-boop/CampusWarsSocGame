@@ -23,13 +23,16 @@ import com.socgame.campuswars_app.databinding.ActivityQuizBinding;
 
 import org.w3c.dom.Text;
 
-/*
-    Displays the quiz (duel) and reports back
-
-    written by Jonas
-*/
 public class QuizActivity extends AppCompatActivity implements View.OnClickListener
 {
+    /**
+     * Gets Data from calling Activity via Bundle
+     * creates Quiz Duel between 2 Players
+     *
+     * sends Data back to Server
+     *
+     * written by Jonas and Daniel
+     */
     private Context ctx;
     private String question;
     private String[] answers;

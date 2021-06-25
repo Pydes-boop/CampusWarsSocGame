@@ -29,7 +29,7 @@ public class LoginActivity extends AppCompatActivity {
      *     The other to the register screen
      *     we save the registered state of the user
      *
-     *     written by both Daniel and Jonas
+     *     written by Daniel and Jonas
      */
 
     @Override
