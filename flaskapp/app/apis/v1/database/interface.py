@@ -9,7 +9,8 @@ __all__ = ()
 
 from apis.v1.database import mongo, db
 from datetime import datetime
-from apis.v1.database.time_functions import get_current_time_in_millis, get_current_term
+from apis.v1.database.time_functions import get_current_time_and_day, get_current_term
+from bson.objectid import ObjectId
 
 
 def find_closest_room(lon, lat, max_distance):
@@ -21,11 +22,12 @@ def find_closest_room(lon, lat, max_distance):
 #  @Felix,Robin
 def add_room(room_name, longitude, latitude):
     item = {
-        "type": "Point",
-        "coordinates": [longitude, latitude],
+        "location":
+            {"type": "Point",
+             "coordinates": [longitude, latitude]},
         "roomName": room_name,
     }
-    return mongo.db.room.insert_one(item)['acknowledged']
+    return mongo.db.room.insert_one(item).acknowledged
 
 
 def get_all_rooms():
@@ -33,13 +35,15 @@ def get_all_rooms():
 
 
 def add_lecture(name, term, room_id=None, timetable=[]):
+    if isinstance(room_id, str):
+        room_id = ObjectId(room_id)
     item = {
         "name": name,
         "term": term,
         "roomID": room_id,
         "timetable": timetable
     }
-    return mongo.db.lecture.insert_one(item)['acknowledged']
+    return mongo.db.lecture.insert_one(item).acknowledged
 
 
 def add_user(firebase_id, name, lectures=[]):
@@ -50,7 +54,7 @@ def add_user(firebase_id, name, lectures=[]):
         "name": name,
         "lectures": lectures
     }
-    return mongo.db.firebase_users.insert_one(item)['acknowledged']
+    return mongo.db.firebase_users.insert_one(item).acknowledged
 
 
 def add_lectures_to_user(firebase_id, lectures):
@@ -70,19 +74,21 @@ def add_lectures_to_user(firebase_id, lectures):
                 "timetable": []
             }
             result = mongo.db.lecture.insert_one(item)
-            if not result['acknowledged']:
+            if not result.acknowledged:
                 return False
-            lecture_id = result['insertedId']
+            lecture_id = result.inserted_id
         else:
             lecture_id = mongo.db.lectures.find_one({"name": name, "term": term}, {"_id": 1})["_id"]
         if not mongo.db.firebase_users.update({"firebaseID": firebase_id},
-                                              {"$push": {"lectures": lecture_id}})['acknowledged']:
+                                              {"$push": {"lectures": lecture_id}}).acknowledged:
             return False
 
     return True
 
 
 def add_question_to_quiz(question, right_answer, wrong_answers, quiz_id):
+    if isinstance(quiz_id, str):
+        quiz_id = ObjectId(quiz_id)
     item = {
         "question": question,
         "rightAnswer": right_answer,
@@ -93,31 +99,40 @@ def add_question_to_quiz(question, right_answer, wrong_answers, quiz_id):
 
 
 def get_current_quizzes(room_id):
-    current_time = get_current_time_in_millis()
+    if isinstance(room_id, str):
+        room_id = ObjectId(room_id)
+    current_time = get_current_time_and_day
+    day = get_current_day()
     index_lecture = mongo.db.lecture.find_one({"roomID": room_id, "term": get_current_term(),
-                                               "timetable": {"$elemMatch": {"start": {"$lt": current_time},
-                                                                            "end": {"$gte": current_time}}}},
+                                               "timetable": {"$elemMatch": {"start": {"$lt": current_time[0]},
+                                                                            "end": {"$gte": current_time[0]},
+                                                                            "day": current_time[1]}}},
                                               {"_id": 1})
     indices_quizzes = mongo.db.quiz.find({"lectureID": index_lecture})
     return list(mongo.db.quiz.find({"_id": {"$in": indices_quizzes}}))
 
 
-def add_quiz(name, created_by, lecture):
+def add_quiz(name, created_by, lecture_id):
+    if isinstance(lecture_id, str):
+        lecture_id = ObjectId(lecture_id)
     item = {
         "name": name,
         "createdBy": created_by,
-        "lectureID": lecture,
+        "lectureID": lecture_id,
         "creationDate": datetime.now().isoformat(),
     }
-    return mongo.db.quiz.insert_one(item)['acknowledged']
+    return mongo.db.quiz.insert_one(item).acknowledged
 
 
 def get_lectures_of_user(firebase_id):
-    return mongo.db.users.find_one({"firebaseID": firebase_id})["lectures"]
+    return mongo.db.firebase_users.find_one({"firebaseID": firebase_id})["lectures"]
 
 
 def get_users_of_lecture(lecture_id):
-    return list(mongo.db.users.find({"lectures": lecture_id}, {"firebaseID": 1}))
+    if isinstance(lecture_id, str):
+        lecture_id = ObjectId(lecture_id)
+    return list(
+        mongo.db.firebase_users.find({"lectures": {"$elemMatch": {"$eq": lecture_id}}}, {"firebaseID": 1, "_id": 0}))
 
 
 if __name__ == '__main__':
