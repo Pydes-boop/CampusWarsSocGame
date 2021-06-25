@@ -22,6 +22,7 @@ import java.util.List;
 
 /*
     Register to this (Singleton) observable to get your location (as Lat Long)
+    To register you must implement the GpsObserver interface
     Use get Instance, never call a constructor yourself!!!!
 
     I absolutly hate everything about this. Is cost me blood sweat and tears - mostly tears

@@ -16,7 +16,14 @@ import androidx.navigation.ui.NavigationUI;
 import com.socgame.campuswars_app.R;
 import com.socgame.campuswars_app.databinding.ActivityQuizBinding;
 
-public class QuizActivity extends AppCompatActivity {
+/*
+    Displays the quiz (duel) and reports back
+
+    written by Jonas
+*/
+public class QuizActivity extends AppCompatActivity
+{
+    //TODO: Link to the server
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

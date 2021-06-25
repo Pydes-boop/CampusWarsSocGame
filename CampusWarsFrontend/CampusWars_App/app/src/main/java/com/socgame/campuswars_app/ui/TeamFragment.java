@@ -16,7 +16,12 @@ import com.socgame.campuswars_app.R;
 import java.util.ArrayList;
 import java.util.List;
 
+/*
+    Here we display info about the players team
+    including a list of team members
 
+    written by Jonas
+ */
 public class TeamFragment extends Fragment
 {
     public TeamFragment()
@@ -36,6 +41,8 @@ public class TeamFragment extends Fragment
         View view = inflater.inflate(R.layout.fragment_team, container, false);
         ListView listView = view.findViewById(R.id.memberList);
 
+        //TODO: get correct info from server
+        //TODO: create a custom drawable
         String[] array =
         {
             "Dummy Name 1",

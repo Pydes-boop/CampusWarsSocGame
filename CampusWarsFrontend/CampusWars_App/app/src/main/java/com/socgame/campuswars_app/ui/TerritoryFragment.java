@@ -12,8 +12,14 @@ import android.widget.Button;
 
 import com.socgame.campuswars_app.R;
 
+/*
+
+*/
 public class TerritoryFragment extends Fragment //implements View.OnClickListener
 {
+
+    //TODO: create an update method which calls the server
+
     public TerritoryFragment()
     {
         // Required empty public constructor

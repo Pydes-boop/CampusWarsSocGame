@@ -12,6 +12,14 @@ import com.google.android.material.tabs.TabLayout;
 import com.socgame.campuswars_app.custom.CustomViewPager;
 import com.socgame.campuswars_app.R;
 
+/*
+    Displays the heart of our game
+    Three tabs (lecture hall, map, team)
+
+    uses custom ViewPager
+
+    written by both Daniel and Jonas
+*/
 public class MainScreenActivity extends AppCompatActivity
 {
     private TabLayout tabLayout;

@@ -20,7 +20,14 @@ import com.socgame.campuswars_app.R;
 import com.socgame.campuswars_app.communication.BackendCom;
 import com.socgame.campuswars_app.communication.FirebaseCom;
 import com.socgame.campuswars_app.communication.HttpSingleton;
+/*
+    The standard Login happens here
+    User enters info
+    One Button sends it to firebase
+    The other to the register screen
 
+    written by both Daniel and Jonas
+*/
 public class LoginActivity extends AppCompatActivity {
 
     @Override
@@ -30,7 +37,7 @@ public class LoginActivity extends AppCompatActivity {
         Context ctx = this.getApplicationContext();
         FirebaseCom fCom = FirebaseCom.getInstance(ctx);
 
-        //fixme Eventuell muss hier die id gefixt werden für login
+        //FIXME: Eventuell muss hier die id gefixt werden für login
         EditText email = (EditText) findViewById(R.id.editTextTextEmailAddress);
         EditText password = (EditText) findViewById(R.id.editTextTextPassword);
         Button login = (Button) findViewById(R.id.loginButton);

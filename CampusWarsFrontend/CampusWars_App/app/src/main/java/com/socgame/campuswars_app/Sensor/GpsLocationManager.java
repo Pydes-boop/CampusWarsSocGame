@@ -11,7 +11,10 @@ import android.location.LocationManager;
 import androidx.core.app.ActivityCompat;
 
 import com.google.android.gms.maps.model.LatLng;
-
+/*
+    Legacy GPS code
+    Used nowhere
+*/
 public class GpsLocationManager
 {
     /*

@@ -4,6 +4,12 @@ import android.app.Activity;
 
 import com.google.android.gms.maps.model.LatLng;
 
+/*
+    implement this, call the register method and override OnLocationUpdate to recieve the GPS coordinates
+    (GPS Listener / Observable will be automatically created)
+
+    written by Jonas
+*/
 public interface GpsObserver
 {
     public void OnLocationUpdate(LatLng loc);

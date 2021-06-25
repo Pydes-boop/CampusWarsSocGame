@@ -10,7 +10,13 @@ import android.widget.Button;
 import android.widget.ImageView;
 
 import com.socgame.campuswars_app.R;
+/*
+    This is the start / splash screen
+    It shows the logo for a few seconds before automatically switching to the login screen
+    In the future we might want to call some setup methods here
 
+    written by Jonas (so far)
+ */
 public class LoadingActivity extends AppCompatActivity
 {
 
