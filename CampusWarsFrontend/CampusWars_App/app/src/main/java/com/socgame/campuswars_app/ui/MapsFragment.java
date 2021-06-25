@@ -5,7 +5,9 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import android.graphics.Color;
+import android.location.Location;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,13 +23,18 @@ import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.socgame.campuswars_app.R;
-import com.socgame.campuswars_app.communication.GpsLocationManager;
+import com.socgame.campuswars_app.Sensor.GpsLocationManager;
+import com.socgame.campuswars_app.Sensor.GpsObserver;
+import com.socgame.campuswars_app.Sensor.LocationChangeListener;
+import com.socgame.campuswars_app.Sensor.OnLocationChangeInterface;
 
 
-public class MapsFragment extends Fragment
+public class MapsFragment extends Fragment implements GpsObserver
 {
 
-    private LatLng position;
+    private LatLng position = new LatLng(48.2650,11.6716);//Using campus as default/fallback position;
+    private GoogleMap map;
+    private Marker localPos ;
 
     //Thanks StackOverflow
     //https://stackoverflow.com/questions/19076124/android-map-marker-color
@@ -53,17 +60,22 @@ public class MapsFragment extends Fragment
         @Override
         public void onMapReady(GoogleMap googleMap)
         {
+            map = googleMap;
+
+
             //Make it viusally fit our UI style
             googleMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(getContext(), R.raw.mapsstyle_json));
 
 
-            //Set marker at pos
-            googleMap.addMarker(new MarkerOptions().position(position).title("You"));
-            googleMap.moveCamera(CameraUpdateFactory.newLatLng(position));
+            //same code in gps update
 
+            //Set marker at pos
+            localPos =  googleMap.addMarker(new MarkerOptions().position(position).title("You"));
+
+            //Set cam to pos
+            googleMap.moveCamera(CameraUpdateFactory.newLatLng(position));
             //Zoom in
-            //if(position.latitude != 0 && position.longitude != 0)//dont zoom in on ocean debug
-                googleMap.animateCamera( CameraUpdateFactory.zoomTo( 17.0f ) );
+            googleMap.animateCamera( CameraUpdateFactory.zoomTo( 17.0f ) );
 
 
 
@@ -72,20 +84,34 @@ public class MapsFragment extends Fragment
             double range = 0.005;
             for(int i = 0; i < 20; i++)
             {
-                LatLng hall = new LatLng(position.latitude+(Math.random()*2-1)*range, position.longitude+(Math.random()*2-1)*range);
+                LatLng campus = new LatLng(48.2650,11.6716);
+                LatLng hall = new LatLng(campus.latitude+(Math.random()*2-1)*range, campus.longitude+(Math.random()*2-1)*range);
+
+                String color = "#4275A8"; //"#" + Integer.toString(R.color.highlight)
+                //BitmapDescriptor towerIcon = BitmapDescriptorFactory.fromResource(R.drawable.ic_territory);
+                BitmapDescriptor markerIcon = hexToHSV(color);
 
                 Marker marker = googleMap.addMarker
                 (
                         new MarkerOptions().position(hall).title("Lecture Hall " + i)
-                        .icon(hexToHSV(/*"#" + Integer.toString(R.color.highlight)*/"#4275A8"))
+                        .icon(markerIcon)
+                        .snippet("Go forth and conquer!")
                 );
             }
 
+            //NICE TO HAVE
+            //DRAW BORDERS
+            //https://stackoverflow.com/questions/45803711/how-to-draw-a-polygon-like-google-map-in-android-app
             /*
-            LatLng sydney = new LatLng(-34, 151);
-
-            googleMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-            googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+            Polygon polygon = googleMap.addPolygon(new PolygonOptions()
+                    .add
+                    (
+                        new LatLng(position.latitude+(Math.random()*2-1)*range/3, position.longitude+(Math.random()*2-1)*range),
+                        new LatLng(position.latitude+(Math.random()*2-1)*range/3, position.longitude+(Math.random()*2-1)*range),
+                        new LatLng(position.latitude+(Math.random()*2-1)*range/3, position.longitude+(Math.random()*2-1)*range)
+                    )
+                    .strokeColor(Color.BLUE)
+                    .fillColor(Color.CYAN));
             */
         }
     };
@@ -112,10 +138,61 @@ public class MapsFragment extends Fragment
             mapFragment.setMenuVisibility(false);
             mapFragment.setHasOptionsMenu(false);
 
-            //TODO: call this a lot, cause it does NOT auto update
-            //Also this will crash if I call outside of this method
-            //FML
-            position = GpsLocationManager.getPosition(getActivity(), getContext());
+            register(getActivity());//Also creates instance of gps listener if needed and autoupdates itself
+        }
+
+    }
+
+    /*
+    @Override
+    public void locationChanged(Location loc)
+    {
+        position = locToLatLng(loc);
+
+        if(map != null)
+        {
+            //move camera
+            map.moveCamera(CameraUpdateFactory.newLatLng(position));
+            //Zoom in
+            map.animateCamera( CameraUpdateFactory.zoomTo( 17.0f ) );
+
+            if(localPos != null)
+            {
+                localPos.remove();
+                localPos =  map.addMarker(new MarkerOptions().position(position).title("You"));
+            }
+        }
+    }
+    */
+
+    @Override
+    public void OnLocationUpdate(LatLng loc)
+    {
+        if(loc == null)
+        {
+            Log.e("GPS", this + " recieved null location");
+        }
+
+        position = loc;
+
+        Log.d("GPS", this + " location updated to " + loc.latitude + ", " + loc.longitude);
+
+        if(map != null)
+        {
+
+            //TODO: smooth camera
+
+            //move camera
+            map.moveCamera(CameraUpdateFactory.newLatLng(position));
+            //Zoom in
+            map.animateCamera( CameraUpdateFactory.zoomTo( 17.0f ) );
+
+
+            if(localPos != null)
+            {
+                localPos.remove();
+                localPos =  map.addMarker(new MarkerOptions().position(position).title("You"));
+            }
         }
     }
 }
