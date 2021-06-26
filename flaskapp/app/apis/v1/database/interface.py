@@ -31,7 +31,7 @@ def add_room(room_name, longitude, latitude):
 
 
 def get_all_rooms():
-    return list(mongo.db.room.find({}, {"_id": 0}))
+    return list(mongo.db.room.find())
 
 
 def add_lecture(name, term, room_id=None, timetable=[]):
@@ -133,6 +133,11 @@ def get_users_of_lecture(lecture_id):
         lecture_id = ObjectId(lecture_id)
     return list(
         mongo.db.firebase_users.find({"lectures": {"$elemMatch": {"$eq": lecture_id}}}, {"firebaseID": 1, "_id": 0}))
+
+
+# todo marina
+def get_full_name_of_current_lecture_in_room(room_id):
+    return mongo.db.lecture.find_one()['name'] + ": " + mongo.db.lecture.find_one()['term']
 
 
 if __name__ == '__main__':
