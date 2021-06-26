@@ -73,7 +73,7 @@ class RoomFinder(Resource):
                      "latitude": i["location"]["coordinates"][1]},
                 "roomName": i["roomName"],
                 "occupier": {"color": color, "name": "Team" + str(j)},
-                "currentLecture": get_full_name_of_current_lecture_in_room(i[_id])
+                "currentLecture": get_full_name_of_current_lecture_in_room(i['_id'])
             }
             j = j + 1
             result.append(item)
