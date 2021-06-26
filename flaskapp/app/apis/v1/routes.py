@@ -38,21 +38,6 @@ class LectureHalls(Resource):
         )
 
 
-@api.resource('/lecturehalls/<int:number>')
-class LectureHalls(Resource):
-    def get(self, number):
-        # TODO replace with actual lookup
-        return jsonify(
-            [
-                number,
-                {'name': 'MW-1', 'location': [50, 10]},
-                {'name': 'MW-2', 'location': [51, 9]},
-                {'name': 'MI-1', 'location': [50, 9]},
-                {'name': 'MI-2', 'location': [51, 10]}
-            ]
-        )
-
-
 @api.resource('/quiz')
 class Quiz(Resource):
     @staticmethod
