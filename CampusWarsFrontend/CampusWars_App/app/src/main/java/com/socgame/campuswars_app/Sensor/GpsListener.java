@@ -20,14 +20,14 @@ import java.util.LinkedList;
 import java.util.List;
 
 
-/*
-    Register to this (Singleton) observable to get your location (as Lat Long)
-    To register you must implement the GpsObserver interface
-    Use get Instance, never call a constructor yourself!!!!
-
-    I absolutly hate everything about this. Is cost me blood sweat and tears - mostly tears
-
-    written by Jonas
+/**
+   * Register to this (Singleton) observable to get your location (as Lat Long)
+   * To register you must implement the GpsObserver interface
+   * Use get Instance, never call a constructor yourself!!!!
+   *
+   * Updates fairly jittery and often since the raw measurements are bearly filtered
+   *
+   * written by Jonas
  */
 public class GpsListener implements LocationListener
 {
@@ -43,25 +43,7 @@ public class GpsListener implements LocationListener
 
             Log.d("GPS", "Initialized GPS Listener");
 
-            /*
-            //Activity needed to create a locationmanager
-           class DummyActivity extends Activity
-           {
-               @Override
-               protected void onCreate(@Nullable Bundle savedInstanceState)
-               {
-                   super.onCreate(savedInstanceState);
-                   //Dont show anything
-                   //no intent
-                   //no starting
-               }
-           }
-           DummyActivity activity = new DummyActivity();
-           Bundle savedInstance = Bundle.EMPTY;
-           activity.onCreate(savedInstance);
-            */
-
-           LocationManager lm = (LocationManager) activity.getSystemService(activity.LOCATION_SERVICE);
+            LocationManager lm = (LocationManager) activity.getSystemService(activity.LOCATION_SERVICE);
 
             //Permission checks
            if
@@ -176,6 +158,7 @@ public class GpsListener implements LocationListener
     public void onLocationChanged(@NonNull Location location)
     {
         //TODO: DO CHECKS
+        //TODO: smooth factoring in accuracy
         LatLng loc = locToLatLng(location);
         this.location = loc;
 
@@ -194,7 +177,7 @@ public class GpsListener implements LocationListener
 
         for(Location loc : locations)
         {
-            //TODO: factor in accuracy
+            //no longer to do factor in accuracy
             lat += loc.getLatitude();
             lng += loc.getLongitude();
         }

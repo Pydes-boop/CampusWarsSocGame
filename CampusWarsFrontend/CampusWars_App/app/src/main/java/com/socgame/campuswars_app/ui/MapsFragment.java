@@ -24,20 +24,19 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.socgame.campuswars_app.R;
 import com.socgame.campuswars_app.Sensor.GpsObserver;
 
-/*
-    Displays the world map
-    Uses custom design
-    Displays current position
-    Displays lecture halls
-
-    written by Jonas
+/**
+   * Displays the world map
+   * Uses custom design
+   * Displays current position
+   * Displays lecture halls
+   *
+   * written by Jonas
 */
 public class MapsFragment extends Fragment implements GpsObserver
 {
-
     private LatLng position = new LatLng(48.2650,11.6716);//Using campus as default/fallback position;
     private GoogleMap map;
-    private Marker localPos ;
+    private Marker localPos;//TODO: maybe google maps has an integrated way to do that?
 
     //Thanks StackOverflow
     //https://stackoverflow.com/questions/19076124/android-map-marker-color
@@ -50,16 +49,6 @@ public class MapsFragment extends Fragment implements GpsObserver
 
     private OnMapReadyCallback callback = new OnMapReadyCallback()
     {
-        /**
-         * Manipulates the map once available.
-         * This callback is triggered when the map is ready to be used.
-         * This is where we can add markers or lines, add listeners or move the camera.
-         * In this case, we just add a marker near Sydney, Australia.
-         * If Google Play services is not installed on the device, the user will be prompted to
-         * install it inside the SupportMapFragment. This method will only be triggered once the
-         * user has installed Google Play services and returned to the app.
-         */
-
         @Override
         public void onMapReady(GoogleMap googleMap)
         {
@@ -81,28 +70,7 @@ public class MapsFragment extends Fragment implements GpsObserver
             //Zoom in
             googleMap.animateCamera( CameraUpdateFactory.zoomTo( 17.0f ) );
 
-
-
-            //TODO: Get actual lecture halls
-            // Add custom markers for our lecture halls
-            double range = 0.005;
-            for(int i = 0; i < 20; i++)
-            {
-                LatLng campus = new LatLng(48.2650,11.6716);
-                LatLng hall = new LatLng(campus.latitude+(Math.random()*2-1)*range, campus.longitude+(Math.random()*2-1)*range);
-
-                String color = "#4275A8"; //"#" + Integer.toString(R.color.highlight)
-                //BitmapDescriptor towerIcon = BitmapDescriptorFactory.fromResource(R.drawable.ic_territory);
-                BitmapDescriptor markerIcon = hexToHSV(color);
-
-                Marker marker = googleMap.addMarker
-                (
-                        new MarkerOptions().position(hall).title("Lecture Hall " + i)
-                        .icon(markerIcon)
-                        .snippet("Go forth and conquer!")
-                );
-            }
-
+            /*
             //NICE TO HAVE
             //DRAW BORDERS
             //https://stackoverflow.com/questions/45803711/how-to-draw-a-polygon-like-google-map-in-android-app
@@ -120,6 +88,65 @@ public class MapsFragment extends Fragment implements GpsObserver
         }
     };
 
+
+    //Adding proper comments, cause Daniel will have to call this
+
+    /**
+     * Add a marker of a lecture hall to the map.
+     * Wrapper of identical method which uses the LatLng class for gps pos
+     *
+     *
+     * @param lat latitude
+     * @param lon longitude
+     * @param color marker color as hex example: "#4275A8"
+     * @param name name of lecture hall
+     * @param lecture current lecture title, alternatively any sub-headline
+     * @return reference of the Marker. Call Marker.remove() to delete lecture hall
+     */
+    public Marker addLectureHall(double lat, double lon, String color, String name, String lecture)
+    {
+        return addLectureHall(new LatLng(lat, lon), color, name, lecture);
+    }
+
+    /**
+     * Add a marker of a lecture hall to the map
+     *
+     * @param pos gps location
+     * @param color marker color as hex example: "#4275A8"
+     * @param name name of lecture hall
+     * @param lecture current lecture title, alternatively any sub-headline
+     * @return reference of the Marker. Call Marker.remove() to delete lecture hall
+     */
+    public Marker addLectureHall(LatLng pos, String color, String name, String lecture)
+    {
+        //TODO: maybe safe locally for further analysis?
+
+
+        String fallbackColor = "#4275A8";
+
+        BitmapDescriptor markerIcon;
+        //BitmapDescriptor towerIcon = BitmapDescriptorFactory.fromResource(R.drawable.ic_territory);
+
+        try //Check color viability
+        {
+            markerIcon = hexToHSV(color);
+        }
+        catch (Exception e)
+        {
+            Log.e("GPS", "Could not parse color " + color);
+            markerIcon = hexToHSV(fallbackColor);
+        }
+
+
+        Marker marker = map.addMarker
+                (
+                        new MarkerOptions().position(pos).title(name)
+                                .icon(markerIcon)
+                                .snippet(lecture)
+                );
+
+        return  marker;
+    }
 
     @Nullable
     @Override
@@ -147,28 +174,6 @@ public class MapsFragment extends Fragment implements GpsObserver
 
     }
 
-    /*
-    @Override
-    public void locationChanged(Location loc)
-    {
-        position = locToLatLng(loc);
-
-        if(map != null)
-        {
-            //move camera
-            map.moveCamera(CameraUpdateFactory.newLatLng(position));
-            //Zoom in
-            map.animateCamera( CameraUpdateFactory.zoomTo( 17.0f ) );
-
-            if(localPos != null)
-            {
-                localPos.remove();
-                localPos =  map.addMarker(new MarkerOptions().position(position).title("You"));
-            }
-        }
-    }
-    */
-
     @Override
     public void OnLocationUpdate(LatLng loc)
     {
@@ -185,6 +190,8 @@ public class MapsFragment extends Fragment implements GpsObserver
         {
 
             //TODO: smooth camera
+            //TODO: dont always move camera
+
 
             //move camera
             map.moveCamera(CameraUpdateFactory.newLatLng(position));
