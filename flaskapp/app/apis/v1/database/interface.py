@@ -137,7 +137,7 @@ def get_users_of_lecture(lecture_id):
 
 # todo marina
 def get_full_name_of_current_lecture_in_room(room_id):
-    return mongo.db.lecture.find_one()['name'] + ": " + mongo.db.lecture.find_one()['term']
+    return "SoG: S21"
 
 
 if __name__ == '__main__':
