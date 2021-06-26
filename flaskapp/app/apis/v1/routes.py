@@ -12,8 +12,10 @@ from flask_restful import Resource
 from apis.v1 import v1, api
 import groupCreation
 from apis.v1.decorators import request_requires
-from apis.v1.database.interface import get_all_rooms, room_detection, get_all_groups, set_user_groups, \
-    add_question_to_quiz
+
+from apis.v1.database.interface import add_room, add_lecture, get_all_rooms, find_closest_room, add_lectures_to_user, \
+    add_question_to_quiz, add_user, get_users_of_lecture
+from bson.objectid import ObjectId
 
 
 @v1.app_errorhandler(404)
@@ -21,17 +23,19 @@ def error_404(_):
     return make_response(jsonify({'exception': 'Not found!', 'code': 404}), 404)
 
 
-@api.resource('/room/<string:types>')
-class Room(Resource):
-    def get(self, types):
-        if types == 'all':
-            return jsonify(get_all_rooms())
-        return jsonify({'failed': 'invalid type'})
-
-    def post(self, types):
-        if types == 'find':
-            return jsonify(room_detection(request.headers["latitude"], request.headers["longitude"]))
-        return jsonify({'failed': 'invalid type'})
+@api.resource('/lecturehalls/<int:number>')
+class LectureHalls(Resource):
+    def get(self, number):
+        # TODO replace with actual lookup
+        return jsonify(
+            [
+                number,
+                {'name': 'MW-1', 'location': [50, 10]},
+                {'name': 'MW-2', 'location': [51, 9]},
+                {'name': 'MI-1', 'location': [50, 9]},
+                {'name': 'MI-2', 'location': [51, 10]}
+            ]
+        )
 
 
 @api.resource('/lecturehalls/<int:number>')
@@ -64,11 +68,11 @@ class Quiz(Resource):
         )
 
 
-@api.resource('/roomdetection')
-class RoomDetection(Resource):
+@api.resource('/roomfinder')
+class RoomFinder(Resource):
     @request_requires(headers=['latitude', 'longitude'])
     def post(self):
-        return jsonify(room_detection(request.headers["latitude"], request.headers["longitude"]))
+        return jsonify(find_closest_room(request.headers["longitude"], request.headers["latitude"], 30))
 
     def get(self):
         return jsonify(get_all_rooms())
@@ -80,15 +84,10 @@ class Echo(Resource):
         return "Hallo Echo!", 200
 
 
-@api.resource('/groups')
-class Groups(Resource):
-    def get(self):
-        # todo: frontend pls define what to return
-        # might be unnecessary because the tum online interface gets the possible groups
-        return jsonify(get_all_groups())
-
+@api.resource('/lectures')
+class Lectures(Resource):
     def post(self):
-        set_user_groups(request.headers["UID"], request.headers["Lectures"])
+        set_user_lectures(request.headers["uid"], request.headers["lectures"])
         return
 
 
@@ -103,8 +102,22 @@ class Start(Resource):
 class Question(Resource):
     def post(self):
         # todo: get questions from body and process to database
-        add_question(1, 2, 3)
+        add_question_to_quiz(1, 2, 3, 4)
         return "ok", 200
+
+
+@api.resource('/register')
+class Register(Resource):
+    def post(self):
+        add_user(request.headers["uid"], request.headers["name"])
+        return "ok", 200
+
+
+@api.resource('/marina')
+class Test(Resource):
+    def get(self):
+        add_user(1, "marina", [ObjectId("60d5dfe18343a7a71befce4b")])
+        return get_users_of_lecture("60d5dfe18343a7a71befce4b")
 
 
 if __name__ == '__main__':
