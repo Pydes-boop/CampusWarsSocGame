@@ -66,7 +66,7 @@ class RoomFinder(Resource):
                 "location":
                     {"longitude": i["location"]["coordinates"][0],
                      "latitude": i["location"]["coordinates"][1]},
-                "roomName": i["room_name"]
+                "roomName": i["roomName"]
             }
             result.append(item)
         return jsonify(result)
