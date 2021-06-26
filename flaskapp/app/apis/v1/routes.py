@@ -12,6 +12,7 @@ from flask_restful import Resource
 from apis.v1 import v1, api
 import groupCreation
 from apis.v1.decorators import request_requires
+import random
 
 from apis.v1.database.interface import add_room, add_lecture, get_all_rooms, find_closest_room, add_lectures_to_user, \
     add_question_to_quiz, add_user, get_users_of_lecture
@@ -59,15 +60,21 @@ class RoomFinder(Resource):
     def post(self):
         return jsonify(find_closest_room(request.headers["longitude"], request.headers["latitude"], 30))
 
+    # todo @Robin insert your stuff instead of my dummy stuff
     def get(self):
         result = []
+        r = lambda: random.randint(0, 255)
+        color = '#%02X%02X%02X' % (r(), r(), r())
+        j = 1
         for i in get_all_rooms():
             item = {
                 "location":
                     {"longitude": i["location"]["coordinates"][0],
                      "latitude": i["location"]["coordinates"][1]},
-                "roomName": i["roomName"]
+                "roomName": i["roomName"],
+                "occupier": {"color": color, "name": "Team" + str(j)}
             }
+            j = j + 1
             result.append(item)
         return jsonify(result)
 
