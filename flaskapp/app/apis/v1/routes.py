@@ -15,7 +15,7 @@ from apis.v1.decorators import request_requires
 import random
 
 from apis.v1.database.interface import add_room, add_lecture, get_all_rooms, find_closest_room, add_lectures_to_user, \
-    add_question_to_quiz, add_user, get_users_of_lecture
+    add_question_to_quiz, add_user, get_users_of_lecture, get_full_name_of_current_lecture_in_room
 from bson.objectid import ObjectId
 
 
@@ -72,7 +72,8 @@ class RoomFinder(Resource):
                     {"longitude": i["location"]["coordinates"][0],
                      "latitude": i["location"]["coordinates"][1]},
                 "roomName": i["roomName"],
-                "occupier": {"color": color, "name": "Team" + str(j)}
+                "occupier": {"color": color, "name": "Team" + str(j)},
+                "currentLecture": get_full_name_of_current_lecture_in_room(i[_id])
             }
             j = j + 1
             result.append(item)
