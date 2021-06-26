@@ -60,7 +60,16 @@ class RoomFinder(Resource):
         return jsonify(find_closest_room(request.headers["longitude"], request.headers["latitude"], 30))
 
     def get(self):
-        return jsonify(get_all_rooms())
+        result = []
+        for i in get_all_rooms():
+            item = {
+                "location":
+                    {"longitude": i["location"]["coordinates"][0],
+                     "latitude": i["location"]["coordinates"][1]},
+                "roomName": i["room_name"]
+            }
+            result.append(item)
+        return jsonify(result)
 
 
 @api.resource('/echo')
