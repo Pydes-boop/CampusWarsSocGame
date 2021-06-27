@@ -1,6 +1,7 @@
 package com.socgame.campuswars_app.Sensor;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -31,10 +32,14 @@ import java.util.List;
  */
 public class GpsListener implements LocationListener
 {
+    private LocationManager lm;
+    private Activity activity;
+
     //Singleton
     private static GpsListener instance;
 
     //DO NOT USE THE CONSTRUCTOR!!
+    @SuppressLint("MissingPermission")
     private GpsListener(Activity activity)
     {
         if (instance == null)
@@ -43,13 +48,13 @@ public class GpsListener implements LocationListener
 
             Log.d("GPS", "Initialized GPS Listener");
 
-            LocationManager lm = (LocationManager) activity.getSystemService(activity.LOCATION_SERVICE);
+            lm = (LocationManager) activity.getSystemService(activity.LOCATION_SERVICE);
+            this.activity = activity;
 
             //Permission checks
            if
            (
-               ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                   permission()
            )
            {
                activity.requestPermissions
@@ -65,7 +70,7 @@ public class GpsListener implements LocationListener
             {
                 //startlocation
                 String provider = LocationManager.GPS_PROVIDER;
-                Location lastLoc = lm.getLastKnownLocation(provider);
+                @SuppressLint("MissingPermission") Location lastLoc = lm.getLastKnownLocation(provider);
 
                 //Force location update
                 lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1, this);
@@ -195,6 +200,25 @@ public class GpsListener implements LocationListener
     public void onProviderDisabled(@NonNull String provider)
     {
         Log.d("GPS", "Could not use provider " + provider);
+    }
+
+    @SuppressLint("MissingPermission")
+    @Override
+    public void onProviderEnabled(@NonNull String provider)
+    {
+        try
+        {
+            if(permission())
+                lm.requestLocationUpdates(provider, 1000, 1, this);
+        }
+        catch (Exception e) {}
+    }
+
+    private boolean permission()
+    {
+        return     ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED;
+
     }
 
     private static LatLng locToLatLng(Location loc)

@@ -42,16 +42,24 @@ public class TeamFragment extends Fragment
         ListView listView = view.findViewById(R.id.memberList);
 
         //TODO: get correct info from server
-        //TODO: create a custom drawable
+        //only possible when the calls exist
         String[] array =
         {
             "Dummy Name 1",
             "Dummy Name 2",
             "Dummy Name 3",
+            "Dummy Name 4",
+            "Dummy Name 5",
+            "Dummy Name 6",
+            "Dummy Name 7",
+            "Dummy Name 8",
+            "Dummy Name 9",
+            "Dummy Name 10",
         };
 
         //TODO: Create custom Array Adapter
-        ArrayAdapter<String> itemsAdapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_activated_1, array);
+        //ArrayAdapter<String> itemsAdapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_activated_1, array);
+        ArrayAdapter<String> itemsAdapter = new ArrayAdapter<String>(getContext(), R.layout.teammember, array);
         listView.setAdapter(itemsAdapter);
 
         return view;

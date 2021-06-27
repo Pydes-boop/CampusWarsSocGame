@@ -123,7 +123,8 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="THIS LIST WORKS, NOTHING TO DISPLAY YET"
+            android:text="Team members:"
+            android:textSize="20sp"
             android:textColor="@color/text"
             android:gravity="center"
             android:background="@drawable/button_rounded"
@@ -134,13 +135,25 @@
             android:id="@+id/memberList"
             android:layout_width="match_parent"
             android:layout_height="0dp"
+            android:padding="20sp"
+            android:layout_weight="4"
+
 
             android:background="@drawable/button_rounded"
             android:elevation="20sp"
 
             android:textColor="@color/text"
 
-            android:layout_weight="4"
+            android:divider="@color/darkAccent"
+            android:dividerHeight="1sp"
+
+
+            android:smoothScrollbar="true"
+            android:scrollbarAlwaysDrawVerticalTrack="true"
+            android:scrollbarStyle="insideInset"
+            android:scrollbars="vertical"
+            android:scrollbarTrackVertical="@color/darkAccent"
+            android:scrollbarSize="7sp"
             >
 
 
