@@ -9,6 +9,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -53,18 +54,14 @@ public class GpsListener implements LocationListener
 
             //Permission checks
            if
-           (
-                   permission()
-           )
+           (!permission())
            {
                activity.requestPermissions
                        (
                                 new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
                                 42069
                        );
-               //return;
            }
-
 
             try
             {
@@ -77,6 +74,19 @@ public class GpsListener implements LocationListener
                 lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 1, this);
             }
             catch (Exception e) {Log.e("GPS", "Could not start GPS: " + e);}
+
+            try
+            {
+                boolean gps = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
+                boolean net = lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+
+                if(!(gps || net))
+                    Toast.makeText(activity, "Please enable GPS", Toast.LENGTH_SHORT).show();
+            }
+            catch (Exception e)
+            {
+                Toast.makeText(activity, "Please check your GPS", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
