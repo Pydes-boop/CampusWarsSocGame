@@ -70,6 +70,9 @@ public class MapsFragment extends Fragment implements GpsObserver
             //Zoom in
             googleMap.animateCamera( CameraUpdateFactory.zoomTo( 17.0f ) );
 
+            //TODO: get the actual lecture halls
+            //only possible when the calls exist
+
             /*
             //NICE TO HAVE
             //DRAW BORDERS
