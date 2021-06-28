@@ -9,6 +9,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.socgame.campuswars_app.R;
 
@@ -17,6 +19,7 @@ import com.socgame.campuswars_app.R;
 */
 public class TerritoryFragment extends Fragment //implements View.OnClickListener
 {
+    View fragmentView = null;
 
     //TODO: create an update method which calls the server
 
@@ -36,9 +39,10 @@ public class TerritoryFragment extends Fragment //implements View.OnClickListene
     {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_territory, container, false);
+        this.fragmentView = view;
 
-        Button next = (Button) view.findViewById(R.id.challengeButton);
-        next.setOnClickListener(new View.OnClickListener() {
+        Button challenge = (Button) view.findViewById(R.id.challengeButton);
+        challenge.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 Intent myIntent = new Intent(view.getContext(), QuizActivity.class);
                 //We use bundles to give parameters to our QuizActivity
@@ -52,6 +56,33 @@ public class TerritoryFragment extends Fragment //implements View.OnClickListene
             }
         });
 
+
+        Button rally = (Button) view.findViewById(R.id.raidButton);
+        rally.setOnClickListener(new View.OnClickListener()
+        {
+            public void onClick(View view)
+            {
+                //TODO: sent notification backend/firebase
+                Toast.makeText(getActivity(), "You sent for your troops", Toast.LENGTH_LONG).show();
+            }
+        });
+
+        //TODO: get actual info from server
+        setHallInfo("Current Lecture Hall", "Owning Team Name", "Current Lecture");
+
         return view;
+    }
+
+    public void setHallInfo(String name, String owner, String lecture)//TODO: maybe add color?
+    {
+        TextView nameText = fragmentView.findViewById(R.id.lectureHall);
+        nameText.setText(name);
+        //nameText.setColor(color);
+
+        TextView ownerText = fragmentView.findViewById(R.id.textCurrentOwner);
+        ownerText.setText(owner);
+
+        TextView lectureText = fragmentView.findViewById(R.id.textCurrentLecture);
+        lectureText.setText(lecture);
     }
 }
