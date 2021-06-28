@@ -11,6 +11,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -23,6 +25,11 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.socgame.campuswars_app.R;
 import com.socgame.campuswars_app.Sensor.GpsObserver;
+import com.socgame.campuswars_app.communication.BackendCom;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
    * Displays the world map
@@ -37,6 +44,7 @@ public class MapsFragment extends Fragment implements GpsObserver
     private LatLng position = new LatLng(48.2650,11.6716);//Using campus as default/fallback position;
     private GoogleMap map;
     private Marker localPos;//TODO: maybe google maps has an integrated way to do that?
+    BackendCom bCom;
 
     //Thanks StackOverflow
     //https://stackoverflow.com/questions/19076124/android-map-marker-color
@@ -45,6 +53,48 @@ public class MapsFragment extends Fragment implements GpsObserver
         float[] hsv = new float[3];
         Color.colorToHSV(Color.parseColor(hexColor), hsv);
         return BitmapDescriptorFactory.defaultMarker(hsv[0]);
+    }
+
+    private Response.Listener<JSONArray> roomfinderGetListener(){
+        return new Response.Listener<JSONArray>() {
+            @Override
+            public void onResponse(JSONArray response) {
+                Log.d("REPONSE", "GOT A RESPONE");
+                try{
+                    for(int i = 0; i < response.length(); i++){
+                            //Getting JSONs
+                            JSONObject lectureHall = (JSONObject) response.get(i);
+                            JSONObject location = (JSONObject) lectureHall.get("location");
+                            JSONObject occupier = (JSONObject) lectureHall.get("occupier");
+
+                            //Getting Data
+                            double lat = location.getDouble("latitude");
+                            double lon = location.getDouble("longitude");
+
+                            String lecture = lectureHall.getString("currentLecture");
+                            String name = lectureHall.getString("roomName");
+
+                            String color = occupier.getString("color");
+
+                            //TODO fix Http Call and switch lat with lon
+                            //Adding Lecture Hall
+                            addLectureHall(lon, lat, color, name, lecture);
+                    }
+                } catch (JSONException e) {
+                    Log.d("roomFinderGetListener: ", e.toString());
+                }
+            }
+        };
+    }
+
+    private Response.ErrorListener httpErrorListener(){
+        return new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                //Error Handling
+                Log.d("HTTP", "Error: " + error.getMessage());
+            }
+        };
     }
 
     private OnMapReadyCallback callback = new OnMapReadyCallback()
@@ -70,9 +120,8 @@ public class MapsFragment extends Fragment implements GpsObserver
             //Zoom in
             googleMap.animateCamera( CameraUpdateFactory.zoomTo( 17.0f ) );
 
-            //TODO: get the actual lecture halls
-            //only possible when the calls exist
-
+            Log.d("Test", "Starting HTTP CALL FOR ROOMS");
+            bCom.roomDetectionGet(roomfinderGetListener(), httpErrorListener());
             /*
             //NICE TO HAVE
             //DRAW BORDERS
@@ -164,6 +213,8 @@ public class MapsFragment extends Fragment implements GpsObserver
     {
         super.onViewCreated(view, savedInstanceState);
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
+        this.bCom = BackendCom.getInstance(this.getContext());
+
 
         if (mapFragment != null)
         {
