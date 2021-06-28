@@ -112,7 +112,6 @@ public class BackendCom {
     }
 
     public void roomDetectionGet(Response.Listener<JSONArray> listener, Response.ErrorListener error){
-        Log.d("roomDETECTIONGET", "IS THIS WORKING?");
         http.getRequest("v1/roomfinder", listener, error);
     }
 
