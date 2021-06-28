@@ -165,18 +165,45 @@
             android:layout_weight="0.2" >
         </Space>
 
-        <Button
-            android:id="@+id/raidButton"
-            android:layout_width="150sp"
-            android:layout_height="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="40sp"
+            android:orientation="horizontal">
 
-            android:layout_marginBottom="20sp"
+            <Button
+                android:id="@+id/raidButton"
+                android:layout_width="150sp"
+                android:layout_height="match_parent"
 
-            android:background="@drawable/button_rounded_highlight"
+                android:layout_marginBottom="0sp"
 
-            android:elevation="15sp"
-            android:text="Rally Team"
-            android:textColor="@color/textInverted" />
+                android:layout_weight="1"
+
+                android:background="@drawable/button_rounded_highlight"
+                android:elevation="15sp"
+                android:text="Rally Team"
+                android:textColor="@color/textInverted" />
+
+            <TextView
+                android:id="@+id/textView3"
+                android:layout_width="0sp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <Button
+                android:id="@+id/logoutButton"
+                android:layout_width="150sp"
+                android:layout_height="match_parent"
+
+                android:layout_marginBottom="0sp"
+
+                android:layout_weight="1"
+
+                android:background="@drawable/button_rounded_highlight"
+                android:elevation="15sp"
+                android:text="logout"
+                android:textColor="@color/textInverted" />
+        </LinearLayout>
 
         <Space
             android:layout_width="1dp"
