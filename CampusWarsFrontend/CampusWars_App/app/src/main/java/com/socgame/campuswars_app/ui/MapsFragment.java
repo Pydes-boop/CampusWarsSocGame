@@ -59,7 +59,6 @@ public class MapsFragment extends Fragment implements GpsObserver
         return new Response.Listener<JSONArray>() {
             @Override
             public void onResponse(JSONArray response) {
-                Log.d("REPONSE", "GOT A RESPONE");
                 try{
                     for(int i = 0; i < response.length(); i++){
                             //Getting JSONs
@@ -120,7 +119,6 @@ public class MapsFragment extends Fragment implements GpsObserver
             //Zoom in
             googleMap.animateCamera( CameraUpdateFactory.zoomTo( 17.0f ) );
 
-            Log.d("Test", "Starting HTTP CALL FOR ROOMS");
             bCom.roomDetectionGet(roomfinderGetListener(), httpErrorListener());
             /*
             //NICE TO HAVE
