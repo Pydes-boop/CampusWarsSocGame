@@ -56,13 +56,12 @@ public class MapsFragment extends Fragment implements GpsObserver {
         return new Response.Listener<JSONArray>() {
             @Override
             public void onResponse(JSONArray response) {
-                Log.d("REPONSE", "GOT A RESPONE");
-                try {
-                    for (int i = 0; i < response.length(); i++) {
-                        //Getting JSONs
-                        JSONObject lectureHall = (JSONObject) response.get(i);
-                        JSONObject location = (JSONObject) lectureHall.get("location");
-                        JSONObject occupier = (JSONObject) lectureHall.get("occupier");
+                try{
+                    for(int i = 0; i < response.length(); i++){
+                            //Getting JSONs
+                            JSONObject lectureHall = (JSONObject) response.get(i);
+                            JSONObject location = (JSONObject) lectureHall.get("location");
+                            JSONObject occupier = (JSONObject) lectureHall.get("occupier");
 
                         //Getting Data
                         double lat = location.getDouble("latitude");
@@ -99,26 +98,13 @@ public class MapsFragment extends Fragment implements GpsObserver {
         public void onMapReady(GoogleMap googleMap) {
             map = googleMap;
 
-
             //Make it viusally fit our UI style
             googleMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(getContext(), R.raw.mapsstyle_json));
 
-
             updatePositionMarker();
-            /*
-            //Set marker at pos
-            localPos =  googleMap.addMarker(new MarkerOptions().position(position).title("You"));
 
-            //Set cam to pos
-            googleMap.moveCamera(CameraUpdateFactory.newLatLng(position));
-            
-            //Zoom in
-            googleMap.animateCamera( CameraUpdateFactory.zoomTo( 17.0f ) );
-            */
-
-
-            Log.d("Test", "Starting HTTP CALL FOR ROOMS");
             bCom.roomDetectionGet(roomfinderGetListener(), httpErrorListener());
+
             /*
             //NICE TO HAVE
             //DRAW BORDERS
@@ -198,7 +184,7 @@ public class MapsFragment extends Fragment implements GpsObserver {
             mapFragment.setMenuVisibility(false);
             mapFragment.setHasOptionsMenu(false);
 
-            register(getActivity());//Also creates instance of gps listener if needed and autoupdates itself
+            register(getActivity());//Also creates instance of gps listener if needed and auto updates itself
         }
 
     }
