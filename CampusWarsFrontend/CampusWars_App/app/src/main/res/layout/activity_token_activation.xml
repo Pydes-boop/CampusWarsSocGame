@@ -37,8 +37,8 @@
 
     <ImageView
         android:id="@+id/imageView3"
-        android:layout_width="280dp"
-        android:layout_height="56dp"
+        android:layout_width="280sp"
+        android:layout_height="56sp"
         android:layout_marginBottom="20dp"
         app:layout_constraintBottom_toTopOf="@+id/imageView4"
         app:layout_constraintEnd_toEndOf="parent"
@@ -48,8 +48,8 @@
 
     <ImageView
         android:id="@+id/imageView"
-        android:layout_width="400dp"
-        android:layout_height="100dp"
+        android:layout_width="400sp"
+        android:layout_height="100sp"
         app:layout_constraintBottom_toTopOf="@+id/imageView2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.454"
@@ -60,8 +60,8 @@
 
     <ImageView
         android:id="@+id/imageView4"
-        android:layout_width="300dp"
-        android:layout_height="187.5dp"
+        android:layout_width="300sp"
+        android:layout_height="187.5sp"
         android:layout_marginBottom="52dp"
         app:layout_constraintBottom_toTopOf="@+id/linearLayout"
         app:layout_constraintEnd_toEndOf="parent"
@@ -71,8 +71,8 @@
 
     <ImageView
         android:id="@+id/imageView2"
-        android:layout_width="300dp"
-        android:layout_height="60dp"
+        android:layout_width="300sp"
+        android:layout_height="60sp"
         android:layout_marginBottom="52dp"
         app:layout_constraintBottom_toTopOf="@+id/imageView3"
         app:layout_constraintEnd_toEndOf="parent"
@@ -83,26 +83,26 @@
     <LinearLayout
         android:id="@+id/linearLayout"
         android:layout_width="0dp"
-        android:layout_height="60dp"
+        android:layout_height="60sp"
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.454"
-        app:layout_constraintStart_toStartOf="parent" >
+        app:layout_constraintStart_toStartOf="parent">
 
         <Button
             android:id="@+id/activation_website"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Zur Website"
+            android:background="@drawable/button_rounded_highlight"
 
-            android:textColor="@color/textInverted"
-            android:background="@drawable/button_rounded_highlight"/>
+            android:text="Zur Website"
+            android:textColor="@color/textInverted" />
 
         <TextView
             android:id="@+id/textView2"
-            android:layout_width="10dp"
+            android:layout_width="10sp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:text="TextView" />
@@ -112,9 +112,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="      Weiter      "
+            android:background="@drawable/button_rounded_highlight"
 
-            android:textColor="@color/textInverted"
-            android:background="@drawable/button_rounded_highlight"/>
+            android:text="      Weiter      "
+            android:textColor="@color/textInverted" />
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
