@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.socgame.campuswars_app.R;
@@ -29,6 +30,8 @@ import java.util.List;
  */
 public class TeamFragment extends Fragment
 {
+    View fragmentView = null;
+
     public TeamFragment()
     {
         // Required empty public constructor
@@ -41,11 +44,14 @@ public class TeamFragment extends Fragment
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+    {
         Context ctx = this.getContext();
 
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_team, container, false);
+        this.fragmentView = view;
+
         ListView listView = view.findViewById(R.id.memberList);
 
         Button logout = (Button) view.findViewById(R.id.logoutButton);
@@ -67,10 +73,8 @@ public class TeamFragment extends Fragment
             "Dummy Name 10",
         };
 
-        //TODO: Create custom Array Adapter
-        //ArrayAdapter<String> itemsAdapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_activated_1, array);
-        ArrayAdapter<String> itemsAdapter = new ArrayAdapter<String>(getContext(), R.layout.teammember, array);
-        listView.setAdapter(itemsAdapter);
+        setMembers(array);
+        setTeamInfo("Your Team Name", 5, 10);
 
         //Logout Button
         logout.setOnClickListener(new View.OnClickListener() {
@@ -87,5 +91,28 @@ public class TeamFragment extends Fragment
         });
 
         return view;
+    }
+
+    public void setMembers(String[] names)
+    {
+        ListView listView = fragmentView.findViewById(R.id.memberList);
+
+        //TODO: Create custom Array Adapter (not needed, unless we show more info)
+        //ArrayAdapter<String> itemsAdapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_activated_1, array);
+        ArrayAdapter<String> itemsAdapter = new ArrayAdapter<String>(getContext(), R.layout.teammember, names);
+        listView.setAdapter(itemsAdapter);
+    }
+
+    public void setTeamInfo(String name, int memberCount, int controlledHalls)//TODO: maybe add team color?
+    {
+        TextView nameText = fragmentView.findViewById(R.id.teamName);
+        nameText.setText(name);
+        //nameText.setTextColor();
+
+        TextView memberText = fragmentView.findViewById(R.id.textCurrentMembers);
+        memberText.setText(memberCount + " Members");
+
+        TextView controlText = fragmentView.findViewById(R.id.textCurrentControll);
+        controlText.setText(controlledHalls + "%");//WILL THIS BE ABSOLUTE OR PERCENT?
     }
 }
