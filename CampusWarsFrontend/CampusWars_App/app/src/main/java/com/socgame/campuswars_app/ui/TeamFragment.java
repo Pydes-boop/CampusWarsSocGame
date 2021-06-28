@@ -14,6 +14,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.socgame.campuswars_app.R;
@@ -87,6 +88,16 @@ public class TeamFragment extends Fragment
 
                 Intent myIntent = new Intent(view.getContext(), LoginActivity.class);
                 startActivityForResult(myIntent, 0);
+            }
+        });
+
+        Button rally = (Button) view.findViewById(R.id.raidButton);
+        rally.setOnClickListener(new View.OnClickListener()
+        {
+            public void onClick(View view)
+            {
+                //TODO: sent notification backend/firebase
+                Toast.makeText(getActivity(), "You sent for your troops", Toast.LENGTH_LONG).show();
             }
         });
 
