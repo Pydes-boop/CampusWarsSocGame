@@ -4,7 +4,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -39,46 +45,37 @@ import org.json.JSONObject;
    *
    * written by Jonas
 */
-public class MapsFragment extends Fragment implements GpsObserver
-{
-    private LatLng position = new LatLng(48.2650,11.6716);//Using campus as default/fallback position;
+public class MapsFragment extends Fragment implements GpsObserver {
+    private LatLng position = new LatLng(48.2650, 11.6716);//Using campus as default/fallback position;
     private GoogleMap map;
     private Marker localPos;//TODO: maybe google maps has an integrated way to do that?
     BackendCom bCom;
 
-    //Thanks StackOverflow
-    //https://stackoverflow.com/questions/19076124/android-map-marker-color
-    private static BitmapDescriptor hexToHSV(String hexColor)
-    {
-        float[] hsv = new float[3];
-        Color.colorToHSV(Color.parseColor(hexColor), hsv);
-        return BitmapDescriptorFactory.defaultMarker(hsv[0]);
-    }
 
-    private Response.Listener<JSONArray> roomfinderGetListener(){
+    private Response.Listener<JSONArray> roomfinderGetListener() {
         return new Response.Listener<JSONArray>() {
             @Override
             public void onResponse(JSONArray response) {
                 Log.d("REPONSE", "GOT A RESPONE");
-                try{
-                    for(int i = 0; i < response.length(); i++){
-                            //Getting JSONs
-                            JSONObject lectureHall = (JSONObject) response.get(i);
-                            JSONObject location = (JSONObject) lectureHall.get("location");
-                            JSONObject occupier = (JSONObject) lectureHall.get("occupier");
+                try {
+                    for (int i = 0; i < response.length(); i++) {
+                        //Getting JSONs
+                        JSONObject lectureHall = (JSONObject) response.get(i);
+                        JSONObject location = (JSONObject) lectureHall.get("location");
+                        JSONObject occupier = (JSONObject) lectureHall.get("occupier");
 
-                            //Getting Data
-                            double lat = location.getDouble("latitude");
-                            double lon = location.getDouble("longitude");
+                        //Getting Data
+                        double lat = location.getDouble("latitude");
+                        double lon = location.getDouble("longitude");
 
-                            String lecture = lectureHall.getString("currentLecture");
-                            String name = lectureHall.getString("roomName");
+                        String lecture = lectureHall.getString("currentLecture");
+                        String name = lectureHall.getString("roomName");
 
-                            String color = occupier.getString("color");
+                        String color = occupier.getString("color");
 
-                            //TODO fix Http Call and switch lat with lon
-                            //Adding Lecture Hall
-                            addLectureHall(lon, lat, color, name, lecture);
+                        //TODO fix Http Call and switch lat with lon
+                        //Adding Lecture Hall
+                        addLectureHall(lon, lat, color, name, lecture);
                     }
                 } catch (JSONException e) {
                     Log.d("roomFinderGetListener: ", e.toString());
@@ -87,7 +84,7 @@ public class MapsFragment extends Fragment implements GpsObserver
         };
     }
 
-    private Response.ErrorListener httpErrorListener(){
+    private Response.ErrorListener httpErrorListener() {
         return new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
@@ -97,11 +94,9 @@ public class MapsFragment extends Fragment implements GpsObserver
         };
     }
 
-    private OnMapReadyCallback callback = new OnMapReadyCallback()
-    {
+    private OnMapReadyCallback callback = new OnMapReadyCallback() {
         @Override
-        public void onMapReady(GoogleMap googleMap)
-        {
+        public void onMapReady(GoogleMap googleMap) {
             map = googleMap;
 
 
@@ -109,8 +104,8 @@ public class MapsFragment extends Fragment implements GpsObserver
             googleMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(getContext(), R.raw.mapsstyle_json));
 
 
-            //same code in gps update
-
+            updatePositionMarker();
+            /*
             //Set marker at pos
             localPos =  googleMap.addMarker(new MarkerOptions().position(position).title("You"));
 
@@ -119,6 +114,8 @@ public class MapsFragment extends Fragment implements GpsObserver
             
             //Zoom in
             googleMap.animateCamera( CameraUpdateFactory.zoomTo( 17.0f ) );
+            */
+
 
             Log.d("Test", "Starting HTTP CALL FOR ROOMS");
             bCom.roomDetectionGet(roomfinderGetListener(), httpErrorListener());
@@ -147,11 +144,10 @@ public class MapsFragment extends Fragment implements GpsObserver
      * Add a marker of a lecture hall to the map.
      * Wrapper of identical method which uses the LatLng class for gps pos
      *
-     *
-     * @param lat latitude
-     * @param lon longitude
-     * @param color marker color as hex example: "#4275A8"
-     * @param name name of lecture hall
+     * @param lat     latitude
+     * @param lon     longitude
+     * @param color   marker color as hex example: "#4275A8"
+     * @param name    name of lecture hall
      * @param lecture current lecture title, alternatively any sub-headline
      * @return reference of the Marker. Call Marker.remove() to delete lecture hall
      */
@@ -163,9 +159,9 @@ public class MapsFragment extends Fragment implements GpsObserver
     /**
      * Add a marker of a lecture hall to the map
      *
-     * @param pos gps location
-     * @param color marker color as hex example: "#4275A8"
-     * @param name name of lecture hall
+     * @param pos     gps location
+     * @param color   marker color as hex example: "#4275A8"
+     * @param name    name of lecture hall
      * @param lecture current lecture title, alternatively any sub-headline
      * @return reference of the Marker. Call Marker.remove() to delete lecture hall
      */
@@ -173,31 +169,11 @@ public class MapsFragment extends Fragment implements GpsObserver
     {
         //TODO: maybe safe locally for further analysis?
 
+        MarkerOptions options = customMarker(pos, name, lecture, color, R.drawable.ic_tower_solid, 2);//defaultMarker(pos, name, lecture, color);
 
-        String fallbackColor = "#4275A8";
+        Marker marker = map.addMarker(options);
 
-        BitmapDescriptor markerIcon;
-        //BitmapDescriptor towerIcon = BitmapDescriptorFactory.fromResource(R.drawable.ic_territory);
-
-        try //Check color viability
-        {
-            markerIcon = hexToHSV(color);
-        }
-        catch (Exception e)
-        {
-            Log.e("GPS", "Could not parse color " + color);
-            markerIcon = hexToHSV(fallbackColor);
-        }
-
-
-        Marker marker = map.addMarker
-                (
-                        new MarkerOptions().position(pos).title(name)
-                                .icon(markerIcon)
-                                .snippet(lecture)
-                );
-
-        return  marker;
+        return marker;
     }
 
     @Nullable
@@ -216,8 +192,7 @@ public class MapsFragment extends Fragment implements GpsObserver
         this.bCom = BackendCom.getInstance(this.getContext());
 
 
-        if (mapFragment != null)
-        {
+        if (mapFragment != null) {
             mapFragment.getMapAsync(callback);
 
             mapFragment.setMenuVisibility(false);
@@ -231,7 +206,7 @@ public class MapsFragment extends Fragment implements GpsObserver
     @Override
     public void OnLocationUpdate(LatLng loc)
     {
-        if(loc == null)
+        if (loc == null)
         {
             Log.e("GPS", this + " recieved null location");
         }
@@ -240,8 +215,12 @@ public class MapsFragment extends Fragment implements GpsObserver
 
         Log.d("GPS", this + " location updated to " + loc.latitude + ", " + loc.longitude);
 
-        if(map != null)
-        {
+        updatePositionMarker();
+    }
+
+    private void updatePositionMarker()
+    {
+        if (map != null) {
 
             //TODO: smooth camera
             //TODO: dont always move camera
@@ -250,14 +229,98 @@ public class MapsFragment extends Fragment implements GpsObserver
             //move camera
             map.moveCamera(CameraUpdateFactory.newLatLng(position));
             //Zoom in
-            map.animateCamera( CameraUpdateFactory.zoomTo( 17.0f ) );
+            map.animateCamera(CameraUpdateFactory.zoomTo(17.0f));
 
-
-            if(localPos != null)
-            {
+            //remove outdated marker
+            if (localPos != null)
                 localPos.remove();
-                localPos =  map.addMarker(new MarkerOptions().position(position).title("You"));
-            }
+
+            MarkerOptions options = customMarker(position, "You", "You are here", "#000000", R.drawable.ic_human, 2);
+            localPos = map.addMarker(options);
         }
+    }
+
+    //Marker (color) logic
+
+    private MarkerOptions customMarker(LatLng pos, String title, String desc, String color, int drawable, float scale)
+    {
+        //Load icon
+        //TODO: check for garbage input drawable
+        BitmapDrawable bitmapDrawable = (BitmapDrawable) getResources().getDrawable(drawable).mutate();
+        Bitmap bitmap = bitmapDrawable.getBitmap();
+
+        //Rescale custom marker icon
+        //https://stackoverflow.com/questions/14851641/change-marker-size-in-google-maps-api-v2
+        bitmap = Bitmap.createScaledBitmap(bitmap, (int)(bitmap.getWidth() * scale), (int)(bitmap.getHeight() * scale), true);
+
+        //Recolor icon
+        try //Check color viability
+        {
+            bitmap = tintBitmap(bitmap, hexToColor(color));
+        }
+        catch (Exception e)
+        {
+            Log.e("GPS", "Could not parse color " + color);
+            bitmap = tintBitmap(bitmap, Color.BLUE);
+        }
+
+
+        BitmapDescriptor personIcon = BitmapDescriptorFactory.fromBitmap(bitmap);
+
+        //Add custom marker
+        MarkerOptions options = new MarkerOptions()
+                .position(pos)
+                .title("You")
+                .icon(personIcon)
+                .snippet("You are here");
+
+        return options;
+    }
+
+    private MarkerOptions defaultMarker(LatLng pos, String title, String desc, String color)
+    {
+        BitmapDescriptor icon = null;
+        try //Check color viability
+        {
+            icon = BitmapDescriptorFactory.defaultMarker(hexToHue(color));
+        }
+        catch (Exception e)
+        {
+            Log.e("GPS", "Could not parse color " + color);
+            icon = BitmapDescriptorFactory.defaultMarker(Color.BLACK);
+        }
+
+
+        return new MarkerOptions()
+                .position(pos)
+                .title(title)
+                .icon(icon)
+                .snippet(desc);
+    }
+
+
+    //Thanks StackOverflow
+    //https://stackoverflow.com/questions/19076124/android-map-marker-color
+    private static float hexToHue(String hexColor)
+    {
+        float[] hsv = new float[3];
+        Color.colorToHSV(Color.parseColor(hexColor), hsv);
+        return hsv[0];//BitmapDescriptorFactory.defaultMarker(hsv[0]);
+    }
+
+    private static int hexToColor(String hexColor)
+    {
+        return Color.parseColor(hexColor);
+    }
+
+    //https://stackoverflow.com/questions/6331906/how-to-tint-a-bitmap-to-a-solid-color
+    private static Bitmap tintBitmap(Bitmap bitmap, int color)
+    {
+        Paint paint = new Paint();
+        paint.setColorFilter(new PorterDuffColorFilter(color, PorterDuff.Mode.SRC_IN));
+        Bitmap bitmapResult = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmapResult);
+        canvas.drawBitmap(bitmap, 0, 0, paint);
+        return bitmapResult;
     }
 }

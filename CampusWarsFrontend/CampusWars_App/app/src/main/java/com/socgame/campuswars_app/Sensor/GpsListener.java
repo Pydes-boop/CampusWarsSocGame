@@ -81,11 +81,11 @@ public class GpsListener implements LocationListener
                 boolean net = lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 
                 if(!(gps || net))
-                    Toast.makeText(activity, "Please enable GPS", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(activity, "Please enable GPS", Toast.LENGTH_LONG).show();
             }
             catch (Exception e)
             {
-                Toast.makeText(activity, "Please check your GPS", Toast.LENGTH_SHORT).show();
+                Toast.makeText(activity, "Please check your GPS", Toast.LENGTH_LONG).show();
             }
         }
     }
@@ -210,6 +210,8 @@ public class GpsListener implements LocationListener
     public void onProviderDisabled(@NonNull String provider)
     {
         Log.d("GPS", "Could not use provider " + provider);
+
+        Toast.makeText(activity, "Location: " + provider + " disabled. Please turn it on again!", Toast.LENGTH_LONG).show();
     }
 
     @SuppressLint("MissingPermission")
@@ -219,7 +221,11 @@ public class GpsListener implements LocationListener
         try
         {
             if(permission())
+            {
                 lm.requestLocationUpdates(provider, 1000, 1, this);
+
+                Toast.makeText(activity, "Location: " + provider + " enabled", Toast.LENGTH_LONG).show();
+            }
         }
         catch (Exception e) {}
     }
