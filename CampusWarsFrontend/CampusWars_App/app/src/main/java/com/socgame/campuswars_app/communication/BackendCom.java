@@ -111,10 +111,14 @@ public class BackendCom {
         }
     }
 
-    public boolean roomDetection(){
-        //empty method stub
-        //roomDetection needs to be directly done in the activity as we want to instantly use the data when we get it
-        return false;
+    public void roomDetectionGet(Response.Listener<JSONArray> listener, Response.ErrorListener error){
+        Log.d("roomDETECTIONGET", "IS THIS WORKING?");
+        http.getRequest("v1/roomfinder", listener, error);
+    }
+
+    public void roomDetectionPost(Response.Listener<JSONArray> listener, Response.ErrorListener error){
+        //TODO
+        //http.getRequest("v1/roomfinder", listener, error);
     }
 
     public boolean quiz(){
