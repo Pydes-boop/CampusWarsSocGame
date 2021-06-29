@@ -139,6 +139,21 @@ def get_users_of_lecture(lecture_id):
 def get_full_name_of_current_lecture_in_room(room_id):
     return "SoG: S21"
 
+def add_new_teams(team_list):
+    for t in team_list:
+        if not add_team(t):
+            return False, t
+    return True, None
+
+
+def add_team(member_list):
+    item = {
+        "name": "teamname",
+        "colour": "#333333",
+        "term": get_current_term(),
+        "members": member_list,
+    }
+    return mongo.db.teams.insert_one(item).acknowledged
 
 if __name__ == '__main__':
     pass
