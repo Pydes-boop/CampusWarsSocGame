@@ -142,11 +142,16 @@ def get_full_name_of_current_lecture_in_room(room_id):
     lecture = mongo.db.lecture.find_one({"roomID": room_id, "term": get_current_term(),
                                          "timetable": {"$elemMatch": {"start": {"$lt": current_time[0]},
                                                                       "end": {"$gte": current_time[0]},
+
                                                                       "day": current_time[1]}}})
-    if lecture is None:
-        return None
+
     return "SoG: S21"
-    # return lecture["name"] + ": " + lecture["term"]
+
+
+# if lecture is None:
+#     return None
+
+# return lecture["name"] + ": " + lecture["term"]
 
 
 def add_new_teams(team_list):
