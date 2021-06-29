@@ -145,7 +145,8 @@ def get_full_name_of_current_lecture_in_room(room_id):
                                                                       "day": current_time[1]}}})
     if lecture is None:
         return None
-    return lecture["name"] + ": " + lecture["term"]
+    return "SoG: S21"
+    # return lecture["name"] + ": " + lecture["term"]
 
 
 def add_new_teams(team_list):
