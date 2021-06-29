@@ -25,7 +25,7 @@ RUN pip install --upgrade pip
 RUN pip install cython
 RUN pip install scipy
 RUN pip install numpy
-
+RUN pip install pulp
 
 RUN pip install pandas
 
