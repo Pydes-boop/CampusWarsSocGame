@@ -8,7 +8,7 @@ def create_groups():
     # todo: @marina I need the saved lectures with its attendants
     lectures = {"Audiokommunikation: 21S": ["uid1", "uid2", "uid3"],
                 "Didaktisches und pädagogisches Training für Tutoren (IN9028): 21S": ["uid3", "uid5"],
-                "Echtzeit-Computergrafik (IN0038): 21S": ["uid1", "uid2", "uid4", "uid5"]}
+                "Echtzeit-Computergrafik (IN0038): 21S": ["uid1", "uid2", "uid4", "uid5"]} # remove this line after db integration
     social_network = nx.Graph()
     for title, attendants in lectures.items():
         social_network.add_nodes_from(attendants)
@@ -49,7 +49,7 @@ def create_groups():
     for group in possible_groups:
         if x[group].value() == 1.0:
             user_groups.append(group)
-    user_groups = [["uid1", "uid3", "uid5"], ["udi2", "uid4"]]
+    user_groups = [["uid1", "uid3", "uid5"], ["udi2", "uid4"]] # remove this line after db integration
     #todo: @Robin teamname generator and color generator fills data
     user_groups = {"Teamname1": ["uid1", "uid3", "uid5"], "Teamname2": ["udi2", "uid4"]}
     group_colors = {"Teamname1": "rot", "Teamname2": "blau"}
