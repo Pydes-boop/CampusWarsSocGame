@@ -12,6 +12,7 @@ mongoengine = "*"
 flask-pymongo = "*"
 networkx = "*"
 numpy = "*"
+pulp = "*"
 
 [dev-packages]
 
