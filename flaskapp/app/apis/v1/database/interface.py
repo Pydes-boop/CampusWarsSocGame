@@ -101,8 +101,7 @@ def add_question_to_quiz(question, right_answer, wrong_answers, quiz_id):
 def get_current_quizzes(room_id):
     if isinstance(room_id, str):
         room_id = ObjectId(room_id)
-    current_time = get_current_time_and_day
-    day = get_current_day()
+    current_time = get_current_time_and_day()
     index_lecture = mongo.db.lecture.find_one({"roomID": room_id, "term": get_current_term(),
                                                "timetable": {"$elemMatch": {"start": {"$lt": current_time[0]},
                                                                             "end": {"$gte": current_time[0]},
@@ -137,7 +136,17 @@ def get_users_of_lecture(lecture_id):
 
 # todo marina
 def get_full_name_of_current_lecture_in_room(room_id):
-    return "SoG: S21"
+    if isinstance(room_id, str):
+        room_id = ObjectId(room_id)
+    current_time = get_current_time_and_day()
+    lecture = mongo.db.lecture.find_one({"roomID": room_id, "term": get_current_term(),
+                                         "timetable": {"$elemMatch": {"start": {"$lt": current_time[0]},
+                                                                      "end": {"$gte": current_time[0]},
+                                                                      "day": current_time[1]}}})
+    if lecture is None:
+        return None
+    return lecture["name"] + ": " + lecture["term"]
+
 
 def add_new_teams(team_list):
     for t in team_list:
@@ -154,6 +163,7 @@ def add_team(member_list):
         "members": member_list,
     }
     return mongo.db.teams.insert_one(item).acknowledged
+
 
 if __name__ == '__main__':
     pass
