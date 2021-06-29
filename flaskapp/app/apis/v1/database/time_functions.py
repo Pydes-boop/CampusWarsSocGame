@@ -16,7 +16,7 @@ def get_current_time_and_day():
 
 
 def get_current_term():
-    today = datetime.date.today()
+    today = datetime.today()
     year = today.year % 100
     letter = ""
     if START_SUMMER_TERM <= today.month <= END_SUMMER_TERM:
