@@ -165,5 +165,9 @@ def add_team(member_list):
     return mongo.db.teams.insert_one(item).acknowledged
 
 
+def get_all_lecture_ids():
+    return list(mongo.db.lecture.find({}, {"_id": 1}))
+
+
 if __name__ == '__main__':
     pass
