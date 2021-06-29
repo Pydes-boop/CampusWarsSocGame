@@ -11,6 +11,8 @@ import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.BitmapDrawable;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -100,6 +102,7 @@ public class MapsFragment extends Fragment implements GpsObserver {
 
             //Make it viusally fit our UI style
             googleMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(getContext(), R.raw.mapsstyle_json));
+            googleMap.setBuildingsEnabled(true);
 
             updatePositionMarker();
 
@@ -206,16 +209,22 @@ public class MapsFragment extends Fragment implements GpsObserver {
 
     private void updatePositionMarker()
     {
-        if (map != null) {
+        if (map != null)
+        {
+            //Dont always move camera
+            Location locCam = latLngToLocation(map.getCameraPosition().target);
+            Location loc = latLngToLocation(position);
+            float distance = loc.distanceTo(locCam);
 
-            //TODO: smooth camera
-            //TODO: dont always move camera
+            if(distance < 100 || distance > 1000)
+            {
+                //TODO: smooth camera
 
-
-            //move camera
-            map.moveCamera(CameraUpdateFactory.newLatLng(position));
-            //Zoom in
-            map.animateCamera(CameraUpdateFactory.zoomTo(17.0f));
+                //move camera
+                map.moveCamera(CameraUpdateFactory.newLatLng(position));
+                //Zoom in
+                map.animateCamera(CameraUpdateFactory.zoomTo(17.0f));
+            }
 
             //remove outdated marker
             if (localPos != null)
@@ -308,5 +317,14 @@ public class MapsFragment extends Fragment implements GpsObserver {
         Canvas canvas = new Canvas(bitmapResult);
         canvas.drawBitmap(bitmap, 0, 0, paint);
         return bitmapResult;
+    }
+
+    //https://stackoverflow.com/questions/31099140/how-to-convert-lat-lng-to-a-location-variable
+    Location latLngToLocation(LatLng loc)
+    {
+        Location temp = new Location(LocationManager.GPS_PROVIDER);
+        temp.setLatitude(loc.latitude);
+        temp.setLongitude(loc.longitude);
+        return  temp;
     }
 }
