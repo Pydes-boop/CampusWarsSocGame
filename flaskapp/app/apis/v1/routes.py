@@ -64,9 +64,9 @@ class RoomFinder(Resource):
     def get(self):
         result = []
         r = lambda: random.randint(0, 255)
-        color = '#%02X%02X%02X' % (r(), r(), r())
         j = 1
         for i in get_all_rooms():
+            color = '#%02X%02X%02X' % (r(), r(), r())
             item = {
                 "location":
                     {"longitude": i["location"]["coordinates"][0],
