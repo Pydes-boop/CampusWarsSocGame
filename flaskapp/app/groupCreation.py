@@ -1,5 +1,7 @@
 import numpy as np
 import networkx as nx
+import pulp
+# used solution for wedding seating problem
 
 
 def create_groups():
@@ -21,7 +23,50 @@ def create_groups():
                     social_network.add_edge(users[i], users[j], weight=(1 / len(users)), counter=1)
     for u, v, d in social_network.edges(data=True):
         d['weight'] = d['weight']/d['counter']
-    # todo: @Felix please select a matching algorithm and implement it
+
+    max_groups = len(social_network.nodes)/5
+    max_group_size = 5
+
+    # create list of all possible tables
+    possible_groups = [tuple(c) for c in pulp.allcombinations(social_network.nodes, max_group_size)]
+
+    # create a binary variable to state that a table setting is used
+    x = pulp.LpVariable.dicts('table', possible_groups,
+                              lowBound=0,
+                              upBound=1,
+                              cat=pulp.LpInteger)
+    seating_model = pulp.LpProblem("Wedding-Seating-Model", pulp.LpMinimize)
+    seating_model += sum([happiness(group, social_network) * x[group] for group in possible_groups])
+
+    # specify the maximum number of groups
+    seating_model += sum([x[group] for group in possible_groups]) <= max_groups, \
+                     "Maximum_number_of_tables"
+    for user in social_network.nodes:
+        seating_model += sum([x[group] for group in possible_groups
+                             if user in group]) == 1, "Must_seat_%s" % user
+    seating_model.solve()
+    user_groups = []
+    for group in possible_groups:
+        if x[group].value() == 1.0:
+            user_groups.append(group)
     user_groups = [["uid1", "uid3", "uid5"], ["udi2", "uid4"]]
+    #todo: @Robin teamname generator and color generator fills data
+    user_groups = {"Teamname1": ["uid1", "uid3", "uid5"], "Teamname2": ["udi2", "uid4"]}
+    group_colors = {"Teamname1": "rot", "Teamname2": "blau"}
     # todo: @Marina: please fill the database with the user_groups{list{str}}
     pass
+
+
+def happiness(group, social_network):
+    """
+    find the happiness a group of people have inbetween themself
+    :param social_network:
+    :param group:
+    :return:
+    """
+    return_value = 0
+    for i in range(0, len(group) - 1):
+        for j in range(i+1, len(group)):
+            if social_network.has_edge(group[i], group[j]):
+                return_value += social_network[group[i]][group[j]]['weight']
+    return return_value
