@@ -125,7 +125,7 @@ class TeamState:
 
     def get_all_team_scores_in_room(self, room: str) -> Dict[str, int]:
         """"""
-        return dict((team, team[room]) for team in self.teams)
+        return dict((name, team[room]) for name, team in self.teams.items())
 
     def get_all_teams_for_all_rooms(self) -> Dict[str, Dict[str, int]]:
         return dict((room, self.get_all_team_scores_in_room(room)) for room in self.get_rooms())
