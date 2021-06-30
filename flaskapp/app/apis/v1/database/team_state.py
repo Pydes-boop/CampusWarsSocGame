@@ -83,7 +83,7 @@ class MultiplierWatchdog(dict, Dict[str, Room]):
         try:
             return super(MultiplierWatchdog, self).__getitem__(item)
         except KeyError:
-            room = Room(item, self.team_state.get_room_occupier(item))
+            room = Room(self.team_state.get_room_occupier(item), item)
             self[item] = room
         return room
 
