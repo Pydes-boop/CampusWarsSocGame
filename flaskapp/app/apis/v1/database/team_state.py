@@ -28,8 +28,9 @@ class Room:
     team: str
     multiplier: float
 
-    def __init__(self, team: str):
+    def __init__(self, team: str, room: str):
         self.team = team
+        self.room = room
         self.multiplier = 1.0
 
     def reset(self) -> None:
@@ -77,6 +78,14 @@ class MultiplierWatchdog(dict, Dict[str, Room]):
 
     def stop(self) -> None:
         self.running = False
+
+    def __getitem__(self, item: str) -> Room:
+        try:
+            return super(MultiplierWatchdog, self).__getitem__(item)
+        except KeyError:
+            room = Room(item, self.team_state.get_room_occupier(item))
+            self[item] = room
+        return room
 
 
 class Rooms(defaultdict, DefaultDict[str, int]):
@@ -139,7 +148,7 @@ class TeamState:
         m = max(all_team_scores.values())
         teams = [key for key, value in all_team_scores.items() if value == m]
         if not teams: return None
-        if len(teams) > 1: return self.mw[room].team
+        if len(teams) > 1 and room in self.mw: return self.mw[room].team
         return teams[0]
 
     def get_rooms(self) -> Set[str]:
