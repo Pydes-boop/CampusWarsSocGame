@@ -5,7 +5,7 @@ __author__ = "Robin 'r0w' Weiland"
 __date__ = "2021-06-25"
 __version__ = "0.0.1"
 
-__all__ = ('RoomQueue',)
+__all__ = ('LiveData',)
 
 from datetime import datetime
 from dataclasses import dataclass
@@ -15,8 +15,10 @@ from time import sleep
 from abc import ABCMeta, abstractmethod
 from os import urandom
 from base64 import b64encode
+from apis.v1.database.team_state import TeamState
+from operator import attrgetter
 
-from typing import Any, Optional, Dict, List
+from typing import Any, Union, Optional, Dict, List, Tuple
 
 LIFE_TIME_USER: int = 20
 REFRESH_MAX_USER: int = 40
@@ -70,18 +72,42 @@ class Game(TimedItem):
     players: List[User]
     results: List[int]
     Question: Optional[Dict[str, Any]]
+    readiness: List[bool]
 
     def __init__(self, game_id: str, players: List[User], question: Dict[str, Any]):
         self.game_id = game_id
         self.players = players
+        self.results = [-2, -2]
         self.question = question
+        self.readiness = [False, False]
+
+    def player_in_game(self, uid: str) -> bool:
+        return uid in map(attrgetter('uid'), self.players)
 
     @property
-    def ready(self):
-        return len(self.players) == 2
+    def ready(self) -> bool:
+        return all(self.readiness)
+
+    def set_ready(self, uid: str, state: bool = True) -> None:
+        self.readiness[self.get_player_id(uid)] = state
+
+    @property
+    def all_answered(self) -> bool:
+        return sum(self.results) >= 0
 
     def answer(self, pid: int, answer: str):
         pass  # TODO ask Marina how the questions look exactly
+
+    def get_player_id(self, uid: str) -> int:
+        return list(map(attrgetter('uid'), self.players)).index(uid)
+
+    def get_result_for_player(self, pid: int) -> str:
+        if self.results[pid] and not self.results[not pid]:
+            return 'WON'
+        if self.results[pid] and self.results[not pid]:
+            return 'TIE'
+        else:
+            return 'LOST'
 
 
 class TheGreatPurge(Thread):
@@ -107,7 +133,7 @@ class TheGreatPurge(Thread):
 class PurgeQueue(dict, Dict[str, Any], metaclass=ABCMeta):
     purge_thread: TheGreatPurge
 
-    def __init__(self, ):
+    def __init__(self):
         self.purge_thread = TheGreatPurge(self)
         super(PurgeQueue, self).__init__()
         self.purge_thread.start()
@@ -122,6 +148,12 @@ class PurgeQueue(dict, Dict[str, Any], metaclass=ABCMeta):
 
 
 class RoomQueue(PurgeQueue):
+    team_data: TeamState
+
+    def __init__(self, team_data: Optional[TeamState]):
+        self.team_data = team_data
+        super(RoomQueue, self).__init__()
+
     def __call__(self, uid: str, team: str, room: str) -> None:
         """Add new user."""
         if uid in self and room == self[uid].room == room:
@@ -136,6 +168,7 @@ class RoomQueue(PurgeQueue):
         purge_list = list()
         for uid, user, in self.items():
             if user.time < time:
+                if self.team_data: self.team_data.decrease_team_presence_in_room(team=user.team, room=user.room)
                 purge_list.append(uid)
                 count += 1
         for uid in purge_list: del self[uid]
@@ -158,13 +191,57 @@ class RoomQueue(PurgeQueue):
 
 
 class QuizQueue(RoomQueue):
-    pass
+    game_queue: 'GameQueue'
+
+    def __init__(self, game_queue: 'GameQueue'):
+        self.game_queue = game_queue
+        super(QuizQueue, self).__init__(None)
+
+    def __call__(self, uid: str, team: str, room: str) -> Optional[Tuple[str, Union[Game]]]:
+        """Do everything at once really..."""
+        if uid in self:
+            if game := self.game_queue.is_player_in_game(uid):  # player was added to a game before
+                del self[uid]
+                return 'game', game
+
+            if uid in self and room == self[uid].room == room:  # player adds another into a game
+                if opp := self.get_opponent(self[uid]):
+                    game = Game(game_id(), players=[self[uid], opp], question={})
+                    del self[uid], self[opp.uid]
+                    self.game_queue[game.game_id] = game
+                    return 'game-incomplete', game
+
+            self[uid].refresh()  # just a state refresh from a player that still wants to play
+        else:
+            self[uid] = User(uid, future(), team, room)  # a new player wants to join a game
+
+    def get_opponent(self, user: User) -> Optional[User]:
+        values = self.values()
+        shuffle(list(values))
+        for opp in values:
+            if opp.room == user.room and opp.team != user.team and not opp.freed:
+                return opp
+        else:
+            return None
 
 
 class GameQueue(PurgeQueue):
     def __call__(self, players, question):
         gid = game_id()
         self[gid] = Game(gid, players, question)
+
+    def is_player_in_game(self, uid: str) -> Optional[Game]:
+        for game in self.values():
+            if game.player_in_game(uid):
+                return game
+        else:
+            return None
+
+    def submit_answer(self, gid: str, pid: str, answer: int) -> None:
+        self[gid].results[pid] = answer
+
+    def close(self, gid: str):
+        del self[gid]
 
     def purge(self) -> int:
         count: int = 0
@@ -178,5 +255,22 @@ class GameQueue(PurgeQueue):
         return count
 
 
+class LiveData:
+    room_queue: RoomQueue
+    quiz_queue: QuizQueue
+    game_queue: GameQueue
+
+    def __init__(self, team_state: TeamState):
+        self.room_queue = RoomQueue(team_state)
+        self.game_queue = GameQueue()
+        self.quiz_queue = QuizQueue(self.game_queue)
+
+
 if __name__ == '__main__':
-    pass
+    game = Game('123',
+                [
+                    User('1234', 123, 'team1', 'MW-1'),
+                    User('124', 123, 'team2', 'MW-1')],
+                {}
+                )
+    print(game.get_player_id('124'))
