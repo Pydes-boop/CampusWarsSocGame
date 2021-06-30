@@ -64,7 +64,8 @@ class MultiplierWatchdog(Thread, dict, Dict[str, Room]):
 
     def check(self) -> None:
         for room, team in self.team_state.get_occupiers_for_all_rooms():
-            if team == self[room].team: self[room].increase()
+            if team == self[room].team:
+                self[room].increase()
             else:
                 self[room].team = team
                 self[room].reset()
@@ -125,7 +126,7 @@ class TeamState:
         return dict((room, self.get_all_team_scores_in_room(room)) for room in self.get_rooms())
 
     def get_occupiers_for_all_rooms(self) -> Dict[str, str]:
-        return dict((room, self.get_room_occupier(room) for room in self.get_rooms()))
+        return dict((room, self.get_room_occupier(room)) for room in self.get_rooms())
 
     def get_room_occupier(self, room: str) -> Optional[str]:
         """Get the team that occupies a certain room."""
