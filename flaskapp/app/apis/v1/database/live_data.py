@@ -200,12 +200,14 @@ class QuizQueue(RoomQueue):
     def __call__(self, uid: str, team: str, room: str) -> Optional[Tuple[str, Union[Game]]]:
         """Do everything at once really..."""
         if uid in self:
-            if game := self.game_queue.is_player_in_game(uid):  # player was added to a game before
+            game = self.game_queue.is_player_in_game(uid)
+            if game:  # player was added to a game before
                 del self[uid]
                 return 'game', game
 
             if uid in self and room == self[uid].room == room:  # player adds another into a game
-                if opp := self.get_opponent(self[uid]):
+                opp = self.get_opponent(self[uid])
+                if opp:
                     game = Game(game_id(), players=[self[uid], opp], question={})
                     del self[uid], self[opp.uid]
                     self.game_queue[game.game_id] = game
