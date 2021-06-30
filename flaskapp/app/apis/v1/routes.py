@@ -38,7 +38,7 @@ class RoomFinder(Resource):
         team_state.increase_team_presence_in_room(team=request.headers['team'], room=name)
         live_data.room_queue(uid=request.headers['uid'], team=request.headers['team'], room=name)
         room['occupancy'] = team_state.get_all_team_scores_in_room(name)
-        room['occupier'] = team_state.mw[name].time
+        room['occupier'] = team_state.mw[name].team
         room['multiplier'] = team_state.mw[name].multiplier
         return jsonify(room)
 

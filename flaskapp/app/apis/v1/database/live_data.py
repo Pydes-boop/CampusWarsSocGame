@@ -56,7 +56,7 @@ class TimedItem:
 @dataclass
 class User(TimedItem):
     life_time = LIFE_TIME_USER
-    REFRESH_MAX_USER = REFRESH_MAX_USER
+    refresh_max = REFRESH_MAX_USER
 
     uid: str
     time: int
