@@ -85,6 +85,16 @@ public class MapsFragment extends Fragment implements GpsObserver {
         };
     }
 
+    private Response.Listener<JSONArray> roomfinderPostListener() {
+        return new Response.Listener<JSONArray>() {
+            @Override
+            public void onResponse(JSONArray response) {
+                //TODO
+                //WRITE ROOM WE ARE IN INTO FIXED STORAGE OR SOMETHING?
+            }
+        };
+    }
+
     private Response.ErrorListener httpErrorListener() {
         return new Response.ErrorListener() {
             @Override
@@ -203,6 +213,8 @@ public class MapsFragment extends Fragment implements GpsObserver {
         position = loc;
 
         Log.d("GPS", this + " location updated to " + loc.latitude + ", " + loc.longitude);
+
+        //TODO ROOMFINDER CALL HERE?
 
         updatePositionMarker();
     }

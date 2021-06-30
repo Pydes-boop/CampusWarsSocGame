@@ -111,8 +111,8 @@ public class CampusCom {
                     XmlToJson xmlToJson = new XmlToJson.Builder(Response).build();
                     JSONObject lectures = xmlToJson.toJson();
 
-                    //BackendCom bCom = BackendCom.getInstance(ctx);
-                    //bCom.groups(lectures);
+                    BackendCom bCom = BackendCom.getInstance(ctx);
+                    bCom.groups(lectures);
 
                     Log.d("CampusCom", lectures.toString());
 

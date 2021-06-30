@@ -75,7 +75,9 @@ public class TokenActivationActivity extends AppCompatActivity {
 
                             Toast.makeText(ctx, "Success!", Toast.LENGTH_SHORT).show();
 
-                            //Now we know the token works so we get the lectures and automatically send them to backend in this method
+                            //Sending register to Backend
+                            bCom.register();
+                            //Now that we know Token works we get lectures and then also send those to backend
                             cCom.getLectures();
 
                             //Saving Logged in State

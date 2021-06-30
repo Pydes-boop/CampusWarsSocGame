@@ -42,12 +42,14 @@ public class HttpHeader {
         return header;
     }
 
+    //TODO FIX CALLS BECAUSE NO ONE EVER PROPERLY JUST GAVE ME AN EXAMPLE
+
     private void addUId(){
         SharedPreferences settings = ctx.getSharedPreferences("userdata", 0);
         String UID = settings.getString("UID", "empty");
         String name = settings.getString("name", "empty");
-        header.put("\"uid\"", "\"" + UID + "\"");
-        header.put("\"name\"", "\"" + name + "\"");
+        header.put("uid", "\"" + UID + "\"");
+        header.put("name", "\"" + name + "\"");
     }
 
     public void buildRoomFinderHeader(double latitude, double longitude){

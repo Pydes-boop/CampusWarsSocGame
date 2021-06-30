@@ -69,7 +69,7 @@ public class BackendCom {
     public void register(){
         HttpHeader head = new HttpHeader(ctx);
         try {
-            http.postRequest("register",head.getHeaders(), new Response.Listener<JSONArray>() {
+            http.postRequest("v1/register",head.getHeaders(), new Response.Listener<JSONArray>() {
                 @Override
                 public void onResponse(JSONArray Response) {
                     //On Response
@@ -92,7 +92,7 @@ public class BackendCom {
         HttpHeader head = new HttpHeader(this.ctx);
         try {
             head.buildPersonalLecturesHeader(lectures);
-            http.postRequest("lectures",head.getHeaders(), new Response.Listener<JSONArray>() {
+            http.postRequest("v1/lectures",head.getHeaders(), new Response.Listener<JSONArray>() {
                 @Override
                 public void onResponse(JSONArray Response) {
                     //On Response
