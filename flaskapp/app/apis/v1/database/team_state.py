@@ -12,20 +12,80 @@ from operator import itemgetter
 from collections import defaultdict
 from gzip import compress, decompress
 from pickle import dumps, loads
-from typing import Union, Iterable, DefaultDict
+from threading import Thread
+from time import sleep
+from dataclasses import dataclass
+from typing import Union, Optional, Iterable, DefaultDict, Dict
+
+MULTIPLIER_MAX: int = 2
+MULTIPLIER_INCREASE: float = 0.02
+MW_INTERVAL: int = 60
+
+
+@dataclass
+class Room:
+    room: str
+    team: str
+    multiplier: float
+
+    def __init__(self, team: str):
+        self.team = team
+        self.multiplier = 1.0
+
+    def reset(self) -> None:
+        self.multiplier = 1
+
+    def increase(self) -> float:
+        self.multiplier = max(1.0, min(self.multiplier + MULTIPLIER_INCREASE, MULTIPLIER_MAX))
+        return self.multiplier
+
+
+class MultiplierWatchdog(Thread, dict, Dict[str, Room]):
+    running: bool
+    current_interval: int
+
+    team_state: 'TeamState'
+    occupiers: Dict[str, Room]
+
+    def __init__(self, team_state: 'TeamState'):
+        self.current_interval = 0
+        self.running = True
+        super(MultiplierWatchdog, self).__init__(name='MultiplierWatchdog')
+        self.team_state = team_state
+        self.mw = defaultdict(lambda: None)
+
+    def run(self) -> None:
+        while self.running:
+            sleep(1)
+            self.current_interval += 1
+            if self.current_interval <= MW_INTERVAL:
+                self.current_interval = 0
+                self.check()
+
+    def check(self) -> None:
+        for room, team in self.team_state.get_occupiers_for_all_rooms():
+            if team == self[room].team: self[room].increase()
+            else:
+                self[room].team = team
+                self[room].reset()
+
+    def stop(self) -> None:
+        self.running = False
 
 
 class Rooms(defaultdict, DefaultDict[str, int]):
     def __init__(self):
         super(Rooms, self).__init__(int)
 
-    def increase(self, room: str, value: int = 1) -> None:
+    def increase(self, room: str, value: int = 1) -> int:
         """Increase the given team score. Defaults to 1"""
         self[room] += value
+        return self[room]
 
-    def decrease(self, room: str, value: int = 1) -> None:
+    def decrease(self, room: str, value: int = 1) -> int:
         """Decrease the given team score. Defaults to 1"""
         self[room] -= value
+        return self[room]
 
     def clear_scores(self) -> None:
         """Set all scores to zero. Do NOT confuse with `clear()`!"""
@@ -40,11 +100,14 @@ class Teams(defaultdict, DefaultDict[str, Rooms]):
 
 class TeamState:
     teams: Teams
+    mw: MultiplierWatchdog
 
-    __slots__ = ('teams',)
+    __slots__ = ('teams', 'mw',)
 
     def __init__(self, teams: Teams = None):
         self.teams = teams or Teams()
+        self.mw = MultiplierWatchdog(self)
+        self.mw.start()
 
     def __call__(self, team: str) -> None:
         """Create an empty team. Probably useless but it is here."""
@@ -54,11 +117,27 @@ class TeamState:
         """Get what score a team has in a certain room."""
         return self.teams[team][room]
 
-    def get_room_occupier(self, room: str) -> Iterable[str]:
+    def get_all_team_scores_in_room(self, room: str) -> Dict[str, int]:
+        """"""
+        return dict((team, team[room]) for team in self.teams)
+
+    def get_all_teams_for_all_rooms(self) -> Dict[str, Dict[str, int]]:
+        return dict((room, self.get_all_team_scores_in_room(room)) for room in self.get_rooms())
+
+    def get_occupiers_for_all_rooms(self) -> Dict[str, str]:
+        return dict((room, self.get_room_occupier(room) for room in self.get_rooms()))
+
+    def get_room_occupier(self, room: str) -> Optional[str]:
         """Get the team that occupies a certain room."""
         all_team_scores = dict(zip(self.teams.keys(), map(itemgetter(room), self.teams.values())))
         m = max(all_team_scores.values())
-        return [key for key, value in all_team_scores.items() if value == m]
+        teams = [key for key, value in all_team_scores.items() if value == m]
+        if not teams: return None
+        if len(teams) > 1: return self.mw[room].team
+        return teams[0]
+
+    def get_rooms(self) -> Set[str]:
+        return set(*room.keys() for room in self.teams.values())
 
     def is_occupier(self, team: str, room: str) -> bool:
         """Is a team the occupier of a room."""
