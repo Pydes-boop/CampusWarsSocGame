@@ -34,10 +34,14 @@ public class QuizActivity extends AppCompatActivity implements View.OnClickListe
      * written by Jonas and Daniel
      */
     private Context ctx;
+    private int gid;
+    private int pid;
+    private String oppName;
+    private String oppTeam;
     private String question;
-    private String[] answers;
-    private int correctAnswer;
-    private String challenger;
+    private String[] wrongAnswers;
+    private String correctAnswer;
+
 
     //TODO Link to Server
 
@@ -49,11 +53,16 @@ public class QuizActivity extends AppCompatActivity implements View.OnClickListe
         //Getting Data From Call
         Bundle b = getIntent().getExtras();
         //TODO Add topic Title, ADD challenger to Quiz Activity xml
+        //TODO We get right answer now
         if(b != null){
+            /*
             this.question = b.getString("question");
             this.answers = b.getStringArray("answers");
             this.correctAnswer = b.getInt("correctAnswer");
             this.challenger = b.getString("challenger");
+            */
+            //TODO FIXME FOR NEW HTTP CALL
+            //MAYBE ADD CORRECT ANSWER TO ARRAY of WRONG ANSWERS AND THEN RANDOMIZE?
         }
 
         TextView textQuestion = (TextView) findViewById(R.id.questionText);
@@ -99,10 +108,12 @@ public class QuizActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void checkAnswer(int chosenAnswer){
+        //TODO fix check
+        /*
         if(chosenAnswer == this.correctAnswer){
             Toast.makeText(this.ctx, "Correct Answer, Congrats!", Toast.LENGTH_SHORT).show();
         } else{
             Toast.makeText(this.ctx, "Wrong Answer, Sad :(", Toast.LENGTH_SHORT).show();
-        }
+        }*/
     }
 }
