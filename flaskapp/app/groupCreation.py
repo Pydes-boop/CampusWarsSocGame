@@ -1,7 +1,18 @@
 import numpy as np
 import networkx as nx
 import pulp
+from apis.v1.utils.random_stuff import get_random_color, generate_team_name
+from dataclasses import dataclass
+
+from typing import Any
 # used solution for wedding seating problem
+
+
+@dataclass
+class Group:
+    name: str
+    color: str
+    members: Any
 
 
 def create_groups():
@@ -48,7 +59,7 @@ def create_groups():
     user_groups = []
     for group in possible_groups:
         if x[group].value() == 1.0:
-            user_groups.append(group)
+            user_groups.append(Group(generate_team_name(), get_random_color(), group))
     user_groups = [["uid1", "uid3", "uid5"], ["udi2", "uid4"]] # remove this line after db integration
     #todo: @Robin teamname generator and color generator fills data
     user_groups = {"Teamname1": ["uid1", "uid3", "uid5"], "Teamname2": ["udi2", "uid4"]}
