@@ -50,7 +50,8 @@ class MultiplierWatchdog(Thread, dict, Dict[str, Room]):
     def __init__(self, team_state: 'TeamState'):
         self.current_interval = 0
         self.running = True
-        super(MultiplierWatchdog, self).__init__(name='MultiplierWatchdog')
+        super(MultiplierWatchdog, self).__init__()
+        self.name = 'Multiplayerwatchdog'
         self.team_state = team_state
         self.mw = defaultdict(lambda: None)
 
