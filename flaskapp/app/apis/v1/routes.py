@@ -30,7 +30,7 @@ def error_404(_):
 class RoomFinder(Resource):
     @request_requires(headers=['uid', 'team', 'latitude', 'longitude'])
     def post(self):
-        lat, lon, = map(float, request.headers['longitude'], request.headers['latitude'])
+        lat, lon, = map(float, [request.headers['longitude'], request.headers['latitude']])
         room = find_closest_room(lat, lon, 30)
         name = room['roomName']
         team_state.increase_team_presence_in_room(team=request.headers['team'], room=name)
