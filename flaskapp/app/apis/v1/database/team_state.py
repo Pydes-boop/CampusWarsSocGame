@@ -15,7 +15,7 @@ from pickle import dumps, loads
 from threading import Thread
 from time import sleep
 from dataclasses import dataclass
-from typing import Union, Optional, Iterable, DefaultDict, Dict
+from typing import Union, Optional, Iterable, DefaultDict, Dict, Set
 
 MULTIPLIER_MAX: int = 2
 MULTIPLIER_INCREASE: float = 0.02
@@ -138,7 +138,10 @@ class TeamState:
         return teams[0]
 
     def get_rooms(self) -> Set[str]:
-        return set(*room.keys() for room in self.teams.values())
+        rooms = set()
+        for room in self.teams.values():
+            rooms.update(room.keys())
+        return rooms
 
     def is_occupier(self, team: str, room: str) -> bool:
         """Is a team the occupier of a room."""
