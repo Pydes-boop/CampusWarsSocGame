@@ -40,7 +40,8 @@ class Room:
         return self.multiplier
 
 
-class MultiplierWatchdog(Thread, dict, Dict[str, Room]):
+class MultiplierWatchdog(dict, Dict[str, Room]):
+    thread: Thread
     running: bool
     current_interval: int
 
@@ -48,10 +49,10 @@ class MultiplierWatchdog(Thread, dict, Dict[str, Room]):
     occupiers: Dict[str, Room]
 
     def __init__(self, team_state: 'TeamState'):
+        self.thread = Thread(name='Multiplayerwatchdog', target=self.run)
         self.current_interval = 0
         self.running = True
         super(MultiplierWatchdog, self).__init__()
-        self.name = 'Multiplayerwatchdog'
         self.team_state = team_state
         self.mw = defaultdict(lambda: None)
 
@@ -70,6 +71,9 @@ class MultiplierWatchdog(Thread, dict, Dict[str, Room]):
             else:
                 self[room].team = team
                 self[room].reset()
+
+    def start(self) -> None:
+        self.thread.start()
 
     def stop(self) -> None:
         self.running = False
