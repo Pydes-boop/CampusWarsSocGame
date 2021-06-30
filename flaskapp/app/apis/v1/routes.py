@@ -86,7 +86,7 @@ class QuizRequest(Resource):
 
 
 @api.resource('/quiz-refresh')
-class QuizRequest(Resource):
+class QuizRefresh(Resource):
     @request_requires(headers=['uid', 'team', 'room'])
     def post(self):
         """Refresh quiz state and maybe or join a game."""
