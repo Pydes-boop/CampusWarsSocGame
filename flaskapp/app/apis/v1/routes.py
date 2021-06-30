@@ -32,6 +32,8 @@ class RoomFinder(Resource):
     def post(self):
         lat, lon, = map(float, [request.headers['longitude'], request.headers['latitude']])
         room = find_closest_room(lat, lon, 30)
+        if room is None:
+            return jsonify('nothing near you')
         name = room['roomName']
         team_state.increase_team_presence_in_room(team=request.headers['team'], room=name)
         live_data.room_queue(uid=request.headers['uid'], team=request.headers['team'], room=name)
