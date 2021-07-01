@@ -104,7 +104,7 @@ def get_current_quizzes(room_id):
     if isinstance(room_id, str):
         room_id = ObjectId(room_id)
     room_info = mongo.db.room.find_one({"_id": room_id}, {"_id": 0})
-    return list(mongo.db.quiz.find({"campusID": room_info["campusID"]}))
+    return list(mongo.db.quiz.find({"campusID": room_info["campusID"]}, {"_id": 1}))
 
 
 def add_quiz(name, created_by, lecture_id):
