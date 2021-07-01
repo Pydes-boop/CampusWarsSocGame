@@ -5,7 +5,7 @@ __author__ = "Robin 'r0w' Weiland"
 __date__ = "2021-05-20"
 __version__ = "0.0.1"
 
-__all__ = ('request_requires',)
+__all__ = ('request_requires', 'check_timed_out_users',)
 
 from flask import request, jsonify
 from functools import wraps
