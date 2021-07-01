@@ -10,6 +10,9 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:gravity="center_horizontal"
+
+        android:layout_marginLeft="7sp"
+        android:layout_marginRight="7sp"
         >
 
         <TextView
@@ -23,9 +26,10 @@
             android:autoSizeTextType="uniform"
 
             android:background="@drawable/button_rounded"
+            android:paddingLeft="10sp"
             android:drawableLeft="@drawable/ic_group_icon"
 
-            android:elevation="40sp"
+            android:elevation="15sp"
             android:gravity="center"
             android:text="Your Team Name"
             android:textColor="@color/text"
@@ -48,8 +52,8 @@
 
             android:stretchColumns="0,1"
             android:background="@drawable/button_rounded"
-            android:elevation="20sp"
-            android:layout_weight="0.4"
+            android:elevation="10sp"
+            android:layout_weight="0.2"
             >
 
             <TableRow
@@ -120,44 +124,57 @@
         </Space>
 
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Team members:"
-            android:textSize="20sp"
-            android:textColor="@color/text"
-            android:gravity="center"
-            android:background="@drawable/button_rounded"
-            android:elevation="20sp"
-            android:textStyle="bold"
-            />
-        <ListView
-            android:id="@+id/memberList"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:padding="20sp"
-            android:layout_weight="4"
 
+            android:layout_weight="4"
+            android:orientation="vertical"
 
             android:background="@drawable/button_rounded"
-            android:elevation="20sp"
+            android:elevation="10sp"
 
-            android:textColor="@color/text"
-
-            android:divider="@color/darkAccent"
-            android:dividerHeight="1sp"
-
-
-            android:smoothScrollbar="true"
-            android:scrollbarAlwaysDrawVerticalTrack="true"
-            android:scrollbarStyle="insideInset"
-            android:scrollbars="vertical"
-            android:scrollbarTrackVertical="@color/darkAccent"
-            android:scrollbarSize="7sp"
             >
 
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
 
-        </ListView>
+                android:text="Team members:"
+                android:textSize="20sp"
+                android:textColor="@color/text"
+
+                android:background="@drawable/button_rounded"
+                android:elevation="1sp"
+
+                android:gravity="center"
+                android:textStyle="bold"
+            />
+            <ListView
+                android:id="@+id/memberList"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:padding="20sp"
+                android:layout_weight="4"
+
+
+                android:textColor="@color/text"
+
+                android:divider="@color/darkAccent"
+                android:dividerHeight="1sp"
+
+
+                android:smoothScrollbar="true"
+                android:scrollbarAlwaysDrawVerticalTrack="true"
+                android:scrollbarStyle="insideInset"
+                android:scrollbars="vertical"
+                android:scrollbarTrackVertical="@color/mediumAccent"
+                android:scrollbarThumbVertical="@drawable/button_rounded_highlight"
+                android:fadeScrollbars="true"
+                android:scrollbarSize="7sp"
+            />
+
+        </LinearLayout>
 
         <Space
             android:layout_width="1dp"
@@ -165,45 +182,21 @@
             android:layout_weight="0.2" >
         </Space>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="40sp"
-            android:orientation="horizontal">
 
-            <Button
-                android:id="@+id/raidButton"
-                android:layout_width="150sp"
-                android:layout_height="match_parent"
+        <Button
+            android:id="@+id/raidButton"
+            android:layout_width="150sp"
+            android:layout_height="wrap_content"
 
-                android:layout_marginBottom="0sp"
+            android:layout_marginBottom="0sp"
 
-                android:layout_weight="1"
+            android:layout_weight="0.04"
 
-                android:background="@drawable/button_rounded_highlight"
-                android:elevation="15sp"
-                android:text="Rally Team"
-                android:textColor="@color/textInverted" />
+            android:background="@drawable/button_rounded_highlight"
+            android:elevation="15sp"
+            android:text="Rally Team"
+            android:textColor="@color/textInverted" />
 
-            <TextView
-                android:id="@+id/textView3"
-                android:layout_width="0sp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1" />
-
-            <Button
-                android:id="@+id/logoutButton"
-                android:layout_width="150sp"
-                android:layout_height="match_parent"
-
-                android:layout_marginBottom="0sp"
-
-                android:layout_weight="1"
-
-                android:background="@drawable/button_rounded_highlight"
-                android:elevation="15sp"
-                android:text="logout"
-                android:textColor="@color/textInverted" />
-        </LinearLayout>
 
         <Space
             android:layout_width="1dp"

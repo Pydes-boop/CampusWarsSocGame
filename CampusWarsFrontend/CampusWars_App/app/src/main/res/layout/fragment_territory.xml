@@ -11,6 +11,9 @@
             android:layout_height="match_parent"
             android:orientation="vertical"
             android:gravity="center_horizontal"
+
+            android:layout_marginLeft="7sp"
+            android:layout_marginRight="7sp"
             >
 
             <TextView
@@ -24,9 +27,10 @@
                 android:autoSizeTextType="uniform"
 
                 android:background="@drawable/button_rounded"
+                android:paddingLeft="10sp"
                 android:drawableLeft="@drawable/ic_territory"
 
-                android:elevation="40sp"
+                android:elevation="15sp"
                 android:gravity="center"
                 android:text="Current Lecture Hall"
                 android:textColor="@color/text"
@@ -49,7 +53,7 @@
 
                 android:stretchColumns="0,1"
                 android:background="@drawable/button_rounded"
-                android:elevation="20sp"
+                android:elevation="15sp"
                 android:layout_weight="1"
                 >
 

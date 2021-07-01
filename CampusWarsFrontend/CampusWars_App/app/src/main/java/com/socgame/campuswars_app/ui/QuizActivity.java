@@ -8,6 +8,7 @@ import com.google.android.material.snackbar.Snackbar;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.os.Handler;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -20,7 +21,7 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.socgame.campuswars_app.R;
-import com.socgame.campuswars_app.databinding.ActivityQuizBinding;
+//import com.socgame.campuswars_app.databinding.ActivityQuizBinding;
 
 import org.w3c.dom.Text;
 
@@ -175,5 +176,21 @@ public class QuizActivity extends AppCompatActivity //implements View.OnClickLis
         {
             Toast.makeText(this, "False", Toast.LENGTH_LONG).show();
         }
+
+
+        Handler handler = new Handler();
+        handler.postDelayed
+        (
+            new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    Intent myIntent = new Intent(QuizActivity.this, MainScreenActivity.class);
+                    startActivityForResult(myIntent, 0);
+                }
+            },
+            1000
+        );
     }
 }

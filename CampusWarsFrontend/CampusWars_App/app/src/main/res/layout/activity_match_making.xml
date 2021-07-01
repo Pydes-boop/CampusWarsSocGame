@@ -37,7 +37,7 @@ tools:context=".ui.MatchMakingActivity">
 
 
 <LinearLayout
-    android:layout_width="match_parent"
+    android:layout_width="wrap_content"
     android:layout_height="0dp"
 
     app:layout_constraintEnd_toEndOf="parent"
@@ -47,7 +47,7 @@ tools:context=".ui.MatchMakingActivity">
 
     android:orientation="vertical"
 
-    android:gravity="center"
+    android:layout_gravity="center_horizontal"
     >
 
     <Space
@@ -58,7 +58,7 @@ tools:context=".ui.MatchMakingActivity">
 
     <ImageView
         android:id="@+id/logo"
-        android:layout_width="224dp"
+        android:layout_width="match_parent"
         android:layout_height="145dp"
 
         android:layout_marginTop="40sp"
