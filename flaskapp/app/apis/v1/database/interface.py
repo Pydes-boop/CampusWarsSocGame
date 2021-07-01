@@ -154,7 +154,7 @@ def get_users_of_lecture(lecture_id):
     for i in list(
             mongo.db.firebase_users.find({"lectures": {"$elemMatch": {"$eq": lecture_id}}},
                                          {"firebaseID": 1, "_id": 0})):
-        items.append(i["firebaseID"])
+        items.append(str(i["firebaseID"]))
     return items
 
 
