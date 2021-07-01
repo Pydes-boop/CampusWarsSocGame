@@ -187,7 +187,7 @@ class Register(Resource):
 @api.resource('/marina')
 class Test(Resource):
     def get(self):
-        return get_current_quizzes("60d789da1ca97fc034f1f5ab")
+        return get_current_quizzes(ObjectId("60d789da1ca97fc034f1f5ab"))
 
 
 if __name__ == '__main__':
