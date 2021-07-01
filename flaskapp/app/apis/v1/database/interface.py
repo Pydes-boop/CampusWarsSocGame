@@ -13,9 +13,10 @@ from apis.v1.database.time_functions import get_current_time_and_day, get_curren
 from bson.objectid import ObjectId
 
 
+
 def find_closest_room(lon, lat, max_distance):
     return mongo.db.room.find_one({"location": {"$near": {"$geometry": {"type": "Point", "coordinates": [lon, lat]},
-                                                          "$maxDistance": max_distance}}}, {"_id": 0})
+                                                          "$maxDistance": max_distance}}})
 
 
 # todo evtl occupier live im Überblick behalten weil wegen regelmäßiges update ähnlich der location vom user
@@ -64,7 +65,7 @@ def add_lectures_to_user(firebase_id, lectures):
         split_string = lectures[i].split(":")
         name = split_string[0]
         term = split_string[1]
-        entry_exists = mongo.db.lectures.count({"name": name, "term": term}, {limit: 1})
+        entry_exists = mongo.db.lectures.count({"name": name, "term": term}, {"limit": 1})
         lecture_id = None
         if entry_exists == 0:
             item = {
@@ -155,24 +156,36 @@ def get_full_name_of_current_lecture_in_room(room_id):
 
 
 def add_new_teams(team_list):
-    for t in team_list:
-        if not add_team(t):
-            return False, t
+    for team in team_list:
+        if not add_team(team):
+            return False, team
     return True, None
 
 
-def add_team(member_list):
+def add_team(team):
     item = {
-        "name": "teamname",
-        "colour": "#333333",
+        "name": team.name,
+        "colour": team.color,
         "term": get_current_term(),
-        "members": member_list,
+        "members": team.members,
     }
     return mongo.db.teams.insert_one(item).acknowledged
 
 
 def get_all_lecture_ids():
     return list(mongo.db.lecture.find({}, {"_id": 1}))
+
+
+def get_player_name(firebase_id):
+    return mongo.db.firebase_users.find_one({"firebaseID": firebase_id}, {"name": 1})
+
+
+def get_questions_of_quiz(quiz_id):
+    return list(mongo.db.question.find({"quizID": quiz_id}))
+
+
+def get_current_team(member_firebase_id):
+    return mongo.db.teams.find_one({"members": {"$elemMatch": {"$eq": member_firebase_id}}, "term": get_current_term()})
 
 
 if __name__ == '__main__':
