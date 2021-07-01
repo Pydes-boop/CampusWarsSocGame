@@ -3,6 +3,10 @@ __all__ = ()
 from time import time
 from datetime import datetime, timezone
 import pytz
+import calendar
+from time import gmtime
+from time import strftime
+
 START_SUMMER_TERM = 4
 END_SUMMER_TERM = 9
 
@@ -21,6 +25,14 @@ def get_time_as_seconds(hour, minutes):
     midnight = now.replace(hour=0, minute=0, second=0, microsecond=0)
     seconds = (time_needed - midnight).seconds
     return seconds
+
+
+def get_day_as_string(day):
+    return calendar.day_name[day]
+
+
+def get_seconds_as_string(seconds):
+    return strftime("%H:%M", gmtime(seconds))
 
 
 def get_current_term():
