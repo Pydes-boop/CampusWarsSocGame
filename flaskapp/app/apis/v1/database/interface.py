@@ -198,5 +198,11 @@ def get_colour_of_team(team_name):
     return mongo.db.teams.find_one({"name": team_name, "term": get_current_term()})['colour']
 
 
+def get_quiz_info(quiz_id):
+    if isinstance(quiz_id, str):
+        quiz_id = ObjectId(quiz_id)
+    return mongo.db.quiz.find_one({"_id": quiz_id})
+
+
 if __name__ == '__main__':
     pass
