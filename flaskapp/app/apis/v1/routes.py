@@ -17,7 +17,8 @@ import json
 from apis.v1.database import interface
 from apis.v1.database.interface import add_room, add_lecture, get_all_rooms, find_closest_room, add_lectures_to_user, \
     add_question_to_quiz, add_user, get_users_of_lecture, get_full_name_of_current_lecture_in_room, get_current_team, \
-    get_player_name, get_current_quizzes, get_questions_of_quiz, get_time_table_of_room, get_all_lecture_ids, get_colour_of_team
+    get_player_name, get_current_quizzes, get_questions_of_quiz, get_time_table_of_room, get_all_lecture_ids, \
+    get_current_team_with_member_names, get_colour_of_team
 from bson.objectid import ObjectId
 from apis.v1.database.time_functions import get_current_term, get_time_as_seconds
 
@@ -173,7 +174,7 @@ class Lectures(Resource):
 class MyGroup(Resource):
     @request_requires(headers=['uid'])
     def get(self):
-        return jsonify(get_current_team(request.headers['uid']))
+        return jsonify(get_current_team_with_member_names(request.headers['uid']))
 
 
 @api.resource('/start')
@@ -191,7 +192,7 @@ class Start(Resource):
 class Question(Resource):
     @request_requires(headers=['question', 'right_answer', 'wrong_answers', 'quiz_id'])
     def post(self):
-        add_question_to_quiz(request.headers['question'], request.headers['right_asnwer'],
+        add_question_to_quiz(request.headers['question'], request.headers['right_answer'],
                              request.headers['wrong_answers'], request.headers['quiz_id'])
         return "ok", 200
 
@@ -215,128 +216,8 @@ class Test(Resource):
     def get(self):
         # return get_questions_of_quiz(get_current_quizzes(ObjectId("60d78a721ca97fc034f1f5ac"))[0]["_id"])
         # return get_full_name_of_current_lecture_in_room(ObjectId("60d78a721ca97fc034f1f5ac"))
-        items= []
-        add_user("1", "Hans")
-        items.extend(add_lectures_to_user("1", ["Englisch - English through Cinema C1: 20W", "Diskrete Strukturen (IN0015): 19W",
-                                   "Einführung in die Informatik 1 (IN0001): 19W", "Französisch A1.1: 19W",
-                                   "Social Gaming (IN0040): 21S", "Studentische Vollversammlungen - Informatik: 20W",
-                                   "Praktikum: Echtzeit-Computergrafik (IN0039): 21S",
-                                   "Analysis für Informatik [MA0902]: 20W",
-                                   "Übungen zu Analysis für Informatik [MA0902]: 20W",
-                                   "Interaktive Visualisierung: 20W",
-                                   "Einführung in Informatik für Games Engineering (IN0031): 19W"]))
 
-        add_user("2", "Franz")
-        items.extend(add_lectures_to_user("2", ["Englisch - English through Cinema C1: 20S",
-                                   "Studentische Vollversammlungen - Informatik: 21S",
-                                   "Praktikum: Grundlagen der Programmierung (IN0002), Di, Mi: 19W",
-                                   "Echtzeit-Computergrafik (IN0038): 21S",
-                                   "Ringvorlesung 'Games Engineering' (IN2368): 21S",
-                                   "Social Gaming (IN0040): 21S",
-                                   "Einführung in die Theoretische Informatik (IN0011): 21S",
-                                   "Einführung in die Informatik 1 (IN0001): 19W", "Audiokommunikation: 21S",
-                                   "Studentische Vollversammlungen - Informatik: 19W",
-                                   "Interaktive Visualisierung: 20W"]))
-
-        add_user("3", "Peter")
-        items.extend(add_lectures_to_user("3", ["Praktikum: Echtzeit-Computergrafik (IN0039): 21S",
-                                   "Englisch - English through Cinema C1: 20W",
-                                   "Übungen zu Analysis für Informatik [MA0902]: 20W",
-                                   "Einführung in die Theoretische Informatik (IN0011): 21S",
-                                   "Praktikum: Grundlagen der Programmierung (IN0002), Di, Mi: 19W",
-                                   "Französisch A1.1: 19W",
-                                   "Übungen zu Einführung in Informatik für Games Engineering(IN0031): 19W",
-                                   "Studentische Vollversammlungen - Informatik: 19W",
-                                   "Analysis für Informatik [MA0902]: 20W",
-                                   "Didaktisches und pädagogisches Training für Tutoren (IN9028): 21S",
-                                   "Studentische Vollversammlungen - Informatik: 21S"]))
-        add_user("4", "Lisa")
-        items.extend(add_lectures_to_user("4",
-                             ["Praktikum: Echtzeit-Computergrafik (IN0039): 21S",
-                              "Praktikum: Grundlagen der Programmierung (IN0002), Di, Mi: 19W",
-                              "Interaktionsmethoden und -geräte (IN0033): 20W",
-                              "Englisch - English through Cinema C1: 20S",
-                              "Englisch - English through Cinema C1: 20W",
-                              "Einführung in die Theoretische Informatik (IN0011): 21S", "Social Gaming (IN0040): 21S",
-                              "Einführung in Informatik für Games Engineering (IN0031): 19W",
-                              "Numerisches Programmieren (IN0019): 21S",
-                              "Grundlagen: Algorithmen und Datenstrukturen (IN0007): 20S",
-                              "Studentische Vollversammlungen - Informatik: 20S"]))
-
-        add_user("5", "Klara")
-        items.extend(add_lectures_to_user("5",
-                             ["Englisch - English through Cinema C1: 20W", "Interaktive Visualisierung: 20W",
-                              "Studentische Vollversammlungen - Informatik: 21S",
-                              "Übungen zu Lineare Algebra für Informatik [MA0901]: 20S",
-                              "Praktikum Social Gaming (IN0041): 21S",
-                              "Übungen zu Einführung in Informatik für Games Engineering(IN0031): 19W",
-                              "Studentische Vollversammlungen - Informatik: 19W",
-                              "Einführung in die Theoretische Informatik (IN0011): 21S",
-                              "Modellierung mit Blender (IN2282): 20W",
-                              "Studentische Vollversammlungen - Informatik: 20S",
-                              "Analysis für Informatik [MA0902]: 20W"]))
-        add_user("6", "Johannes")
-        items.extend(add_lectures_to_user("6",
-                             ["Betriebssysteme und hardwarenahe Programmierung für Games (IN0034): 20W",
-                              "Studentische Vollversammlungen - Informatik: 20S",
-                              "Numerisches Programmieren (IN0019): 21S",
-                              "Übungen zu Einführung in die Theoretische Informatik (IN0011), Mo, Di, Fr: 21S",
-                              "Modellierung mit Blender (IN2282): 20W", "Echtzeit-Computergrafik (IN0038): 20S",
-                              "Ringvorlesung 'Games Engineering' (IN2368): 21S",
-                              "Übungen zu Diskrete Strukturen (IN0015) - 1 (Mo): 19W",
-                              "Grundlagen: Datenbanken (IN0008): 20W",
-                              "Interaktionsmethoden und -geräte (IN0033): 20W",
-                              "Englisch - English through Cinema C1: 20S"]))
-        add_user("7", "Mimi")
-        items.extend(add_lectures_to_user("7",
-                             ["Numerisches Programmieren (IN0019): 21S",
-                              "Ringvorlesung 'Games Engineering' (IN2368): 21S",
-                              "Lineare Algebra für Informatik [MA0901]: 20S",
-                              "Studentische Vollversammlungen - Informatik: 20S",
-                              "Übungen zu Interaktionsmethoden und -geräte (IN0033): 20W",
-                              "Echtzeit-Computergrafik (IN0038): 21S",
-                              "Übungen zu Einführung in die Softwaretechnik (IN0006) 27 Gruppen: 20S",
-                              "Einführung in die Informatik 1 (IN0001): 19W",
-                              "Praktikum: Echtzeit-Computergrafik (IN0039): 21S",
-                              "Englisch - English through Cinema C1: 20S",
-                              "Übungen zu Grundlagen: Algorithmen und Datenstrukturen (IN0007), Mo, Di: 20S"]))
-        add_user("8", "Pokemon")
-        items.extend(add_lectures_to_user("8",
-                             ["Echtzeit-Computergrafik (IN0038): 20S",
-                              "Grundlagen der Künstlichen Intelligenz (IN2062): 20W",
-                              "Grundlagen: Algorithmen und Datenstrukturen (IN0007): 20S", "Französisch A1.1: 19W",
-                              "Englisch - English through Cinema C1: 20W",
-                              "Didaktisches und pädagogisches Training für Tutoren (IN9028): 21S",
-                              "Studentische Vollversammlungen - Informatik: 20S",
-                              "Praktikum: Echtzeit-Computergrafik (IN0039): 20S",
-                              "Ringvorlesung 'Games Engineering' (IN2368): 21S",
-                              "Diskrete Strukturen (IN0015): 19W",
-                              "Lineare Algebra für Informatik [MA0901]: 20S"]))
-        add_user("9", "Sophie")
-        items.extend(add_lectures_to_user("9",
-                             ["Modellierung mit Blender (IN2282): 20W",
-                              "Übungen zu Einführung in die Softwaretechnik (IN0006) 27 Gruppen: 20S",
-                              "Praktikum: Echtzeit-Computergrafik (IN0039): 20S",
-                              "Echtzeit-Computergrafik (IN0038): 21S",
-                              "Audiokommunikation: 21S", "Praktikum Social Gaming (IN0041): 21S",
-                              "Studentische Vollversammlungen - Informatik: 20S",
-                              "Übungen zu Grundlagen: Algorithmen und Datenstrukturen (IN0007), Mo, Di: 20S",
-                              "Übungen zu Diskrete Strukturen (IN0015) - 1 (Mo): 19W", "Geschichtswelten (IN2290): 20W",
-                              "Studentische Vollversammlungen - Informatik: 19W"]))
-        add_user("10", "Hannes")
-        items.extend(add_lectures_to_user("10",
-                             ["Übungen zu Analysis für Informatik [MA0902]: 20W", "Diskrete Strukturen (IN0015): 20W",
-                              "Englisch - English through Cinema C1: 20W",
-                              "Studentische Vollversammlungen - Informatik: 19W",
-                              "Didaktisches und pädagogisches Training für Tutoren (IN9028): 21S",
-                              "Praktikum: Echtzeit-Computergrafik (IN0039): 21S",
-                              "Einführung in die Theoretische Informatik (IN0011): 21S",
-                              "Grundlagen der Künstlichen Intelligenz (IN2062): 20W",
-                              "Übungen zu Grundlagen: Algorithmen und Datenstrukturen (IN0007), Mo, Di: 20S",
-                              "Echtzeit-Computergrafik (IN0038): 21S",
-                              "Übungen zu Einführung in Informatik für Games Engineering(IN0031): 19W"]))
-
-        return jsonify(items)
+        return jsonify(groupCreation.create_groups())
 
 
 if __name__ == '__main__':
