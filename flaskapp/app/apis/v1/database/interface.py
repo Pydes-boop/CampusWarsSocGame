@@ -81,7 +81,7 @@ def add_lectures_to_user(firebase_id, lectures):
         else:
             lecture_id = mongo.db.lectures.find_one({"name": name, "term": term}, {"_id": 1})["_id"]
         if not mongo.db.firebase_users.update({"firebaseID": firebase_id},
-                                              {"$push": {"lectures": lecture_id}}).acknowledged:
+                                              {"$push": {"lectures": lecture_id}}).matched_count >0:
             return False
 
     return True
