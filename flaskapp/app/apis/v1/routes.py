@@ -53,7 +53,9 @@ class RoomFinder(Resource):
         result = []
         for i in get_all_rooms():
             occupier = team_state.get_room_occupier(i['roomName']) or 'Nobody'
-            color = get_colour_of_team(occupier) if occupier else '#212121'
+            if occupier:
+                color = get_colour_of_team(occupier)
+            else: color = '#212121'
             item = {
                 "location":
                     {"longitude": i["location"]["coordinates"][0],
