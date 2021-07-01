@@ -1,6 +1,6 @@
 import networkx as nx
 import pulp
-from apis.v1.utils.random_stuff import get_random_color, generate_team_name
+from apis.v1.utils.random_stuff import get_random_color, generate_team_name, used_names
 from dataclasses import dataclass
 from apis.v1.database import interface
 from typing import Any
@@ -19,6 +19,7 @@ def create_groups():
     and saves the new groups with a random name and color to the db
     :return:
     """
+    used_names.clear()
     lectures = {}
     lecture_list = interface.get_all_lecture_ids()
     for lecture in lecture_list:
