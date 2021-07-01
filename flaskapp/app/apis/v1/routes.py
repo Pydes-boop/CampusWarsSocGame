@@ -11,7 +11,7 @@ from flask import jsonify, request, make_response
 from flask_restful import Resource
 from apis.v1 import v1, api
 import groupCreation
-from apis.v1.decorators import request_requires
+from apis.v1.decorators import request_requires, check_timed_out_users
 import random
 import json
 from apis.v1.database import interface
@@ -31,6 +31,7 @@ def error_404(_):
 
 @api.resource('/roomfinder')
 class RoomFinder(Resource):
+    @check_timed_out_users(live_data.timedout_users)
     @request_requires(headers=['uid', 'team', 'latitude', 'longitude'])
     def post(self):
         lat, lon, = map(float, [request.headers['longitude'], request.headers['latitude']])
@@ -73,6 +74,7 @@ class RoomJoin(Resource):
         """Just for debug purposes."""
         return jsonify(live_data.room_queue)
 
+    @check_timed_out_users(live_data.timedout_users)
     @request_requires(headers=['uid', 'team', 'room'])
     def post(self):
         """Users can announce that they are in a room."""
@@ -83,6 +85,7 @@ class RoomJoin(Resource):
 
 @api.resource('/quiz-request')
 class QuizRequest(Resource):
+    @check_timed_out_users(live_data.timedout_users)
     @request_requires(headers=['uid', 'team', 'room'])
     def post(self):
         """Tell us that you would like a quiz."""
@@ -101,6 +104,7 @@ class LiveDebug(Resource):
 
 @api.resource('/quiz-refresh')
 class QuizRefresh(Resource):
+    @check_timed_out_users(live_data.timedout_users)
     @request_requires(headers=['uid', 'team', 'room', 'lid'])
     def post(self):
         """Refresh quiz state and maybe or join a game."""
@@ -129,6 +133,7 @@ class QuizRefresh(Resource):
 
 @api.resource('/quiz-answer')
 class QuizAnswer(Resource):
+    @check_timed_out_users(live_data.timedout_users)
     @request_requires(headers=['uid', 'gid', 'pid', 'result', 'outcome'])
     def post(self):
         """Answer the quiz."""
@@ -140,6 +145,7 @@ class QuizAnswer(Resource):
 
 @api.resource('/quiz-state')
 class QuizState(Resource):
+    @check_timed_out_users(live_data.timedout_users)
     @request_requires(headers=['uid', 'gid', 'pid'])
     def get(self):  # TODO maybe think about combining this with the request above
         """Ask the server if the other player has answered yet, if yes show result."""
