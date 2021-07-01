@@ -211,7 +211,7 @@ def add_team(team):
 def get_all_lecture_ids():
     result = []
     for i in mongo.db.lecture.find({}, {"_id": 1}):
-        result.append(i["_id"])
+        result.append(str(i["_id"]))
     return result
 
 
