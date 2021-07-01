@@ -36,9 +36,9 @@ def create_groups():
                 else:
                     social_network.add_edge(users[i], users[j], weight=(1 / len(users)), counter=1)
     for u, v, d in social_network.edges(data=True):
-        d['weight'] = d['weight']/d['counter']
+        d['weight'] = d['weight'] / d['counter']
 
-    max_groups = len(social_network.nodes)/5
+    max_groups = len(social_network.nodes) / 5
     max_group_size = 5
 
     # create list of all possible tables
@@ -53,11 +53,10 @@ def create_groups():
     seating_model += sum([happiness(group, social_network) * x[group] for group in possible_groups])
 
     # specify the maximum number of groups
-    seating_model += sum([x[group] for group in possible_groups]) <= max_groups, \
-                     "Maximum_number_of_tables"
+    seating_model += sum([x[group] for group in possible_groups]) <= max_groups, "Maximum_number_of_tables"
     for user in social_network.nodes:
         seating_model += sum([x[group] for group in possible_groups
-                             if user in group]) == 1, "Must_seat_%s" % user
+                              if user in group]) == 1, "Must_seat_%s" % user
     seating_model.solve()
     user_groups = []
     for group in possible_groups:
@@ -76,7 +75,7 @@ def happiness(group, social_network):
     """
     return_value = 0
     for i in range(0, len(group) - 1):
-        for j in range(i+1, len(group)):
+        for j in range(i + 1, len(group)):
             if social_network.has_edge(group[i], group[j]):
                 return_value += social_network[group[i]][group[j]]['weight']
     return return_value

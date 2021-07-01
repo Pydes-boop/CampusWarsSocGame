@@ -5,7 +5,9 @@ __author__ = "Robin 'r0w' Weiland"
 __date__ = "2021-06-09"
 __version__ = "0.0.1"
 
-__all__ = ()
+__all__ = ("add_room", "add_lecture", "get_all_rooms", "find_closest_room", "add_lectures_to_user",
+           "add_question_to_quiz", "add_user", "get_users_of_lecture", "get_full_name_of_current_lecture_in_room",
+           "get_current_team", "get_player_name", "get_current_quizzes", "get_questions_of_quiz")
 
 from apis.v1.database import mongo, db
 from datetime import datetime

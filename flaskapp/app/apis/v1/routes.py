@@ -37,13 +37,12 @@ class RoomFinder(Resource):
         if room is None:
             return jsonify('nothing near you')
         name = room['roomName']
-        room["_id"] = "23"  # todo: remove mock for _id and currentLecture
         team_state.increase_team_presence_in_room(team=request.headers['team'], room=name)
         live_data.room_queue(uid=request.headers['uid'], team=request.headers['team'], room=name)
         return_room = {'occupancy': team_state.get_all_team_scores_in_room(name),
                        'occupier': team_state.get_room_occupier(name),
                        'room_name': name, 'lid': room["_id"], 'multiplier': team_state.mw[name].multiplier,
-                       "currentLecture": "no lecture"}
+                       "currentLecture": get_full_name_of_current_lecture_in_room(room["_id"])}
         return jsonify(return_room)
 
     # todo @Robin insert your stuff instead of my dummy stuff
