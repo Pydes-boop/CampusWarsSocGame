@@ -5,7 +5,7 @@ __author__ = "Robin 'r0w' Weiland"
 __date__ = "2021-06-28"
 __version__ = "0.0.1"
 
-__all__ = ('get_random_color', 'generate_team_name',)
+__all__ = ('get_random_color', 'generate_team_name', "used_names", )
 
 from random import random, seed
 from datetime import datetime
