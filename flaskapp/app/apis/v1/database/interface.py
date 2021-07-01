@@ -205,7 +205,10 @@ def add_team(team):
 
 
 def get_all_lecture_ids():
-    return list(mongo.db.lecture.find({}, {"_id": 1}))
+    result = []
+    for i in mongo.db.lecture.find({}, {"_id": 1}):
+        result.append(i["_id"])
+    return result
 
 
 def get_player_name(firebase_id):
