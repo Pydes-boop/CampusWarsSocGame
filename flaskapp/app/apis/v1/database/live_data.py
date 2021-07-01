@@ -116,7 +116,7 @@ class Game(TimedItem):
 
     @property
     def json(self):
-        return self.__dict__
+        return dict((key, value) for key, value in self.__dict__ if not callable(value))
 
 
 class TheGreatPurge(Thread):
@@ -154,6 +154,10 @@ class PurgeQueue(dict, Dict[str, Any], metaclass=ABCMeta):
 
     def __del__(self):
         self.purge_thread.stop()
+
+    def __getitem__(self, item):
+        if item not in self:
+            raise Exception(f'Unknown item: "{item}" in {self.__class__.__name__}')
 
 
 class RoomQueue(PurgeQueue):
