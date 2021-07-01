@@ -15,7 +15,9 @@ class Group:
 
 def create_groups():
     """
-    uses the wedding seating problem and solution to match users to groups, gets the lectures and users from the db,
+    uses the wedding seating problem and solution to match users to groups
+    (see https://coin-or.github.io/pulp/CaseStudies/a_set_partitioning_problem.html)
+    gets the lectures and users from the db,
     and saves the new groups with a random name and color to the db
     :return:
     """
