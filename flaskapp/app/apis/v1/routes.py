@@ -11,13 +11,13 @@ from flask import jsonify, request, make_response
 from flask_restful import Resource
 from apis.v1 import v1, api
 import groupCreation
-from apis.v1.decorators import request_requires
+from apis.v1.decorators import request_requires, check_timed_out_users
 import random
 import json
 from apis.v1.database import interface
 from apis.v1.database.interface import add_room, add_lecture, get_all_rooms, find_closest_room, add_lectures_to_user, \
     add_question_to_quiz, add_user, get_users_of_lecture, get_full_name_of_current_lecture_in_room, get_current_team, \
-    get_player_name, get_current_quizzes, get_questions_of_quiz, get_time_table_of_room, get_all_lecture_ids
+    get_player_name, get_current_quizzes, get_questions_of_quiz, get_time_table_of_room, get_all_lecture_ids, get_colour_of_team
 from bson.objectid import ObjectId
 from apis.v1.database.time_functions import get_current_term, get_time_as_seconds
 
@@ -31,6 +31,7 @@ def error_404(_):
 
 @api.resource('/roomfinder')
 class RoomFinder(Resource):
+    @check_timed_out_users(live_data.timedout_users)
     @request_requires(headers=['uid', 'team', 'latitude', 'longitude'])
     def post(self):
         lat, lon, = map(float, [request.headers['longitude'], request.headers['latitude']])
@@ -49,20 +50,18 @@ class RoomFinder(Resource):
     # todo @Robin insert your stuff instead of my dummy stuff
     def get(self):
         result = []
-        r = lambda: random.randint(0, 255)
-        j = 1
         for i in get_all_rooms():
-            color = '#%02X%02X%02X' % (r(), r(), r())
+            occupier = team_state.get_room_occupier(i['roomName'])
+            color = get_colour_of_team(occupier)
             item = {
                 "location":
                     {"longitude": i["location"]["coordinates"][0],
                      "latitude": i["location"]["coordinates"][1]},
                 "roomName": i["roomName"],
                 "_id": str(i["_id"]),
-                "occupier": {"color": color, "name": "Team" + str(j)},
+                "occupier": {"color": color, "name": occupier},
                 "currentLecture": get_full_name_of_current_lecture_in_room(i['_id'])
             }
-            j = j + 1
             result.append(item)
         return jsonify(result)
 
@@ -73,6 +72,7 @@ class RoomJoin(Resource):
         """Just for debug purposes."""
         return jsonify(live_data.room_queue)
 
+    @check_timed_out_users(live_data.timedout_users)
     @request_requires(headers=['uid', 'team', 'room'])
     def post(self):
         """Users can announce that they are in a room."""
@@ -83,6 +83,7 @@ class RoomJoin(Resource):
 
 @api.resource('/quiz-request')
 class QuizRequest(Resource):
+    @check_timed_out_users(live_data.timedout_users)
     @request_requires(headers=['uid', 'team', 'room'])
     def post(self):
         """Tell us that you would like a quiz."""
@@ -101,6 +102,7 @@ class LiveDebug(Resource):
 
 @api.resource('/quiz-refresh')
 class QuizRefresh(Resource):
+    @check_timed_out_users(live_data.timedout_users)
     @request_requires(headers=['uid', 'team', 'room', 'lid'])
     def post(self):
         """Refresh quiz state and maybe or join a game."""
@@ -129,6 +131,7 @@ class QuizRefresh(Resource):
 
 @api.resource('/quiz-answer')
 class QuizAnswer(Resource):
+    @check_timed_out_users(live_data.timedout_users)
     @request_requires(headers=['uid', 'gid', 'pid', 'result', 'outcome'])
     def post(self):
         """Answer the quiz."""
@@ -140,13 +143,15 @@ class QuizAnswer(Resource):
 
 @api.resource('/quiz-state')
 class QuizState(Resource):
+    @check_timed_out_users(live_data.timedout_users)
     @request_requires(headers=['uid', 'gid', 'pid'])
     def get(self):  # TODO maybe think about combining this with the request above
         """Ask the server if the other player has answered yet, if yes show result."""
         live_data.game_queue[request.headers['gid']].refresh()
         if live_data.game_queue[request.headers['gid']].all_answered:
-            return jsonify(
-                live_data.game_queue[request.headers['gid']].get_result_for_player(int(request.headers['pid'])))
+            result = live_data.game_queue[request.headers['gid']].get_result_for_player(int(request.headers['pid']))
+            if result == 'LOST': live_data.timedout_users(request.headers['uid'])
+            return jsonify(result)
 
         return jsonify('not yet answered')
 
@@ -176,11 +181,10 @@ class Start(Resource):
     @request_requires(headers=['passphrase'])
     def post(self):
         if request.headers['passphrase'] == "YOU ONLY CALL THIS TWICE A YEAR PLS":
-            # if groupCreation.create_groups()[0]: todo: swap with line below
-            #     return "ok", 200
-            # else:
-            #     return "nope", 400
-            return jsonify(groupCreation.create_groups()), 200
+            if groupCreation.create_groups()[0]:
+                return "ok", 200
+            else:
+                return "nope", 400
 
 
 @api.resource('/question')

@@ -57,6 +57,14 @@ class TimedItem:
 
 
 @dataclass
+class TimedOutUser(TimedItem):
+    life_time = 600
+    refresh_max = 600
+
+    uid: str
+
+
+@dataclass
 class User(TimedItem):
     life_time = LIFE_TIME_USER
     refresh_max = REFRESH_MAX_USER
@@ -159,6 +167,23 @@ class PurgeQueue(dict, Dict[str, Any], metaclass=ABCMeta):
         if item not in self:
             raise Exception(f'Unknown item: "{item}" in {self.__class__.__name__}')
         return super(PurgeQueue, self).__getitem__(item)
+
+
+class TimedOutUsers(PurgeQueue):
+    def __call__(self, uid) -> None:
+        if uid not in self:
+            self[uid] = TimedOutUser(uid)
+
+    def purge(self) -> int:
+        count: int = 0
+        time = now()
+        purge_list = list()
+        for uid, user, in self.items():
+            if user.time < time:
+                purge_list.append(uid)
+                count += 1
+        for uid in purge_list: del self[uid]
+        return count
 
 
 class RoomQueue(PurgeQueue):
@@ -279,11 +304,13 @@ class LiveData:
     room_queue: RoomQueue
     quiz_queue: QuizQueue
     game_queue: GameQueue
+    timedout_users: TimedOutUsers
 
     def __init__(self, team_state: TeamState):
         self.room_queue = RoomQueue(team_state)
         self.game_queue = GameQueue()
         self.quiz_queue = QuizQueue(self.game_queue)
+        self.timedout_users = TimedOutUsers()
 
 
 if __name__ == '__main__':
