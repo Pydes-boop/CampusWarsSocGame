@@ -80,9 +80,9 @@ def add_lectures_to_user(firebase_id, lectures):
             lecture_id = result.inserted_id
         else:
             lecture_id = mongo.db.lectures.find_one({"name": name, "term": term}, {"_id": 1})["_id"]
-        if not mongo.db.firebase_users.update({"firebaseID": firebase_id},
-                                              {"$push": {"lectures": lecture_id}}).modified_count > 0:
-            return False
+       #todo why dict
+        mongo.db.firebase_users.update({"firebaseID": firebase_id},
+                                       {"$push": {"lectures": lecture_id}})
 
     return True
 
