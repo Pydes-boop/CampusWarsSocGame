@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -27,7 +28,7 @@ public class MatchMakingActivity extends AppCompatActivity
     //The state represents is "what is finished?"
     private enum State  {BEGIN, REQUEST,WAIT, READY};
     private State state = State.BEGIN;
-    private Context ctx = this.getApplicationContext();
+    private Context ctx = this;//this.getApplicationContext();
     private double latitude;
     private double longitude;
     private String roomName;
@@ -61,24 +62,54 @@ public class MatchMakingActivity extends AppCompatActivity
     //this can be deleted
     private void debugChange()
     {
-        for(int i = 1000; state != State.READY; i += 1000)
-        {
-            state = State.values()[state.ordinal()+1];//iterate state
+        changeUiState(State.BEGIN);
 
-            Handler handler = new Handler();
-            handler.postDelayed
-                    (
-                            new Runnable()
+        Handler handler = new Handler();
+        handler.postDelayed
+        (
+                new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        changeUiState(State.REQUEST);
+                    }
+                },
+                1000
+        );
+
+
+        Handler handler2 = new Handler();
+        handler2.postDelayed
+                (
+                        new Runnable()
+                        {
+                            @Override
+                            public void run()
                             {
-                                @Override
-                                public void run()
-                                {
-                                    changeUiState(state);
-                                }
-                            },
-                            i
-                    );
-        }
+                                changeUiState(State.WAIT);
+                            }
+                        },
+                        2000
+                );
+
+
+        Handler handler3 = new Handler();
+        handler3.postDelayed
+                (
+                        new Runnable()
+                        {
+                            @Override
+                            public void run()
+                            {
+                                changeUiState(State.READY);
+
+                                Intent myIntent = new Intent(MatchMakingActivity.this, QuizActivity.class);
+                                startActivityForResult(myIntent, 0);
+                            }
+                        },
+                        3000
+                );
     }
 
     //TODO: @Daniel, you can ue this or discard the code if yo want. You do you
