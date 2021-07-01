@@ -15,11 +15,11 @@ from pickle import dumps, loads
 from threading import Thread
 from time import sleep
 from dataclasses import dataclass
-from typing import Union, Optional, Iterable, DefaultDict, Dict, Set
+from typing import Union, Optional, DefaultDict, Dict, Set
 
 MULTIPLIER_MAX: int = 2
-MULTIPLIER_INCREASE: float = 0.02
-MW_INTERVAL: int = 60
+MULTIPLIER_INCREASE: float = 0.005
+MW_INTERVAL: int = 5
 
 
 @dataclass

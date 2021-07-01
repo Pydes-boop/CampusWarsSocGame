@@ -54,6 +54,7 @@ class RoomFinder(Resource):
                     {"longitude": i["location"]["coordinates"][0],
                      "latitude": i["location"]["coordinates"][1]},
                 "roomName": i["roomName"],
+                "_id": str(i["_id"]),
                 "occupier": {"color": color, "name": "Team" + str(j)},
                 "currentLecture": get_full_name_of_current_lecture_in_room(i['_id'])
             }

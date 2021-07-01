@@ -2,7 +2,7 @@ import networkx as nx
 import pulp
 from apis.v1.utils.random_stuff import get_random_color, generate_team_name
 from dataclasses import dataclass
-from flaskapp.app.apis.v1.database import interface
+from apis.v1.database import interface
 from typing import Any
 
 
