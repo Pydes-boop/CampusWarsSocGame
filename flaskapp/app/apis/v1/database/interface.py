@@ -101,17 +101,9 @@ def add_question_to_quiz(question, right_answer, wrong_answers, quiz_id):
 def get_current_quizzes(room_id):
     if isinstance(room_id, str):
         room_id = ObjectId(room_id)
-    current_time = get_current_time_and_day()
-    index_lecture = mongo.db.lecture.find_one({"roomID": room_id, "term": get_current_term(),
-                                               "timetable": {"$elemMatch": {"start": {"$lt": current_time[0]},
-                                                                            "end": {"$gte": current_time[0]},
-                                                                            "day": current_time[1]}}},
-                                              {"_id": 1})
-    indices_quizzes = [] # list(mongo.db.quiz.find({"lectureID": index_lecture}))
-    if len(indices_quizzes) == 0:
-        room_info = mongo.db.room.find_one({"_id": room_id}, {"_id": 0})
-        indices_quizzes = list(mongo.db.quiz.find({"campusID": room_info["campusID"]}))
-    return list(mongo.db.quiz.find({"_id": {"$in": indices_quizzes}}))
+    room_info = mongo.db.room.find_one({"_id": room_id}, {"_id": 0})
+    return  list(mongo.db.quiz.find({"campusID": room_info["campusID"]}))
+    
 
 
 def add_quiz(name, created_by, lecture_id):
