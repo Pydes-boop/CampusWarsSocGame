@@ -93,7 +93,7 @@ public class TerritoryFragment extends Fragment  implements GpsObserver //implem
         });
 
 
-        registerForContextMenu(getView());
+        register(getActivity());
 
         return view;
     }
