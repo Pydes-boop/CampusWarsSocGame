@@ -199,62 +199,12 @@ class TimeTable(Resource):
     @request_requires(headers=['room_id'])
     def post(self):
         return get_time_table_of_room(request.headers['room_id'])
-    
+
 
 @api.resource('/marina')
 class Test(Resource):
     def get(self):
-        add_lecture("Social Gaming (IN0040)", get_current_term(), [{"start": get_time_as_seconds(14, 15),
-                                                                    "end": get_time_as_seconds(15, 45),
-                                                                    "roomID": ObjectId("60d789da1ca97fc034f1f5ab"),
-                                                                    "day": 2},
-                                                                   ])
-        add_lecture("Praktikum Social Gaming (IN0040)", get_current_term(), [{"start": get_time_as_seconds(16, 0),
-                                                                              "end": get_time_as_seconds(18, 0),
-                                                                              "roomID": ObjectId(
-                                                                                  "60d789da1ca97fc034f1f5ab"),
-                                                                              "day": 0},
-                                                                             ])
-        add_lecture("Einführung in die Theoretische Informatik (IN0011)", get_current_term(),
-                    [{"start": get_time_as_seconds(14, 15),
-                      "end": get_time_as_seconds(16, 0),
-                      "roomID": ObjectId("60d78a721ca97fc034f1f5ac"),
-                      "day": 0},
-                     {"start": get_time_as_seconds(14, 15),
-                      "end": get_time_as_seconds(16, 0),
-                      "roomID": ObjectId("60d78a721ca97fc034f1f5ac"),
-                      "day": 3},
-                     ])
-        add_lecture("Grundlagen: Rechnernetze und Verteilte Systeme (IN0010)", get_current_term(),
-                    [{"start": get_time_as_seconds(10, 0),
-                      "end": get_time_as_seconds(12, 0),
-                      "roomID": ObjectId("60d789da1ca97fc034f1f5ab"),
-                      "day": 0},
-                     {"start": get_time_as_seconds(10, 0),
-                      "end": get_time_as_seconds(12, 0),
-                      "roomID": ObjectId("60d78a721ca97fc034f1f5ac"),
-                      "day": 1},
-                     ])
-        add_lecture("Grundlagen: Algorithmen und Datenstrukturen (IN0007)", get_current_term(),
-                    [{"start": get_time_as_seconds(14, 0),
-                      "end": get_time_as_seconds(16, 0),
-                      "roomID": ObjectId("60d78a721ca97fc034f1f5ac"),
-                      "day": 1},
-                     {"start": get_time_as_seconds(13, 15),
-                      "end": get_time_as_seconds(14, 15),
-                      "roomID": ObjectId("60d78a721ca97fc034f1f5ac"),
-                      "day": 2},
-                     ])
-        add_lecture("Marina Test Lecture (7777)", get_current_term(),
-                    [{"start": get_time_as_seconds(14, 0),
-                      "end": get_time_as_seconds(16, 0),
-                      "roomID": ObjectId("60d78a721ca97fc034f1f5ac"),
-                      "day": 1},
-                     {"start": get_time_as_seconds(13, 15),
-                      "end": get_time_as_seconds(18, 15),
-                      "roomID": ObjectId("60d78a721ca97fc034f1f5ac"),
-                      "day": 3},
-                     ])
+
         return get_time_table_of_room(ObjectId("60d78a721ca97fc034f1f5ac"))
         # return get_questions_of_quiz(get_current_quizzes(ObjectId("60d78a721ca97fc034f1f5ac"))[0]["_id"])
         # return get_full_name_of_current_lecture_in_room(ObjectId("60d78a721ca97fc034f1f5ac"))
