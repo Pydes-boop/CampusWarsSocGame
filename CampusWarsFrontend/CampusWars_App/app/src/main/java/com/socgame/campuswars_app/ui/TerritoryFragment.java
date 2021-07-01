@@ -64,10 +64,19 @@ public class TerritoryFragment extends Fragment  implements GpsObserver //implem
 
         Button challenge = (Button) view.findViewById(R.id.challengeButton);
         challenge.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                if(lectureHall.equals("nothing")){
+            public void onClick(View view)
+            {
+                //TODO: re-enable this once it works
+                Intent myIntent = new Intent(view.getContext(), MatchMakingActivity.class);
+                startActivity(myIntent);
+
+                /*
+                if(lectureHall.equals("nothing"))
+                {
                     Toast.makeText(getActivity(), "You need to enter a lecture hall to challenge people", Toast.LENGTH_LONG).show();
-                } else {
+                }
+                else
+                {
                     Intent myIntent = new Intent(view.getContext(), MatchMakingActivity.class);
                     //We use bundles to give parameters to our QuizActivity
                     Bundle b = new Bundle();
@@ -78,6 +87,7 @@ public class TerritoryFragment extends Fragment  implements GpsObserver //implem
                     myIntent.putExtras(b);
                     startActivityForResult(myIntent, 0);
                 }
+                 */
             }
         });
 

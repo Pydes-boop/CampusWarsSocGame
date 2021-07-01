@@ -24,6 +24,7 @@ import com.socgame.campuswars_app.databinding.ActivityQuizBinding;
 
 import org.w3c.dom.Text;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -117,8 +118,12 @@ public class QuizActivity extends AppCompatActivity //implements View.OnClickLis
         //Also what do I do with the opposing team/player name?
 
 
+        //Question text
+        TextView questionText = this.findViewById(R.id.questionText);
+        questionText.setText(question);
+
         //Randomize answer order
-        List<String> allAnswers = Arrays.asList(wrongAnswers);
+        List<String> allAnswers = new ArrayList<String>(Arrays.asList(wrongAnswers));
         allAnswers.add(correctAnswer);
         Collections.shuffle(allAnswers);
         indexRight = allAnswers.indexOf(correctAnswer);

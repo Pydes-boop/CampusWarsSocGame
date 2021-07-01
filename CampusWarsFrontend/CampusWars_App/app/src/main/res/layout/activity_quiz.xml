@@ -112,26 +112,28 @@
 
                 <Button
                     android:id="@+id/answerButtonA"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:text="Answer A"
 
                     android:layout_margin="5sp"
 
                     android:textColor="@color/text"
+                    android:singleLine="false"
                     android:background="@drawable/button_rounded"
                     android:elevation="20sp"
                     />
 
                 <Button
                     android:id="@+id/answerButtonB"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:text="Answer B"
 
                     android:layout_margin="5sp"
 
                     android:textColor="@color/text"
+                    android:singleLine="false"
                     android:background="@drawable/button_rounded"
                     android:elevation="20sp"
                     />
@@ -147,26 +149,28 @@
 
                 <Button
                     android:id="@+id/answerButtonC"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:text="Answer C"
 
                     android:layout_margin="5sp"
 
                     android:textColor="@color/text"
+                    android:singleLine="false"
                     android:background="@drawable/button_rounded"
                     android:elevation="20sp"
                     />
 
                 <Button
                     android:id="@+id/answerButtonD"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:text="Answer D"
 
                     android:layout_margin="5sp"
 
                     android:textColor="@color/text"
+                    android:singleLine="false"
                     android:background="@drawable/button_rounded"
                     android:elevation="20sp"
                     />
