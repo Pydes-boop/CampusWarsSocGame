@@ -7,7 +7,7 @@ __version__ = "0.0.1"
 
 __all__ = ("add_room", "add_lecture", "get_all_rooms", "find_closest_room", "add_lectures_to_user",
            "add_question_to_quiz", "add_user", "get_users_of_lecture", "get_full_name_of_current_lecture_in_room",
-           "get_current_team", "get_player_name", "get_current_quizzes", "get_questions_of_quiz")
+           "get_current_team", "get_player_name", "get_current_quizzes", "get_questions_of_quiz", "get_colour_of_team")
 
 from apis.v1.database import mongo, db
 from datetime import datetime
@@ -167,6 +167,7 @@ def get_full_name_of_current_lecture_in_room(room_id):
 
 
 def add_new_teams(team_list):
+    mongo.db.teams.delete_many({"term": get_current_term()})
     for team in team_list:
         if not add_team(team):
             return False, team
