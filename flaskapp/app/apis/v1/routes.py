@@ -222,7 +222,7 @@ class Test(Resource):
         add_user("2", "Franz",
                  ["Englisch - English through Cinema C1: 20S", "Studentische Vollversammlungen - Informatik: 21S",
                   "Praktikum: Grundlagen der Programmierung (IN0002), Di, Mi: 19W",
-                  "Echtzeit-Computergrafik (IN0038): 21S", "Ringvorlesung "Games Engineering" (IN2368): 21S",
+                  "Echtzeit-Computergrafik (IN0038): 21S", "Ringvorlesung 'Games Engineering' (IN2368): 21S",
                   "Social Gaming (IN0040): 21S", "Einführung in die Theoretische Informatik (IN0011): 21S",
                   "Einführung in die Informatik 1 (IN0001): 19W", "Audiokommunikation: 21S",
                   "Studentische Vollversammlungen - Informatik: 19W", "Interaktive Visualisierung: 20W"])
@@ -262,11 +262,11 @@ class Test(Resource):
                   "Studentische Vollversammlungen - Informatik: 20S", "Numerisches Programmieren (IN0019): 21S",
                   "Übungen zu Einführung in die Theoretische Informatik (IN0011), Mo, Di, Fr: 21S",
                   "Modellierung mit Blender (IN2282): 20W", "Echtzeit-Computergrafik (IN0038): 20S",
-                  "Ringvorlesung "Games Engineering" (IN2368): 21S",
+                  "Ringvorlesung 'Games Engineering' (IN2368): 21S",
                   "Übungen zu Diskrete Strukturen (IN0015) - 1 (Mo): 19W", "Grundlagen: Datenbanken (IN0008): 20W",
                   "Interaktionsmethoden und -geräte (IN0033): 20W", "Englisch - English through Cinema C1: 20S"])
         add_user("7", "Mimi",
-                 ["Numerisches Programmieren (IN0019): 21S", "Ringvorlesung "Games Engineering" (IN2368): 21S",
+                 ["Numerisches Programmieren (IN0019): 21S", "Ringvorlesung 'Games Engineering' (IN2368): 21S",
                   "Lineare Algebra für Informatik [MA0901]: 20S",
                   "Studentische Vollversammlungen - Informatik: 20S",
                   "Übungen zu Interaktionsmethoden und -geräte (IN0033): 20W",
@@ -281,30 +281,31 @@ class Test(Resource):
                   "Englisch - English through Cinema C1: 20W",
                   "Didaktisches und pädagogisches Training für Tutoren (IN9028): 21S",
                   "Studentische Vollversammlungen - Informatik: 20S",
-                  "Praktikum: Echtzeit-Computergrafik (IN0039): 20S", "Ringvorlesung "Games Engineering
-                  " (IN2368): 21S", "Diskrete Strukturen (IN0015): 19W",
+                  "Praktikum: Echtzeit-Computergrafik (IN0039): 20S", "Ringvorlesung 'Games Engineering' (IN2368): 21S",
+                  "Diskrete Strukturen (IN0015): 19W",
                   "Lineare Algebra für Informatik [MA0901]: 20S"])
         add_user("9", "Sophie",
-         ["Modellierung mit Blender (IN2282): 20W",
-          "Übungen zu Einführung in die Softwaretechnik (IN0006) 27 Gruppen: 20S",
-          "Praktikum: Echtzeit-Computergrafik (IN0039): 20S", "Echtzeit-Computergrafik (IN0038): 21S",
-          "Audiokommunikation: 21S", "Praktikum Social Gaming (IN0041): 21S",
-          "Studentische Vollversammlungen - Informatik: 20S",
-          "Übungen zu Grundlagen: Algorithmen und Datenstrukturen (IN0007), Mo, Di: 20S",
-          "Übungen zu Diskrete Strukturen (IN0015) - 1 (Mo): 19W", "Geschichtswelten (IN2290): 20W",
-          "Studentische Vollversammlungen - Informatik: 19W"])
+                 ["Modellierung mit Blender (IN2282): 20W",
+                  "Übungen zu Einführung in die Softwaretechnik (IN0006) 27 Gruppen: 20S",
+                  "Praktikum: Echtzeit-Computergrafik (IN0039): 20S", "Echtzeit-Computergrafik (IN0038): 21S",
+                  "Audiokommunikation: 21S", "Praktikum Social Gaming (IN0041): 21S",
+                  "Studentische Vollversammlungen - Informatik: 20S",
+                  "Übungen zu Grundlagen: Algorithmen und Datenstrukturen (IN0007), Mo, Di: 20S",
+                  "Übungen zu Diskrete Strukturen (IN0015) - 1 (Mo): 19W", "Geschichtswelten (IN2290): 20W",
+                  "Studentische Vollversammlungen - Informatik: 19W"])
         add_user("10", "Hannes",
-         ["Übungen zu Analysis für Informatik [MA0902]: 20W", "Diskrete Strukturen (IN0015): 20W",
-          "Englisch - English through Cinema C1: 20W", "Studentische Vollversammlungen - Informatik: 19W",
-          "Didaktisches und pädagogisches Training für Tutoren (IN9028): 21S",
-          "Praktikum: Echtzeit-Computergrafik (IN0039): 21S",
-          "Einführung in die Theoretische Informatik (IN0011): 21S",
-          "Grundlagen der Künstlichen Intelligenz (IN2062): 20W",
-          "Übungen zu Grundlagen: Algorithmen und Datenstrukturen (IN0007), Mo, Di: 20S",
-          "Echtzeit-Computergrafik (IN0038): 21S",
-          "Übungen zu Einführung in Informatik für Games Engineering(IN0031): 19W"])
+                 ["Übungen zu Analysis für Informatik [MA0902]: 20W", "Diskrete Strukturen (IN0015): 20W",
+                  "Englisch - English through Cinema C1: 20W", "Studentische Vollversammlungen - Informatik: 19W",
+                  "Didaktisches und pädagogisches Training für Tutoren (IN9028): 21S",
+                  "Praktikum: Echtzeit-Computergrafik (IN0039): 21S",
+                  "Einführung in die Theoretische Informatik (IN0011): 21S",
+                  "Grundlagen der Künstlichen Intelligenz (IN2062): 20W",
+                  "Übungen zu Grundlagen: Algorithmen und Datenstrukturen (IN0007), Mo, Di: 20S",
+                  "Echtzeit-Computergrafik (IN0038): 21S",
+                  "Übungen zu Einführung in Informatik für Games Engineering(IN0031): 19W"])
 
         return True
+
 
 if __name__ == '__main__':
     pass
