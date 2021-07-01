@@ -3,10 +3,13 @@ package com.socgame.campuswars_app.ui;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,9 +19,18 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.auth.FirebaseAuth;
 import com.socgame.campuswars_app.R;
+import com.socgame.campuswars_app.communication.BackendCom;
 import com.socgame.campuswars_app.communication.FirebaseCom;
+import com.socgame.campuswars_app.communication.HttpHeader;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +44,10 @@ import java.util.List;
 public class TeamFragment extends Fragment
 {
     View fragmentView = null;
+
+    private String color;
+    private String teamName;
+    private String[] members;
 
     public TeamFragment()
     {
@@ -55,27 +71,16 @@ public class TeamFragment extends Fragment
 
         ListView listView = view.findViewById(R.id.memberList);
 
-
-        //TODO: get correct info from server
-        //only possible when the calls exist
-        String[] array =
-        {
-            "Dummy Name 1",
-            "Dummy Name 2",
-            "Dummy Name 3",
-            "Dummy Name 4",
-            "Dummy Name 5",
-            "Dummy Name 6",
-            "Dummy Name 7",
-            "Dummy Name 8",
-            "Dummy Name 9",
-            "Dummy Name 10",
-        };
-
-        setMembers(array);
-        setTeamInfo("Your Team Name", 5, 10);
-
+        //Getting Button before Http Call so we can overwrite button color to team color
         Button rally = (Button) view.findViewById(R.id.raidButton);
+
+        //Getting our Information from Backend and setting it in our GetResponseListener
+        ctx = this.getContext();
+        BackendCom bCom = BackendCom.getInstance(ctx);
+        HttpHeader header = new HttpHeader(ctx);
+        bCom.group(myGroupGet(rally), httpErrorListener(), header);
+
+
         rally.setOnClickListener(new View.OnClickListener()
         {
             public void onClick(View view)
@@ -98,11 +103,15 @@ public class TeamFragment extends Fragment
         listView.setAdapter(itemsAdapter);
     }
 
-    public void setTeamInfo(String name, int memberCount, int controlledHalls)//TODO: maybe add team color?
+    public void setTeamInfo(String name, int memberCount, int controlledHalls, String color)//TODO: maybe add team color?
     {
+        //TODO EITHER FIX ISSUES WITH TRANSPARENCY OR USE COLOR WITHOUT TRANSPARENCY
+        String desaturatedColor = color.replaceAll("#", "");
+        desaturatedColor = "#80" + desaturatedColor;
+
         TextView nameText = fragmentView.findViewById(R.id.teamName);
         nameText.setText(name);
-        //nameText.setTextColor();
+        nameText.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor(desaturatedColor)));
 
         TextView memberText = fragmentView.findViewById(R.id.textCurrentMembers);
         memberText.setText(memberCount + " Members");
@@ -110,4 +119,43 @@ public class TeamFragment extends Fragment
         TextView controlText = fragmentView.findViewById(R.id.textCurrentControll);
         controlText.setText(controlledHalls + "%");//WILL THIS BE ABSOLUTE OR PERCENT?
     }
+
+    private Response.Listener<JSONObject> myGroupGet(Button button)
+    {
+        return new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    color = response.getString("colour");
+                    teamName = response.getString("name");
+                    JSONArray tMembers = response.getJSONArray("members");
+
+                    members = new String[tMembers.length()];
+                    for(int i = 0; i < tMembers.length(); i++){
+                        members[i] = tMembers.getString(i);
+                    }
+
+                    setMembers(members);
+                    setTeamInfo(teamName, members.length, 0, color);
+
+                    //Setting Button Color to Team Color
+                    button.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor(color)));
+                } catch (JSONException e) {
+                    Log.d("My Group:", e.toString());
+                }
+
+            }
+        };
+    }
+
+    private Response.ErrorListener httpErrorListener() {
+        return new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                //Error Handling
+                Log.d("HTTP", "Error: " + error.getMessage());
+            }
+        };
+    }
+
 }

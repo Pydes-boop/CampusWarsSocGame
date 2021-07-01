@@ -152,9 +152,16 @@ public class HttpSingleton {
         HttpSingleton.getInstance(ctx).addToRequestQueue(jsonArrayRequest);
     }
 
-    public void getRequestObject(String route, Response.Listener<JSONObject> listener, Response.ErrorListener errlsn){
+    public void getRequestObject(String route, HashMap<String, String> params, Response.Listener<JSONObject> listener, Response.ErrorListener errlsn){
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
-                (Request.Method.GET, this.url + route,null, listener, errlsn);
+                (Request.Method.GET, this.url + route,null, listener, errlsn) {
+            //this is the part, that adds the header to the request
+            @Override
+            public Map<String, String> getHeaders() {
+                Map<String, String> parameters = params;
+                return parameters;
+            }
+        };
         HttpSingleton.getInstance(ctx).addToRequestQueue(jsonObjectRequest);
     }
 
@@ -169,6 +176,18 @@ public class HttpSingleton {
             }
         };
         HttpSingleton.getInstance(ctx).addToRequestQueue(jsonObjectRequest);
+    }
+
+    public void postRequestString(String route, HashMap<String, String> params, Response.Listener<String> listener, Response.ErrorListener errlsn){
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, this.url + route, listener, errlsn) {
+            //this is the part, that adds the header to the request
+            @Override
+            public Map<String, String> getHeaders() {
+                Map<String, String> parameters = params;
+                return parameters;
+            }
+        };
+        HttpSingleton.getInstance(ctx).addToRequestQueue(stringRequest);
     }
 
     public void getRequestString(String route, Response.Listener<String> listener, Response.ErrorListener errlsn){

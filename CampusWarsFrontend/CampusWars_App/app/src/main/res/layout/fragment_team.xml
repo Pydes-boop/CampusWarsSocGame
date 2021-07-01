@@ -26,14 +26,14 @@
             android:autoSizeTextType="uniform"
 
             android:background="@drawable/button_rounded"
-            android:paddingLeft="10sp"
             android:drawableLeft="@drawable/ic_group_icon"
 
             android:elevation="15sp"
             android:gravity="center"
+            android:paddingLeft="10sp"
             android:text="Your Team Name"
-            android:textColor="@color/text"
 
+            android:textColor="@color/text"
             android:textStyle="bold" />
 
         <Space

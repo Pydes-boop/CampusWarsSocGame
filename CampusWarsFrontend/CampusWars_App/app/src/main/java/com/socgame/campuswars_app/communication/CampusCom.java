@@ -112,7 +112,7 @@ public class CampusCom {
                     JSONObject lectures = xmlToJson.toJson();
 
                     BackendCom bCom = BackendCom.getInstance(ctx);
-                    bCom.groups(lectures);
+                    bCom.lectures(lectures);
 
                     Log.d("CampusCom", lectures.toString());
 

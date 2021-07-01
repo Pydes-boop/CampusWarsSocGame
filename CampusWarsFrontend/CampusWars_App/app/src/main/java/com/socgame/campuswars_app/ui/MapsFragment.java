@@ -54,49 +54,6 @@ public class MapsFragment extends Fragment implements GpsObserver
     private Marker localPos;//TODO: maybe google maps has an integrated way to do that?
     BackendCom bCom;
 
-
-    private Response.Listener<JSONArray> roomfinderGetListener() {
-        return new Response.Listener<JSONArray>() {
-            @Override
-            public void onResponse(JSONArray response) {
-                try{
-                    for(int i = 0; i < response.length(); i++){
-                            //Getting JSONs
-                            JSONObject lectureHall = (JSONObject) response.get(i);
-                            JSONObject location = (JSONObject) lectureHall.get("location");
-                            JSONObject occupier = (JSONObject) lectureHall.get("occupier");
-
-                        //Getting Data
-                        double lat = location.getDouble("latitude");
-                        double lon = location.getDouble("longitude");
-
-                        String lecture = lectureHall.getString("currentLecture");
-                        String name = lectureHall.getString("roomName");
-
-                        String color = occupier.getString("color");
-
-                        //TODO fix Http Call and switch lat with lon
-                        //Adding Lecture Hall
-                        addLectureHall(lat, lon, color, name, lecture);
-                    }
-                } catch (JSONException e) {
-                    Log.d("roomFinderGetListener: ", e.toString());
-                }
-            }
-        };
-    }
-
-
-    private Response.ErrorListener httpErrorListener() {
-        return new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                //Error Handling
-                Log.d("HTTP", "Error: " + error.getMessage());
-            }
-        };
-    }
-
     private OnMapReadyCallback callback = new OnMapReadyCallback() {
         @Override
         public void onMapReady(GoogleMap googleMap) {
@@ -236,6 +193,47 @@ public class MapsFragment extends Fragment implements GpsObserver
             MarkerOptions options = customMarker(position, "You", "You are here", "#000000", R.drawable.ic_human, 2);
             localPos = map.addMarker(options);
         }
+    }
+
+    private Response.Listener<JSONArray> roomfinderGetListener() {
+        return new Response.Listener<JSONArray>() {
+            @Override
+            public void onResponse(JSONArray response) {
+                try{
+                    for(int i = 0; i < response.length(); i++){
+                        //Getting JSONs
+                        JSONObject lectureHall = response.getJSONObject(i);
+                        JSONObject location = lectureHall.getJSONObject("location");
+                        JSONObject occupier = lectureHall.getJSONObject("occupier");
+
+                        //Getting Data
+                        double lat = location.getDouble("latitude");
+                        double lon = location.getDouble("longitude");
+
+                        String lecture = lectureHall.getString("currentLecture");
+                        String name = lectureHall.getString("roomName");
+
+                        String color = occupier.getString("color");
+
+                        //Adding Lecture Hall
+                        addLectureHall(lat, lon, color, name, lecture);
+                    }
+                } catch (JSONException e) {
+                    Log.d("roomFinderGetListener: ", e.toString());
+                }
+            }
+        };
+    }
+
+
+    private Response.ErrorListener httpErrorListener() {
+        return new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                //Error Handling
+                Log.d("HTTP", "Error: " + error.getMessage());
+            }
+        };
     }
 
     //Marker (color) logic

@@ -48,33 +48,33 @@ public class HttpHeader {
         SharedPreferences settings = ctx.getSharedPreferences("userdata", 0);
         String UID = settings.getString("UID", "empty");
         String name = settings.getString("name", "empty");
-        String team = settings.getString("team", "noTeam");
-        header.put("uid", "\"" + UID + "\"");
-        header.put("name", "\"" + name + "\"");
-        header.put("team", "\"" + team + "\"");
+        String team = settings.getString("team", "no Team");
+        header.put("uid", UID);
+        header.put("name", name);
+        header.put("team", team);
     }
 
     public void buildRoomFinderHeader(double latitude, double longitude){
-        header.put("latitude", "\"" + Double.toString(latitude) + "\"");
-        header.put("longitude", "\"" + Double.toString(longitude) + "\"");
+        header.put("latitude", Double.toString(latitude));
+        header.put("longitude", Double.toString(longitude));
     }
 
     public void buildPersonalLecturesHeader(JSONObject pLectures) throws JSONException {
         String lectures = "[";
         JSONArray arr = pLectures.getJSONObject("rowset").getJSONArray("row");
 
-        lectures += "\"" + arr.getJSONObject(0).get("stp_sp_titel") + ": " + arr.getJSONObject(0).get("semester_id") + "\"";
+        lectures += "\"" + arr.getJSONObject(0).getString("stp_sp_titel").replace("\"", "").replace(":", "") + ": " + arr.getJSONObject(0).get("semester_id") + "\"";
         for(int i = 1; i < arr.length(); i++){
-            lectures += ",\"" + arr.getJSONObject(i).get("stp_sp_titel") + ": " + arr.getJSONObject(i).get("semester_id") + "\"";
+            lectures += ",\"" + arr.getJSONObject(i).getString("stp_sp_titel").replace("\"", "").replace(":", "") + ": " + arr.getJSONObject(i).get("semester_id") + "\"";
         }
         lectures += "]";
         header.put("lectures", lectures);
     }
 
-    public void buildQuizHeader(double latitude, double longitude, int lid, String roomName){
-        header.put("latitude", "\"" + Double.toString(latitude) + "\"");
-        header.put("longitude", "\"" + Double.toString(longitude) + "\"");
-        header.put("lid", "\"" + lid + "\"");
-        header.put("roomName", "\"" + roomName + "\"");
+    public void buildQuizHeader(double latitude, double longitude, String lid, String roomName){
+        header.put("latitude", Double.toString(latitude));
+        header.put("longitude", Double.toString(longitude));
+        header.put("lid", lid);
+        header.put("room", roomName);
     }
 }
