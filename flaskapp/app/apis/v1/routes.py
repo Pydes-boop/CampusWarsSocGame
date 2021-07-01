@@ -174,10 +174,11 @@ class Start(Resource):
     @request_requires(headers=['passphrase'])
     def post(self):
         if request.headers['passphrase'] == "YOU ONLY CALL THIS TWICE A YEAR PLS":
-            if groupCreation.create_groups()[0]:
-                return "ok", 200
-            else:
-                return "nope", 400
+            # if groupCreation.create_groups()[0]: todo: swap with line below
+            #     return "ok", 200
+            # else:
+            #     return "nope", 400
+            return jsonify(groupCreation.create_groups()), 200
 
 
 @api.resource('/question')
