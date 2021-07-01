@@ -100,14 +100,15 @@ class LiveDebug(Resource):
 
 @api.resource('/quiz-refresh')
 class QuizRefresh(Resource):
-    @request_requires(headers=['uid', 'team', 'room'])
+    @request_requires(headers=['uid', 'team', 'room', 'lid'])
     def post(self):
         """Refresh quiz state and maybe or join a game."""
         # I know it is the same as above, but we might
         # have to something different here later
         result = live_data.quiz_queue(request.headers['uid'],
                                       request.headers['team'],
-                                      request.headers['room'])
+                                      request.headers['room'],
+                                      request.headers['lid'])
         if result:
             descriptor, game, = result
             return jsonify(

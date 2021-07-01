@@ -199,7 +199,7 @@ class QuizQueue(RoomQueue):
         self.game_queue = game_queue
         super(QuizQueue, self).__init__(None)
 
-    def __call__(self, uid: str, team: str, room: str) -> Optional[Tuple[str, Union[Game]]]:
+    def __call__(self, uid: str, team: str, room: str, lid: str = None) -> Optional[Tuple[str, Union[Game]]]:
         """Do everything at once really..."""
         if uid in self:
             game = self.game_queue.is_player_in_game(uid)
@@ -210,7 +210,7 @@ class QuizQueue(RoomQueue):
             if uid in self and room == self[uid].room == room:  # player adds another into a game
                 opp = self.get_opponent(self[uid])
                 if opp:
-                    game = Game(game_id(), players=[self[uid], opp], question=choice(get_current_quizzes(room)))  # TODO
+                    game = Game(game_id(), players=[self[uid], opp], question=choice(get_current_quizzes(lid)))  # TODO
                     del self[uid], self[opp.uid]
                     self.game_queue[game.game_id] = game
                     return 'game-incomplete', game
