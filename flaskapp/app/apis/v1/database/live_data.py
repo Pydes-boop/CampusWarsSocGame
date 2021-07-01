@@ -158,6 +158,7 @@ class PurgeQueue(dict, Dict[str, Any], metaclass=ABCMeta):
     def __getitem__(self, item):
         if item not in self:
             raise Exception(f'Unknown item: "{item}" in {self.__class__.__name__}')
+        return super(PurgeQueue, self).__getitem__(item)
 
 
 class RoomQueue(PurgeQueue):
