@@ -65,7 +65,7 @@ def add_lectures_to_user(firebase_id, lectures):
         split_string = lectures[i].split(":")
         name = split_string[0]
         j = 1
-        while j < len(split_string) - 2:
+        while j < len(split_string) - 1:
             name += split_string[j]
             j = j + 1
         term = split_string[j][1:]

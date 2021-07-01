@@ -198,7 +198,7 @@ class Test(Resource):
                    "Social Gaming (IN0040): 21S", "Einführung in die Theoretische Informatik (IN0011): 21S",
                    "Einführung in die Informatik 1 (IN0001): 19W", "Audiokommunikation: 21S",
                    "Studentische Vollversammlungen - Informatik: 19W", "Interaktive Visualisierung: 20W"]
-        return add_lectures_to_user(3, lectures)
+        return add_lectures_to_user("3", lectures)
 
 
 if __name__ == '__main__':
