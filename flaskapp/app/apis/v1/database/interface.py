@@ -13,7 +13,6 @@ from apis.v1.database.time_functions import get_current_time_and_day, get_curren
 from bson.objectid import ObjectId
 
 
-
 def find_closest_room(lon, lat, max_distance):
     return mongo.db.room.find_one({"location": {"$near": {"$geometry": {"type": "Point", "coordinates": [lon, lat]},
                                                           "$maxDistance": max_distance}}})
@@ -108,7 +107,10 @@ def get_current_quizzes(room_id):
                                                                             "end": {"$gte": current_time[0]},
                                                                             "day": current_time[1]}}},
                                               {"_id": 1})
-    indices_quizzes = mongo.db.quiz.find({"lectureID": index_lecture})
+    indices_quizzes = list(mongo.db.quiz.find({"lectureID": index_lecture}))
+    if not indices_quizzes:
+        room_info = mongo.db.room.find_one({"_id": room_id})
+        indices_quizzes = list(mongo.db.quiz.find({"campusID": room_info["campusID"]}))
     return list(mongo.db.quiz.find({"_id": {"$in": indices_quizzes}}))
 
 
@@ -119,6 +121,18 @@ def add_quiz(name, created_by, lecture_id):
         "name": name,
         "createdBy": created_by,
         "lectureID": lecture_id,
+        "creationDate": datetime.now().isoformat(),
+    }
+    return mongo.db.quiz.insert_one(item).acknowledged
+
+
+def add_campus_quiz(name, created_by, campus_id):
+    if isinstance(campus_id, str):
+        campus_id = ObjectId(campus_id)
+    item = {
+        "name": name,
+        "createdBy": created_by,
+        "campusID": campus_id,
         "creationDate": datetime.now().isoformat(),
     }
     return mongo.db.quiz.insert_one(item).acknowledged
