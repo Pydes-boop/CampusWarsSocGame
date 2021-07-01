@@ -59,6 +59,7 @@ def add_user(firebase_id, name, lectures=[]):
 
 # todo schöner machen mit exists
 def add_lectures_to_user(firebase_id, lectures):
+    items = []
     for i in range(len(lectures)):
         split_string = lectures[i].split(":")
         name = split_string[0]
@@ -68,6 +69,7 @@ def add_lectures_to_user(firebase_id, lectures):
             j = j + 1
         term = split_string[j][1:]
         entry_exists = len(list(mongo.db.lectures.find({"name": name, "term": term}))) > 0
+        items.append(entry_exists)
         lecture_id = None
         if not entry_exists:
             item = {
@@ -82,11 +84,12 @@ def add_lectures_to_user(firebase_id, lectures):
         else:
             lecture_id = mongo.db.lecture.find_one({"name": name, "term": term}, {"_id": 1})["_id"]
         # todo why dict
-        if mongo.db.firebase_users.update_one({"firebaseID": firebase_id},
-                                              {"$push": {"lectures": lecture_id}}).matched_count == 0:
-            return False
-
-    return list(mongo.db.lecture.find({}, {"_id": 0}))
+       # if mongo.db.firebase_users.update_one({"firebaseID": firebase_id},
+        #                                      {"$push": {"lectures": lecture_id}}).matched_count == 0:
+            #return False
+        mongo.db.firebase_users.update_one({"firebaseID": firebase_id},
+                                              {"$push": {"lectures": lecture_id}})
+    return items
 
 
 def add_question_to_quiz(question, right_answer, wrong_answers, quiz_id):
