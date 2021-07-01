@@ -150,8 +150,12 @@ def get_lectures_of_user(firebase_id):
 def get_users_of_lecture(lecture_id):
     if isinstance(lecture_id, str):
         lecture_id = ObjectId(lecture_id)
-    return list(
-        mongo.db.firebase_users.find({"lectures": {"$elemMatch": {"$eq": lecture_id}}}, {"firebaseID": 1, "_id": 0}))
+    items = []
+    for i in list(
+            mongo.db.firebase_users.find({"lectures": {"$elemMatch": {"$eq": lecture_id}}},
+                                         {"firebaseID": 1, "_id": 0})):
+        items.append(i["firebaseID"])
+    return items
 
 
 def get_full_name_of_current_lecture_in_room(room_id):
