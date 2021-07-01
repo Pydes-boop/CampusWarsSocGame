@@ -55,8 +55,6 @@ public class TeamFragment extends Fragment
 
         ListView listView = view.findViewById(R.id.memberList);
 
-        Button logout = (Button) view.findViewById(R.id.logoutButton);
-        FirebaseCom fCom = FirebaseCom.getInstance(ctx);
 
         //TODO: get correct info from server
         //only possible when the calls exist
@@ -76,20 +74,6 @@ public class TeamFragment extends Fragment
 
         setMembers(array);
         setTeamInfo("Your Team Name", 5, 10);
-
-        //Logout Button
-        logout.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                fCom.getMAuth().signOut();
-                SharedPreferences settings = ctx.getSharedPreferences("userdata", 0);
-                SharedPreferences.Editor editor = settings.edit();
-                editor.putBoolean("loggedIn", false);
-                editor.apply();
-
-                Intent myIntent = new Intent(view.getContext(), LoginActivity.class);
-                startActivityForResult(myIntent, 0);
-            }
-        });
 
         Button rally = (Button) view.findViewById(R.id.raidButton);
         rally.setOnClickListener(new View.OnClickListener()

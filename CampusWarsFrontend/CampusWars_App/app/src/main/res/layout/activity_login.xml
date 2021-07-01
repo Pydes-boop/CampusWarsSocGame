@@ -69,9 +69,10 @@
 
             android:background="@drawable/button_rounded"
             android:textColor="@color/text"
-            android:elevation="20sp"
+            android:elevation="10sp"
 
             android:drawableLeft="@drawable/ic_email"
+            android:paddingLeft="10sp"
             android:drawablePadding="10sp"
             />
 
@@ -90,9 +91,10 @@
 
             android:background="@drawable/button_rounded"
             android:textColor="@color/text"
-            android:elevation="20sp"
+            android:elevation="10sp"
 
             android:drawableLeft="@drawable/ic_lock"
+            android:paddingLeft="10sp"
             android:drawablePadding="10sp"
             />
 
