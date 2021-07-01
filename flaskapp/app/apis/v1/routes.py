@@ -17,7 +17,7 @@ import json
 from apis.v1.database import interface
 from apis.v1.database.interface import add_room, add_lecture, get_all_rooms, find_closest_room, add_lectures_to_user, \
     add_question_to_quiz, add_user, get_users_of_lecture, get_full_name_of_current_lecture_in_room, get_current_team, \
-    get_player_name, get_current_quizzes, get_questions_of_quiz
+    get_player_name, get_current_quizzes, get_questions_of_quiz, get_time_table_of_room
 from bson.objectid import ObjectId
 from apis.v1.database.time_functions import get_current_term, get_time_as_seconds
 
@@ -194,6 +194,13 @@ class Register(Resource):
         return "ok", 200
 
 
+@api.resource('/timetable')
+class TimeTable(Resource):
+    @request_requires(headers=['room_id'])
+    def post(self):
+        return get_time_table_of_room(request.headers['room_id'])
+    
+
 @api.resource('/marina')
 class Test(Resource):
     def get(self):
@@ -248,7 +255,8 @@ class Test(Resource):
                       "roomID": ObjectId("60d78a721ca97fc034f1f5ac"),
                       "day": 3},
                      ])
-        return get_questions_of_quiz(get_current_quizzes(ObjectId("60d78a721ca97fc034f1f5ac"))[0]["_id"])
+        return get_time_table_of_room(ObjectId("60d78a721ca97fc034f1f5ac"))
+        # return get_questions_of_quiz(get_current_quizzes(ObjectId("60d78a721ca97fc034f1f5ac"))[0]["_id"])
         # return get_full_name_of_current_lecture_in_room(ObjectId("60d78a721ca97fc034f1f5ac"))
 
     if __name__ == '__main__':

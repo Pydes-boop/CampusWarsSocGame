@@ -11,7 +11,8 @@ __all__ = ("add_room", "add_lecture", "get_all_rooms", "find_closest_room", "add
 
 from apis.v1.database import mongo, db
 from datetime import datetime
-from apis.v1.database.time_functions import get_current_time_and_day, get_current_term
+from apis.v1.database.time_functions import get_current_time_and_day, get_current_term, get_day_as_string, \
+    get_seconds_as_string
 from bson.objectid import ObjectId
 
 
@@ -153,7 +154,6 @@ def get_users_of_lecture(lecture_id):
         mongo.db.firebase_users.find({"lectures": {"$elemMatch": {"$eq": lecture_id}}}, {"firebaseID": 1, "_id": 0}))
 
 
-# todo marina
 def get_full_name_of_current_lecture_in_room(room_id):
     if isinstance(room_id, str):
         room_id = ObjectId(room_id)
@@ -167,6 +167,23 @@ def get_full_name_of_current_lecture_in_room(room_id):
     if lecture is None:
         return None
     return lecture["name"] + ": " + lecture["term"]
+
+
+def get_time_table_of_room(room_id):
+    if isinstance(room_id, str):
+        room_id = ObjectId(room_id)
+    lectures = list(mongo.db.lecture.find({"term": get_current_term(),
+                                           "timetable": {"$elemMatch": {"roomID": room_id}}}))
+    items = []
+    for lec in lectures:
+        for e in lec['timetable']:
+            if e['roomID'] == room_id:
+                items.append(
+                    {"name": lec["name"] + ": " + lec["term"], "day_as_int": e["day"],
+                     "day": get_day_as_string(e["day"]),
+                     "start": get_seconds_as_string(e["start"]), "end": get_seconds_as_string(e["end"])})
+    items.sort(key=lambda x: (x["name"], x["start"]))
+    return items
 
 
 def add_new_teams(team_list):
@@ -200,7 +217,8 @@ def get_questions_of_quiz(quiz_id):
 
 
 def get_current_team(member_firebase_id):
-    item = mongo.db.teams.find_one({"members": {"$elemMatch": {"$eq": member_firebase_id}}, "term": get_current_term()})
+    item = mongo.db.teams.find_one(
+        {"members": {"$elemMatch": {"$eq": member_firebase_id}}, "term": get_current_term()})
     item['_id'] = str(item['_id'])
     return item
 
