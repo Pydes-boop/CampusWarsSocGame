@@ -248,7 +248,7 @@ class Test(Resource):
                       "roomID": ObjectId("60d78a721ca97fc034f1f5ac"),
                       "day": 3},
                      ])
-        return get_current_quizzes(ObjectId("60d78a721ca97fc034f1f5ac"))
+        return get_questions_of_quiz(get_current_quizzes(ObjectId("60d78a721ca97fc034f1f5ac")[0]))
         # return get_full_name_of_current_lecture_in_room(ObjectId("60d78a721ca97fc034f1f5ac"))
 
     if __name__ == '__main__':
