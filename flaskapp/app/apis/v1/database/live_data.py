@@ -224,7 +224,7 @@ class QuizQueue(RoomQueue):
                 if opp:
                     game = Game(game_id=game_id(),
                                 players=[self[uid], opp],
-                                question=choice(get_questions_of_quiz((get_current_quizzes(ObjectId(lid))[0]["_id"])))
+                                question=choice(get_questions_of_quiz((choice(get_current_quizzes(ObjectId(lid)))["_id"])))
                                 # question=choice(get_questions_of_quiz(choice(get_current_quizzes(ObjectId(lid)))))
                     )  # TODO
                     del self[uid], self[opp.uid]
