@@ -1,10 +1,13 @@
 package com.socgame.campuswars_app.ui;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
+import android.service.autofill.FieldClassification;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,11 +16,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.google.android.gms.maps.model.LatLng;
 import com.socgame.campuswars_app.R;
 import com.socgame.campuswars_app.Sensor.GpsObserver;
+import com.socgame.campuswars_app.communication.BackendCom;
+import com.socgame.campuswars_app.communication.HttpHeader;
 
 import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /*
 
@@ -25,6 +33,11 @@ import org.json.JSONArray;
 public class TerritoryFragment extends Fragment  implements GpsObserver //implements View.OnClickListener
 {
     View fragmentView = null;
+    private Context ctx = getContext();
+    private BackendCom bCom = BackendCom.getInstance(ctx);
+    private String lectureId;
+    private String lectureHall = "nothing";
+    private LatLng lectureLoc = null;
 
     //TODO: create an update method which calls the server
 
@@ -49,15 +62,18 @@ public class TerritoryFragment extends Fragment  implements GpsObserver //implem
         Button challenge = (Button) view.findViewById(R.id.challengeButton);
         challenge.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-                Intent myIntent = new Intent(view.getContext(), QuizActivity.class);
-                //We use bundles to give parameters to our QuizActivity
-                Bundle b = new Bundle();
-                b.putString("question", "Which one of these Sports typically requires a social Context?"); //Question
-                b.putStringArray("answers", new String[]{"Swimming", "Gaming", "Basketball", "Running"}); //Answer Options
-                b.putInt("correctAnswer", 3); //Correct Answer
-                b.putString("challenger", "Georg Groh"); //Challenger name
-                myIntent.putExtras(b);
-                startActivityForResult(myIntent, 0);
+                if(lectureHall.equals("nothing")){
+                    Toast.makeText(getActivity(), "You need to enter a lecture hall to challenge people", Toast.LENGTH_LONG).show();
+                } else {
+                    Intent myIntent = new Intent(view.getContext(), MatchMakingActivity.class);
+                    //We use bundles to give parameters to our QuizActivity
+                    Bundle b = new Bundle();
+                    b.putDouble("latitude", lectureLoc.latitude); //Question
+                    b.putDouble("latitude", lectureLoc.longitude); //Question
+                    b.putString("roomName", lectureHall); //Challenger name
+                    myIntent.putExtras(b);
+                    startActivityForResult(myIntent, 0);
+                }
             }
         });
 
@@ -91,14 +107,35 @@ public class TerritoryFragment extends Fragment  implements GpsObserver //implem
         lectureText.setText(lecture);
     }
 
-    private Response.Listener<JSONArray> roomfinderPostListener()
+    private Response.Listener<JSONObject> roomfinderPostListener(double latitude, double longitude)
     {
-        return new Response.Listener<JSONArray>() {
+        return new Response.Listener<JSONObject>() {
             @Override
-            public void onResponse(JSONArray response) {
+            public void onResponse(JSONObject response) {
+                try {
+                    JSONObject loc = response.getJSONObject("location");
+                    lectureLoc = new LatLng(latitude, longitude);
+                    JSONObject occupancy = response.getJSONObject("occupancy");
+                    Double multiplier = response.getDouble("multiplier");
+                    String occupier = response.getString("occupier");
+                    String name = response.getString("roomName");
 
-                //TODO: get actual info from server
-                setHallInfo("Current Lecture Hall", "Owning Team Name", "Current Lecture");
+                    setHallInfo(name, occupier, "No Lecture currently");
+
+                } catch (Exception e) {
+                    Log.d("Error in Roomfinder Call", e.toString());
+                }
+            }
+        };
+    }
+
+    private Response.ErrorListener httpErrorListener() {
+        return new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                lectureHall = "nothing";
+                //Error Handling
+                Log.d("HTTP", "Error: " + error.getMessage());
             }
         };
     }
@@ -106,6 +143,11 @@ public class TerritoryFragment extends Fragment  implements GpsObserver //implem
     @Override
     public void OnLocationUpdate(LatLng loc)
     {
+
+        HttpHeader head = new HttpHeader(ctx);
+        head.buildRoomFinderHeader(loc.latitude, loc.longitude);
+        bCom.roomDetectionPost(roomfinderPostListener(loc.latitude, loc.longitude), httpErrorListener(), head);
+
         //maybe safe last location?
         //maybe do some distance / time checks
         //TODO ROOMFINDER CALL HERE?

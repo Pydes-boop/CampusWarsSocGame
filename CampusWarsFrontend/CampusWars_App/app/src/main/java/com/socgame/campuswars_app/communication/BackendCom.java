@@ -115,9 +115,8 @@ public class BackendCom {
         http.getRequest("v1/roomfinder", listener, error);
     }
 
-    public void roomDetectionPost(Response.Listener<JSONArray> listener, Response.ErrorListener error){
-        //TODO
-        //http.getRequest("v1/roomfinder", listener, error);
+    public void roomDetectionPost(Response.Listener<JSONObject> listener, Response.ErrorListener error, HttpHeader head){
+        http.postRequestObject("v1/roomfinder", head.getHeaders(), listener, error);
     }
 
     public boolean quiz(){

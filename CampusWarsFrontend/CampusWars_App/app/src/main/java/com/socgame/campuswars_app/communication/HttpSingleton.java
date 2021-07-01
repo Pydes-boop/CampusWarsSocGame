@@ -117,7 +117,7 @@ public class HttpSingleton {
         HttpSingleton.getInstance(ctx).addToRequestQueue(jsonArrayRequest);
     }
 
-    public void postRequest(String route, HashMap<String, String> params, Response.Listener<JSONArray> listener, Response.ErrorListener errlsn) throws JSONException {
+    public void postRequest(String route, HashMap<String, String> params, Response.Listener<JSONArray> listener, Response.ErrorListener errlsn){
         /**
          * create get request of string: url + route
          * @param route String for route to take ob HTTP Server
@@ -150,6 +150,25 @@ public class HttpSingleton {
             }
         };
         HttpSingleton.getInstance(ctx).addToRequestQueue(jsonArrayRequest);
+    }
+
+    public void getRequestObject(String route, Response.Listener<JSONObject> listener, Response.ErrorListener errlsn){
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
+                (Request.Method.GET, this.url + route,null, listener, errlsn);
+        HttpSingleton.getInstance(ctx).addToRequestQueue(jsonObjectRequest);
+    }
+
+    public void postRequestObject(String route, HashMap<String, String> params, Response.Listener<JSONObject> listener, Response.ErrorListener errlsn){
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
+                (Request.Method.POST, this.url + route, null, listener, errlsn) {
+            //this is the part, that adds the header to the request
+            @Override
+            public Map<String, String> getHeaders() {
+                Map<String, String> parameters = params;
+                return parameters;
+            }
+        };
+        HttpSingleton.getInstance(ctx).addToRequestQueue(jsonObjectRequest);
     }
 
     public void getRequestString(String route, Response.Listener<String> listener, Response.ErrorListener errlsn){
