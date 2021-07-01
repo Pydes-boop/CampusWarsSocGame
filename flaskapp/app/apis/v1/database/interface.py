@@ -57,6 +57,7 @@ def add_user(firebase_id, name, lectures=[]):
     return mongo.db.firebase_users.insert_one(item).acknowledged
 
 
+# todo schöner machen mit exists
 def add_lectures_to_user(firebase_id, lectures):
     lectures = lectures.split(",")
     for i in range(len(lectures)):
@@ -64,9 +65,9 @@ def add_lectures_to_user(firebase_id, lectures):
         split_string = lectures[i].split(":")
         name = split_string[0]
         term = split_string[1]
-        entry_exists = mongo.db.lectures.count({"name": name, "term": term}, {"limit": 1})
+        entry_exists = len(mongo.db.lectures.find({"name": name, "term": term})) > 0
         lecture_id = None
-        if entry_exists == 0:
+        if not entry_exists:
             item = {
                 "name": name,
                 "term": term,
