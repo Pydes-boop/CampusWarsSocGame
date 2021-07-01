@@ -132,7 +132,7 @@ class QuizAnswer(Resource):
     def post(self):
         """Answer the quiz."""
         live_data.game_queue[request.headers['gid']].refresh()
-        live_data.game_queue.submit_answer(request.headers['gid'], request.headers['pid'],
+        live_data.game_queue.submit_answer(request.headers['gid'], int(request.headers['pid']),
                                            int(request.headers['outcome']))
         return jsonify('ok')
 
