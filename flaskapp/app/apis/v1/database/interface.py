@@ -107,7 +107,7 @@ def get_current_quizzes(room_id):
                                                                             "end": {"$gte": current_time[0]},
                                                                             "day": current_time[1]}}},
                                               {"_id": 1})
-    indices_quizzes = list(mongo.db.quiz.find({"lectureID": index_lecture}))
+    indices_quizzes = [] # list(mongo.db.quiz.find({"lectureID": index_lecture}))
     if len(indices_quizzes) == 0:
         room_info = mongo.db.room.find_one({"_id": room_id}, {"_id": 0})
         indices_quizzes = list(mongo.db.quiz.find({"campusID": room_info["campusID"]}))
