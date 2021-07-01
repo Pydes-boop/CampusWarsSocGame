@@ -57,16 +57,19 @@ def add_user(firebase_id, name, lectures=[]):
     return mongo.db.firebase_users.insert_one(item).acknowledged
 
 
+# todo schöner machen mit exists
 def add_lectures_to_user(firebase_id, lectures):
-    lectures = lectures.split(",")
     for i in range(len(lectures)):
-        lectures[i] = lectures[i][1:-1]
         split_string = lectures[i].split(":")
         name = split_string[0]
-        term = split_string[1]
-        entry_exists = mongo.db.lectures.count({"name": name, "term": term}, {"limit": 1})
+        j = 1
+        while j < len(lectures) - 1:
+            name += split_string[1]
+            j = j + 1
+        term = split_string[j]
+        entry_exists = len(list(mongo.db.lectures.find({"name": name, "term": term}))) > 0
         lecture_id = None
-        if entry_exists == 0:
+        if not entry_exists:
             item = {
                 "name": name,
                 "term": term,
@@ -79,9 +82,9 @@ def add_lectures_to_user(firebase_id, lectures):
             lecture_id = result.inserted_id
         else:
             lecture_id = mongo.db.lectures.find_one({"name": name, "term": term}, {"_id": 1})["_id"]
-        if not mongo.db.firebase_users.update({"firebaseID": firebase_id},
-                                              {"$push": {"lectures": lecture_id}}).acknowledged:
-            return False
+        # todo why dict
+        mongo.db.firebase_users.update({"firebaseID": firebase_id},
+                                       {"$push": {"lectures": lecture_id}})
 
     return True
 
@@ -101,14 +104,8 @@ def add_question_to_quiz(question, right_answer, wrong_answers, quiz_id):
 def get_current_quizzes(room_id):
     if isinstance(room_id, str):
         room_id = ObjectId(room_id)
-    current_time = get_current_time_and_day()
-    index_lecture = mongo.db.lecture.find_one({"roomID": room_id, "term": get_current_term(),
-                                               "timetable": {"$elemMatch": {"start": {"$lt": current_time[0]},
-                                                                            "end": {"$gte": current_time[0]},
-                                                                            "day": current_time[1]}}},
-                                              {"_id": 1})
-    indices_quizzes = mongo.db.quiz.find({"lectureID": index_lecture})
-    return list(mongo.db.quiz.find({"_id": {"$in": indices_quizzes}}))
+    room_info = mongo.db.room.find_one({"_id": room_id}, {"_id": 0})
+    return list(mongo.db.quiz.find({"campusID": room_info["campusID"]}, {"_id": 1}))
 
 
 def add_quiz(name, created_by, lecture_id):
@@ -118,6 +115,18 @@ def add_quiz(name, created_by, lecture_id):
         "name": name,
         "createdBy": created_by,
         "lectureID": lecture_id,
+        "creationDate": datetime.now().isoformat(),
+    }
+    return mongo.db.quiz.insert_one(item).acknowledged
+
+
+def add_campus_quiz(name, created_by, campus_id):
+    if isinstance(campus_id, str):
+        campus_id = ObjectId(campus_id)
+    item = {
+        "name": name,
+        "createdBy": created_by,
+        "campusID": campus_id,
         "creationDate": datetime.now().isoformat(),
     }
     return mongo.db.quiz.insert_one(item).acknowledged
@@ -180,7 +189,7 @@ def get_player_name(firebase_id):
 
 
 def get_questions_of_quiz(quiz_id):
-    return list(mongo.db.question.find({"quizID": quiz_id}))
+    return list(mongo.db.question.find({"quizID": quiz_id}, {"_id": 0, "quizID": 0}))
 
 
 def get_current_team(member_firebase_id):
