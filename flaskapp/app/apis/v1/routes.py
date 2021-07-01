@@ -15,7 +15,7 @@ from apis.v1.decorators import request_requires
 import random
 
 from apis.v1.database.interface import add_room, add_lecture, get_all_rooms, find_closest_room, add_lectures_to_user, \
-    add_question_to_quiz, add_user, get_users_of_lecture, get_full_name_of_current_lecture_in_room
+    add_question_to_quiz, add_user, get_users_of_lecture, get_full_name_of_current_lecture_in_room, get_current_quizzes
 from bson.objectid import ObjectId
 
 from data_handler import live_data, team_state
@@ -104,8 +104,10 @@ class QuizRefresh(Resource):
                     'gid': game.game_id,  # game_id: a 24 byte string to identify each game
                     'pid': game.get_player_id(request.headers['uid']),  # player_id: 0 or 1 identifies player in game
                     'opp-name': 'It was you all along',  # name of the opponent TODO ask Marina how to get the name
-                    'opp-team': game.players[not game.get_player_id(request.headers['uid'])].team,  # name of the opponent team
-                    'quiz': game.question,  # quiz in the already specified format TODO is there a way to get just a random quiz
+                    'opp-team': game.players[not game.get_player_id(request.headers['uid'])].team,
+                    # name of the opponent team
+                    'quiz': game.question,
+                    # quiz in the already specified format TODO is there a way to get just a random quiz
                     'game-ready': descriptor == 'game'  # unimportant
                 }
             )
@@ -182,8 +184,7 @@ class Register(Resource):
 @api.resource('/marina')
 class Test(Resource):
     def get(self):
-        add_user(1, "marina", [ObjectId("60d5dfe18343a7a71befce4b")])
-        return get_users_of_lecture("60d5dfe18343a7a71befce4b")
+        return get_current_quizzes("60d78a721ca97fc034f1f5ac")
 
 
 if __name__ == '__main__':
