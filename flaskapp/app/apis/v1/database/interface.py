@@ -64,7 +64,7 @@ def add_lectures_to_user(firebase_id, lectures):
         split_string = lectures[i].split(":")
         name = split_string[0]
         term = split_string[1]
-        entry_exists = mongo.db.lectures.count({"name": name, "term": term}, {limit: 1})
+        entry_exists = mongo.db.lectures.count({"name": name, "term": term}, {"limit": 1})
         lecture_id = None
         if entry_exists == 0:
             item = {
@@ -155,18 +155,18 @@ def get_full_name_of_current_lecture_in_room(room_id):
 
 
 def add_new_teams(team_list):
-    for t in team_list:
-        if not add_team(t):
-            return False, t
+    for team in team_list:
+        if not add_team(team):
+            return False, team
     return True, None
 
 
-def add_team(member_list):
+def add_team(team):
     item = {
-        "name": "teamname",
-        "colour": "#333333",
+        "name": team.name,
+        "colour": team.color,
         "term": get_current_term(),
-        "members": member_list,
+        "members": team.members,
     }
     return mongo.db.teams.insert_one(item).acknowledged
 
