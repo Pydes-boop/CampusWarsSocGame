@@ -91,7 +91,7 @@ class QuizRequest(Resource):
         return jsonify('ok')
 
 
-@api.resource('live-debug')
+@api.resource('/live-debug')
 class LiveDebug(Resource):
     def get(self):
         return jsonify(live_data.room_queue, live_data.quiz_queue, live_data.game_queue)
