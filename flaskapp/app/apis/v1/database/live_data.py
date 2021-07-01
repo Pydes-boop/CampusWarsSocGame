@@ -16,7 +16,7 @@ from abc import ABCMeta, abstractmethod
 from os import urandom
 from base64 import b64encode
 from apis.v1.database.team_state import TeamState
-from apis.v1.database.interface import get_current_quizzes
+from apis.v1.database.interface import get_current_quizzes, get_questions_of_quiz
 from operator import attrgetter
 from random import choice
 from bson import ObjectId
@@ -211,7 +211,7 @@ class QuizQueue(RoomQueue):
             if uid in self and room == self[uid].room == room:  # player adds another into a game
                 opp = self.get_opponent(self[uid])
                 if opp:
-                    game = Game(game_id(), players=[self[uid], opp], question=choice(get_current_quizzes(ObjectId(lid))))  # TODO
+                    game = Game(game_id(), players=[self[uid], opp], question=get_questions_of_quiz(choice(get_current_quizzes(ObjectId(lid)))))  # TODO
                     del self[uid], self[opp.uid]
                     self.game_queue[game.game_id] = game
                     return 'game-incomplete', game
