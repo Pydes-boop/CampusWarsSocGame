@@ -131,7 +131,8 @@ class QuizAnswer(Resource):
     def post(self):
         """Answer the quiz."""
         live_data.game_queue[request.headers['gid']].refresh()
-        live_data.game_queue.submit_answer(request.headers['gid'], request.headers['pid'], request.headers['outcome'])
+        live_data.game_queue.submit_answer(request.headers['gid'], request.headers['pid'],
+                                           int(request.headers['outcome']))
         return jsonify('ok')
 
 
@@ -178,9 +179,10 @@ class Start(Resource):
 
 @api.resource('/question')
 class Question(Resource):
+    @request_requires(headers=['question', 'right_asnwer', 'wrong_answers', 'quiz_id'])
     def post(self):
-        # todo: get questions from body and process to database
-        add_question_to_quiz(1, 2, 3, 4)
+        add_question_to_quiz(request.headers['question'], request.headers['right_asnwer'],
+                             request.headers['wrong_answers'], request.headers['quiz_id'])
         return "ok", 200
 
 
