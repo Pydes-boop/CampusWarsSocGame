@@ -37,10 +37,9 @@ class RoomFinder(Resource):
         name = room['roomName']
         team_state.increase_team_presence_in_room(team=request.headers['team'], room=name)
         live_data.room_queue(uid=request.headers['uid'], team=request.headers['team'], room=name)
-        room['occupancy'] = team_state.get_all_team_scores_in_room(name)
-        room['occupier'] = team_state.mw[name].team
-        room['multiplier'] = team_state.mw[name].multiplier
-        return jsonify(room)
+        return_room = {'occupancy': team_state.get_all_team_scores_in_room(name), 'occupier': team_state.mw[name].team,
+                       'room_name': name, 'lid': room["_id"], 'multiplier': team_state.mw[name].multiplier}
+        return jsonify(return_room)
 
     # todo @Robin insert your stuff instead of my dummy stuff
     def get(self):
@@ -147,10 +146,20 @@ class Lectures(Resource):
         return
 
 
+@api.resource('/mygroup')
+class MyGroup(Resource):
+    @request_requires(headers=['uid'])
+    def get(self):
+        # todo @Marina: function that returns a team of the given uid
+        ...
+
+
 @api.resource('/start')
 class Start(Resource):
+    @request_requires(headers=['passphrase'])
     def post(self):
-        groupCreation.create_groups()
+        if request.headers['passphrese'] == "YOU ONLY CALL THIS TWICE A YEAR PLS":
+            groupCreation.create_groups()
         return "ok", 200
 
 
