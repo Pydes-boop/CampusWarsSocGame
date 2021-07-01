@@ -209,7 +209,7 @@ def get_all_lecture_ids():
 
 
 def get_player_name(firebase_id):
-    return mongo.db.firebase_users.find_one({"firebaseID": firebase_id}, {"name": 1})
+    return mongo.db.firebase_users.find_one({"firebaseID": firebase_id}, {"name": 1})['name']
 
 
 def get_questions_of_quiz(quiz_id):
@@ -233,6 +233,10 @@ def get_quiz_info(quiz_id):
     if isinstance(quiz_id, str):
         quiz_id = ObjectId(quiz_id)
     return mongo.db.quiz.find_one({"_id": quiz_id})
+
+
+def get_number_of_players():
+    pass
 
 
 if __name__ == '__main__':
