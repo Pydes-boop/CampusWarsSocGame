@@ -236,7 +236,7 @@ def get_quiz_info(quiz_id):
 
 
 def get_number_of_players():
-    pass
+    return len(list(mongo.db.firebase_users.find()))
 
 
 if __name__ == '__main__':
