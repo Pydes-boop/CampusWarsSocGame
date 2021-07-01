@@ -15,7 +15,7 @@ from apis.v1.decorators import request_requires
 import random
 
 from apis.v1.database.interface import add_room, add_lecture, get_all_rooms, find_closest_room, add_lectures_to_user, \
-    add_question_to_quiz, add_user, get_users_of_lecture, get_full_name_of_current_lecture_in_room, get_current_quizze, \
+    add_question_to_quiz, add_user, get_users_of_lecture, get_full_name_of_current_lecture_in_room, get_current_quizzes, \
     get_current_team
 from bson.objectid import ObjectId
 
