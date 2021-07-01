@@ -115,8 +115,10 @@ class QuizRefresh(Resource):
                     'gid': game.game_id,  # game_id: a 24 byte string to identify each game
                     'pid': game.get_player_id(request.headers['uid']),  # player_id: 0 or 1 identifies player in game
                     'opp-name': 'It was you all along',  # name of the opponent TODO ask Marina how to get the name
-                    'opp-team': game.players[not game.get_player_id(request.headers['uid'])].team,  # name of the opponent team
-                    'quiz': game.question,  # quiz in the already specified format TODO is there a way to get just a random quiz
+                    'opp-team': game.players[not game.get_player_id(request.headers['uid'])].team,
+                    # name of the opponent team
+                    'quiz': game.question,
+                    # quiz in the already specified format TODO is there a way to get just a random quiz
                     'game-ready': descriptor == 'game'  # unimportant
                 }
             )
@@ -192,12 +194,12 @@ class Register(Resource):
 @api.resource('/marina')
 class Test(Resource):
     def get(self):
-        lectures= ["Englisch - English through Cinema C1: 20S", "Studentische Vollversammlungen - Informatik: 21S",
-                   "Praktikum: Grundlagen der Programmierung (IN0002), Di, Mi: 19W",
-                   "Echtzeit-Computergrafik (IN0038): 21S", "Ringvorlesung 'Games Engineering' (IN2368): 21S",
-                   "Social Gaming (IN0040): 21S", "Einführung in die Theoretische Informatik (IN0011): 21S",
-                   "Einführung in die Informatik 1 (IN0001): 19W", "Audiokommunikation: 21S",
-                   "Studentische Vollversammlungen - Informatik: 19W", "Interaktive Visualisierung: 20W"]
+        lectures = ["Englisch - English through Cinema C1: 20S", "Studentische Vollversammlungen - Informatik: 21S",
+                    "Praktikum: Grundlagen der Programmierung (IN0002), Di, Mi: 19W",
+                    "Echtzeit-Computergrafik (IN0038): 21S", "Ringvorlesung 'Games Engineering' (IN2368): 21S",
+                    "Social Gaming (IN0040): 21S", "Einführung in die Theoretische Informatik (IN0011): 21S",
+                    "Einführung in die Informatik 1 (IN0001): 19W", "Audiokommunikation: 21S",
+                    "Studentische Vollversammlungen - Informatik: 19W", "Interaktive Visualisierung: 20W"]
         return add_lectures_to_user("3", lectures)
 
 

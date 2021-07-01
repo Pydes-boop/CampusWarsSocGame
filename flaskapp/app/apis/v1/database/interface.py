@@ -83,13 +83,13 @@ def add_lectures_to_user(firebase_id, lectures):
                 return False
             lecture_id = result.inserted_id
         else:
-            lecture_id = mongo.db.lectures.find_one({"name": name, "term": term}, {"_id": 1})["_id"]
+            lecture_id = mongo.db.lecture.find_one({"name": name, "term": term}, {"_id": 1})["_id"]
         # todo why dict
         if mongo.db.firebase_users.update_one({"firebaseID": firebase_id},
                                               {"$push": {"lectures": lecture_id}}).matched_count == 0:
             return False
 
-    return True
+    return list(mongo.db.lecture.find({}, {"_id": 0}))
 
 
 def add_question_to_quiz(question, right_answer, wrong_answers, quiz_id):
@@ -196,7 +196,13 @@ def get_questions_of_quiz(quiz_id):
 
 
 def get_current_team(member_firebase_id):
-    return mongo.db.teams.find_one({"members": {"$elemMatch": {"$eq": member_firebase_id}}, "term": get_current_term()})
+    item = mongo.db.teams.find_one({"members": {"$elemMatch": {"$eq": member_firebase_id}}, "term": get_current_term()})
+    item['_id'] = str(item['_id'])
+    return item
+
+
+def get_colour_of_team(team_name):
+    return mongo.db.teams.find_one({"name": team_name, "term": get_current_term()})['colour']
 
 
 if __name__ == '__main__':
