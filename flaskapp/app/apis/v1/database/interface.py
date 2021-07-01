@@ -61,8 +61,32 @@ def add_user(firebase_id, name, lectures=[]):
 def add_lectures_to_user(firebase_id, lectures):
     for i in range(len(lectures)):
         split_string = lectures[i].split(":")
-        return split_string
+        name = split_string[0]
+        j = 1
+        while j < len(split_string) - 2:
+            name += split_string[j]
+            j = j + 1
+        term = split_string[j][1:]
+        entry_exists = len(list(mongo.db.lectures.find({"name": name, "term": term}))) > 0
+        lecture_id = None
+        if not entry_exists:
+            item = {
+                "name": name,
+                "term": term,
+                "roomID": None,
+                "timetable": []
+            }
+            result = mongo.db.lecture.insert_one(item)
+            if not result.acknowledged:
+                return False
+            lecture_id = result.inserted_id
+        else:
+            lecture_id = mongo.db.lectures.find_one({"name": name, "term": term}, {"_id": 1})["_id"]
+        # todo why dict
+        mongo.db.firebase_users.update({"firebaseID": firebase_id},
+                                       {"$push": {"lectures": lecture_id}})
 
+    return True
 
 
 def add_question_to_quiz(question, right_answer, wrong_answers, quiz_id):
