@@ -174,13 +174,15 @@ class Start(Resource):
     @request_requires(headers=['passphrase'])
     def post(self):
         if request.headers['passphrase'] == "YOU ONLY CALL THIS TWICE A YEAR PLS":
-            groupCreation.create_groups()
-        return "ok", 200
+            if groupCreation.create_groups()[0]:
+                return "ok", 200
+            else:
+                return "nope", 400
 
 
 @api.resource('/question')
 class Question(Resource):
-    @request_requires(headers=['question', 'right_asnwer', 'wrong_answers', 'quiz_id'])
+    @request_requires(headers=['question', 'right_answer', 'wrong_answers', 'quiz_id'])
     def post(self):
         add_question_to_quiz(request.headers['question'], request.headers['right_asnwer'],
                              request.headers['wrong_answers'], request.headers['quiz_id'])
@@ -207,7 +209,7 @@ class Test(Resource):
         # return get_questions_of_quiz(get_current_quizzes(ObjectId("60d78a721ca97fc034f1f5ac"))[0]["_id"])
         # return get_full_name_of_current_lecture_in_room(ObjectId("60d78a721ca97fc034f1f5ac"))
 
-        
+
         return get_time_table_of_room(ObjectId("60d78a721ca97fc034f1f5ac"))
 
     if __name__ == '__main__':
