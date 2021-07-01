@@ -19,6 +19,7 @@ from apis.v1.database.interface import add_room, add_lecture, get_all_rooms, fin
     add_question_to_quiz, add_user, get_users_of_lecture, get_full_name_of_current_lecture_in_room, get_current_team, \
     get_player_name, get_current_quizzes, get_questions_of_quiz
 from bson.objectid import ObjectId
+from apis.v1.database.time_functions import get_current_term, get_time_as_seconds
 
 from data_handler import live_data, team_state
 
@@ -194,14 +195,57 @@ class Register(Resource):
 @api.resource('/marina')
 class Test(Resource):
     def get(self):
-        lectures = ["Englisch - English through Cinema C1: 20S", "Studentische Vollversammlungen - Informatik: 21S",
-                    "Praktikum: Grundlagen der Programmierung (IN0002), Di, Mi: 19W",
-                    "Echtzeit-Computergrafik (IN0038): 21S", "Ringvorlesung 'Games Engineering' (IN2368): 21S",
-                    "Social Gaming (IN0040): 21S", "Einführung in die Theoretische Informatik (IN0011): 21S",
-                    "Einführung in die Informatik 1 (IN0001): 19W", "Audiokommunikation: 21S",
-                    "Studentische Vollversammlungen - Informatik: 19W", "Interaktive Visualisierung: 20W"]
-        return add_lectures_to_user("3", lectures)
-
-
-if __name__ == '__main__':
-    pass
+        add_lecture("Social Gaming (IN0040)", get_current_term(), [{"start": get_time_as_seconds(14, 15),
+                                                                    "end": get_time_as_seconds(15, 45),
+                                                                    "roomID": ObjectId("60d789da1ca97fc034f1f5ab"),
+                                                                    "day": 2},
+                                                                   ])
+        add_lecture("Praktikum Social Gaming (IN0040)", get_current_term(), [{"start": get_time_as_seconds(16, 0),
+                                                                              "end": get_time_as_seconds(18, 0),
+                                                                              "roomID": ObjectId(
+                                                                                  "60d789da1ca97fc034f1f5ab"),
+                                                                              "day": 0},
+                                                                             ])
+        add_lecture("Einführung in die Theoretische Informatik (IN0011)", get_current_term(),
+                    [{"start": get_time_as_seconds(14, 15),
+                      "end": get_time_as_seconds(16, 0),
+                      "roomID": ObjectId("60d78a721ca97fc034f1f5ac"),
+                      "day": 0},
+                     {"start": get_time_as_seconds(14, 15),
+                      "end": get_time_as_seconds(16, 0),
+                      "roomID": ObjectId("60d78a721ca97fc034f1f5ac"),
+                      "day": 3},
+                     ])
+        add_lecture("Grundlagen: Rechnernetze und Verteilte Systeme (IN0010)", get_current_term(),
+                    [{"start": get_time_as_seconds(10, 0),
+                      "end": get_time_as_seconds(12, 0),
+                      "roomID": ObjectId("60d789da1ca97fc034f1f5ab"),
+                      "day": 0},
+                     {"start": get_time_as_seconds(10, 0),
+                      "end": get_time_as_seconds(12, 0),
+                      "roomID": ObjectId("60d78a721ca97fc034f1f5ac"),
+                      "day": 1},
+                     ])
+        add_lecture("Grundlagen: Algorithmen und Datenstrukturen (IN0007)", get_current_term(),
+                    [{"start": get_time_as_seconds(14, 0),
+                      "end": get_time_as_seconds(16, 0),
+                      "roomID": ObjectId("60d78a721ca97fc034f1f5ac"),
+                      "day": 1},
+                     {"start": get_time_as_seconds(13, 15),
+                      "end": get_time_as_seconds(14, 15),
+                      "roomID": ObjectId("60d78a721ca97fc034f1f5ac"),
+                      "day": 2},
+                     ])
+        add_lecture("Marina Test Lecture (7777)", get_current_term(),
+                    [{"start": get_time_as_seconds(14, 0),
+                      "end": get_time_as_seconds(16, 0),
+                      "roomID": ObjectId("60d78a721ca97fc034f1f5ac"),
+                      "day": 1},
+                     {"start": get_time_as_seconds(13, 15),
+                      "end": get_time_as_seconds(18, 15),
+                      "roomID": ObjectId("60d78a721ca97fc034f1f5ac"),
+                      "day": 3},
+                     ])
+        return get_full_name_of_current_lecture_in_room(ObjectId("60d78a721ca97fc034f1f5ac"))
+        if __name__ == '__main__':
+            pass

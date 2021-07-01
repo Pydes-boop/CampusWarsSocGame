@@ -36,13 +36,10 @@ def get_all_rooms():
     return list(mongo.db.room.find())
 
 
-def add_lecture(name, term, room_id=None, timetable=[]):
-    if isinstance(room_id, str):
-        room_id = ObjectId(room_id)
+def add_lecture(name, term, timetable=[]):
     item = {
         "name": name,
         "term": term,
-        "roomID": room_id,
         "timetable": timetable
     }
     return mongo.db.lecture.insert_one(item).acknowledged
@@ -75,7 +72,6 @@ def add_lectures_to_user(firebase_id, lectures):
             item = {
                 "name": name,
                 "term": term,
-                "roomID": None,
                 "timetable": []
             }
             result = mongo.db.lecture.insert_one(item)
@@ -151,19 +147,15 @@ def get_full_name_of_current_lecture_in_room(room_id):
     if isinstance(room_id, str):
         room_id = ObjectId(room_id)
     current_time = get_current_time_and_day()
-    lecture = mongo.db.lecture.find_one({"roomID": room_id, "term": get_current_term(),
+    lecture = mongo.db.lecture.find_one({"term": get_current_term(),
                                          "timetable": {"$elemMatch": {"start": {"$lt": current_time[0]},
                                                                       "end": {"$gte": current_time[0]},
-
+                                                                      "roomID": room_id,
                                                                       "day": current_time[1]}}})
 
-    return "SoG: S21"
-
-
-# if lecture is None:
-#     return None
-
-# return lecture["name"] + ": " + lecture["term"]
+    if lecture is None:
+        return None
+    return lecture["name"] + ": " + lecture["term"]
 
 
 def add_new_teams(team_list):
