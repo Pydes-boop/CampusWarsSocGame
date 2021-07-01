@@ -204,10 +204,20 @@ class TimeTable(Resource):
 @api.resource('/marina')
 class Test(Resource):
     def get(self):
-
-        return get_time_table_of_room(ObjectId("60d78a721ca97fc034f1f5ac"))
         # return get_questions_of_quiz(get_current_quizzes(ObjectId("60d78a721ca97fc034f1f5ac"))[0]["_id"])
         # return get_full_name_of_current_lecture_in_room(ObjectId("60d78a721ca97fc034f1f5ac"))
+
+        add_lecture("Einführung in die Theoretische Informatik (IN0011)", get_current_term(),
+                    [{"start": get_time_as_seconds(14, 15),
+                      "end": get_time_as_seconds(16, 0),
+                      "roomID": ObjectId("60d78a721ca97fc034f1f5ac"),
+                      "day": 0},
+                     {"start": get_time_as_seconds(14, 15),
+                      "end": get_time_as_seconds(16, 0),
+                      "roomID": ObjectId("60d78a721ca97fc034f1f5ac"),
+                      "day": 3},
+                     ])
+        return get_time_table_of_room(ObjectId("60d78a721ca97fc034f1f5ac"))
 
     if __name__ == '__main__':
         pass
