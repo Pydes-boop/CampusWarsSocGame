@@ -244,7 +244,7 @@ def get_current_team(member_firebase_id):
 
 
 def get_colour_of_team(team_name):
-    result = mongo.db.teams.find_one({"name": team_name, "term": get_current_term()})['colour']
+    result = mongo.db.teams.find_one({"name": team_name, "term": get_current_term()})
     if result is None:
         return "#212121"
     return result["colour"]
