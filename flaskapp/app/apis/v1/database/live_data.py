@@ -257,7 +257,7 @@ class GameQueue(PurgeQueue):
         else:
             return None
 
-    def submit_answer(self, gid: str, pid: str, answer: int) -> None:
+    def submit_answer(self, gid: str, pid: int, answer: int) -> None:
         self[gid].results[pid] = answer
 
     def close(self, gid: str):
