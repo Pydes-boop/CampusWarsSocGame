@@ -77,7 +77,7 @@ public class MapsFragment extends Fragment implements GpsObserver
 
                         //TODO fix Http Call and switch lat with lon
                         //Adding Lecture Hall
-                        addLectureHall(lon, lat, color, name, lecture);
+                        addLectureHall(lat, lon, color, name, lecture);
                     }
                 } catch (JSONException e) {
                     Log.d("roomFinderGetListener: ", e.toString());

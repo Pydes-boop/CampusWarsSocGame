@@ -71,15 +71,10 @@ public class HttpHeader {
         header.put("lectures", lectures);
     }
 
-    public void buildGroupsHeader(){
-        //TODO empty method stub
-    }
-
-    public void buildStartHeader(){
-        //TODO empty method stub
-    }
-
-    public void buildQuestionHeader(){
-        //TODO empty method stub
+    public void buildQuizHeader(double latitude, double longitude, int lid, String roomName){
+        header.put("latitude", "\"" + Double.toString(latitude) + "\"");
+        header.put("longitude", "\"" + Double.toString(longitude) + "\"");
+        header.put("lid", "\"" + lid + "\"");
+        header.put("roomName", "\"" + roomName + "\"");
     }
 }

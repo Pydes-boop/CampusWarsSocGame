@@ -3,21 +3,37 @@ package com.socgame.campuswars_app.ui;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.android.volley.Response;
+import com.google.android.gms.maps.model.LatLng;
 import com.socgame.campuswars_app.R;
+import com.socgame.campuswars_app.communication.BackendCom;
+import com.socgame.campuswars_app.communication.HttpHeader;
+
+import org.json.JSONObject;
 
 public class MatchMakingActivity extends AppCompatActivity
 {
     //The state represents is "what is finished?"
     private enum State  {BEGIN, REQUEST,WAIT, READY};
     private State state = State.BEGIN;
+    private Context ctx = this.getApplicationContext();
+    private double latitude;
+    private double longitude;
+    private String roomName;
+    private int lid;
+    private HttpHeader head;
+    private BackendCom bCom;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -25,6 +41,18 @@ public class MatchMakingActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_match_making);
 
+        bCom = BackendCom.getInstance(ctx);
+
+        Bundle b = getIntent().getExtras();
+        if(b != null){
+            this.latitude = b.getDouble("latitude"); //Question
+            this.longitude = b.getDouble("longitude"); //Question
+            this.roomName = b.getString("roomName"); //Challenger name
+            this.lid = b.getInt("lid");
+        }
+
+        this.head = new HttpHeader(ctx);
+        head.buildQuizHeader(latitude, longitude, lid, roomName);
 
         //TODO: start calling http and ui
         debugChange();
@@ -59,10 +87,10 @@ public class MatchMakingActivity extends AppCompatActivity
         switch (s)
         {
             case BEGIN:
-                //send request
+                //bCom.quiz("request");
                 break;
             case REQUEST:
-                //now waiting
+                //bCom.quiz("refresh");
                 break;
             case WAIT:
                 //done waiting
@@ -92,6 +120,20 @@ public class MatchMakingActivity extends AppCompatActivity
         }
 
         //TODO: always change/iterate state on response
+    }
+
+    private Response.Listener<JSONObject> quizRequestListener()
+    {
+        return new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+
+                } catch (Exception e) {
+                    Log.d("Error in Quiz Request Call", e.toString());
+                }
+            }
+        };
     }
 
 
