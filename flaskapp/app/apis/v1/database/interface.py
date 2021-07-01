@@ -109,8 +109,9 @@ def get_current_quizzes(room_id):
                                               {"_id": 1})
     indices_quizzes = list(mongo.db.quiz.find({"lectureID": index_lecture}))
     if not indices_quizzes:
-        room_info = mongo.db.room.find_one({"_id": room_id})
+        room_info = mongo.db.room.find_one({"_id": room_id}, {"_id": 0})
         indices_quizzes = list(mongo.db.quiz.find({"campusID": room_info["campusID"]}))
+        return room_info
     return list(mongo.db.quiz.find({"_id": {"$in": indices_quizzes}}))
 
 
