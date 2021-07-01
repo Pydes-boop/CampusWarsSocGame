@@ -83,8 +83,7 @@ def add_lectures_to_user(firebase_id, lectures):
         else:
             lecture_id = mongo.db.lectures.find_one({"name": name, "term": term}, {"_id": 1})["_id"]
         # todo why dict
-        mongo.db.firebase_users.update({"firebaseID": firebase_id},
-                                       {"$push": {"lectures": lecture_id}})
+        mongo.db.firebase_users.update_one({"firebaseID": firebase_id}, {"$push": {"lectures": lecture_id}})
 
     return True
 
