@@ -145,6 +145,7 @@ class TeamState:
     def get_room_occupier(self, room: str) -> Optional[str]:
         """Get the team that occupies a certain room."""
         all_team_scores = dict(zip(self.teams.keys(), map(itemgetter(room), self.teams.values())))
+        if not all_team_scores: return None
         m = max(all_team_scores.values())
         teams = [key for key, value in all_team_scores.items() if value == m]
         if not teams: return None
