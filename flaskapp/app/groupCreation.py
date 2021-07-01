@@ -15,7 +15,9 @@ class Group:
 
 def create_groups():
     """
-    uses the wedding seating problem and solution to match users to groups, gets the lectures and users from the db,
+    uses the wedding seating problem and solution to match users to groups
+    (see https://coin-or.github.io/pulp/CaseStudies/a_set_partitioning_problem.html)
+    gets the lectures and users from the db,
     and saves the new groups with a random name and color to the db
     :return:
     """
@@ -63,8 +65,7 @@ def create_groups():
     for group in possible_groups:
         if x[group].value() == 1.0:
             user_groups.append(Group(generate_team_name(), get_random_color(), group))
-    interface.add_new_teams(user_groups)
-    pass
+    return interface.add_new_teams(user_groups)
 
 
 def happiness(group, social_network):

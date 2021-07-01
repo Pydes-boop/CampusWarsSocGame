@@ -95,7 +95,7 @@ class QuizRequest(Resource):
 @api.resource('/live-debug')
 class LiveDebug(Resource):
     def get(self):
-        return jsonify(live_data.room_queue, live_data.quiz_queue, live_data.game_queue)
+        return jsonify(live_data.room_queue, live_data.quiz_queue, [(key, item.json) for key, item in live_data.game_queue.items()])
 
 
 @api.resource('/quiz-refresh')
@@ -174,8 +174,10 @@ class Start(Resource):
     @request_requires(headers=['passphrase'])
     def post(self):
         if request.headers['passphrase'] == "YOU ONLY CALL THIS TWICE A YEAR PLS":
-            groupCreation.create_groups()
-        return "ok", 200
+            if groupCreation.create_groups():
+                return "ok", 200
+            else:
+                return "nope", 400
 
 
 @api.resource('/question')

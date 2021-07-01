@@ -219,6 +219,8 @@ def get_questions_of_quiz(quiz_id):
 def get_current_team(member_firebase_id):
     item = mongo.db.teams.find_one(
         {"members": {"$elemMatch": {"$eq": member_firebase_id}}, "term": get_current_term()})
+    if item is None:
+        return "No team"  # todo: @Felix add user count and thresshhold to new matching to return
     item['_id'] = str(item['_id'])
     return item
 
