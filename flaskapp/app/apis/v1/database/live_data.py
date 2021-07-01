@@ -78,7 +78,7 @@ class Game(TimedItem):
     readiness: List[bool]
     time: int
 
-    def __init__(self, game_id: str, players: List[User], question: Dict[str, Any], time: int = future):
+    def __init__(self, game_id: str, players: List[User], question: Dict[str, Any], time: int = future()):
         self.game_id = game_id
         self.players = players
         self.results = [-2, -2]
@@ -116,7 +116,7 @@ class Game(TimedItem):
 
     @property
     def json(self):
-        return dict((key, value) for key, value in self.__dict__ if not callable(value))
+        return dict((key, value) for key, value in self.__dict__.items() if not callable(value))
 
 
 class TheGreatPurge(Thread):
