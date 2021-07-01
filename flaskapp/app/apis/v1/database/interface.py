@@ -102,8 +102,7 @@ def get_current_quizzes(room_id):
     if isinstance(room_id, str):
         room_id = ObjectId(room_id)
     room_info = mongo.db.room.find_one({"_id": room_id}, {"_id": 0})
-    return  list(mongo.db.quiz.find({"campusID": room_info["campusID"]}))
-    
+    return list(mongo.db.quiz.find({"campusID": room_info["campusID"]}, {"_id": 1}))
 
 
 def add_quiz(name, created_by, lecture_id):
@@ -187,7 +186,7 @@ def get_player_name(firebase_id):
 
 
 def get_questions_of_quiz(quiz_id):
-    return list(mongo.db.question.find({"quizID": quiz_id}))
+    return list(mongo.db.question.find({"quizID": quiz_id}, {"_id": 0, "quizID": 0}))
 
 
 def get_current_team(member_firebase_id):
