@@ -76,13 +76,15 @@ class Game(TimedItem):
     results: List[int]
     Question: Optional[Dict[str, Any]]
     readiness: List[bool]
+    time: int
 
-    def __init__(self, game_id: str, players: List[User], question: Dict[str, Any]):
+    def __init__(self, game_id: str, players: List[User], question: Dict[str, Any], time: int = future):
         self.game_id = game_id
         self.players = players
         self.results = [-2, -2]
         self.question = question
         self.readiness = [False, False]
+        self.time = time
 
     def player_in_game(self, uid: str) -> bool:
         return uid in map(attrgetter('uid'), self.players)
