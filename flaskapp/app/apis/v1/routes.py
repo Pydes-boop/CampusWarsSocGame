@@ -17,7 +17,8 @@ import json
 from apis.v1.database import interface
 from apis.v1.database.interface import add_room, add_lecture, get_all_rooms, find_closest_room, add_lectures_to_user, \
     add_question_to_quiz, add_user, get_users_of_lecture, get_full_name_of_current_lecture_in_room, get_current_team, \
-    get_player_name, get_current_quizzes, get_questions_of_quiz, get_time_table_of_room, get_all_lecture_ids, get_colour_of_team
+    get_player_name, get_current_quizzes, get_questions_of_quiz, get_time_table_of_room, get_all_lecture_ids, \
+    get_current_team_with_member_names, get_colour_of_team
 from bson.objectid import ObjectId
 from apis.v1.database.time_functions import get_current_term, get_time_as_seconds
 
@@ -173,7 +174,7 @@ class Lectures(Resource):
 class MyGroup(Resource):
     @request_requires(headers=['uid'])
     def get(self):
-        return jsonify(get_current_team(request.headers['uid']))
+        return jsonify(get_current_team_with_member_names(request.headers['uid']))
 
 
 @api.resource('/start')
@@ -191,7 +192,7 @@ class Start(Resource):
 class Question(Resource):
     @request_requires(headers=['question', 'right_answer', 'wrong_answers', 'quiz_id'])
     def post(self):
-        add_question_to_quiz(request.headers['question'], request.headers['right_asnwer'],
+        add_question_to_quiz(request.headers['question'], request.headers['right_answer'],
                              request.headers['wrong_answers'], request.headers['quiz_id'])
         return "ok", 200
 

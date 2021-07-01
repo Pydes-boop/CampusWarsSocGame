@@ -84,11 +84,11 @@ def add_lectures_to_user(firebase_id, lectures):
         else:
             lecture_id = mongo.db.lecture.find_one({"name": name, "term": term}, {"_id": 1})["_id"]
         # todo why dict
-       # if mongo.db.firebase_users.update_one({"firebaseID": firebase_id},
+        # if mongo.db.firebase_users.update_one({"firebaseID": firebase_id},
         #                                      {"$push": {"lectures": lecture_id}}).matched_count == 0:
-            #return False
+        # return False
         mongo.db.firebase_users.update_one({"firebaseID": firebase_id},
-                                              {"$push": {"lectures": lecture_id}})
+                                           {"$push": {"lectures": lecture_id}})
     return items
 
 
@@ -220,6 +220,14 @@ def get_all_lecture_ids():
 
 def get_player_name(firebase_id):
     return mongo.db.firebase_users.find_one({"firebaseID": firebase_id}, {"name": 1})['name']
+
+
+def get_current_team_with_member_names(firebase_id):
+    my_team = get_current_team(firebase_id)
+    if my_team == "No team":
+        return my_team
+    my_team["members"] = list(map(lambda x: get_player_name(x), my_team["members"]))
+    return my_team
 
 
 def get_questions_of_quiz(quiz_id):
