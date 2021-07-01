@@ -13,6 +13,7 @@ from apis.v1.database.time_functions import get_current_time_and_day, get_curren
 from bson.objectid import ObjectId
 
 
+
 def find_closest_room(lon, lat, max_distance):
     return mongo.db.room.find_one({"location": {"$near": {"$geometry": {"type": "Point", "coordinates": [lon, lat]},
                                                           "$maxDistance": max_distance}}})
@@ -183,8 +184,8 @@ def get_questions_of_quiz(quiz_id):
     return list(mongo.db.question.find({"quizID": quiz_id}))
 
 
-def get_current_team():
-    return mongo.db.teams.find_one({"members": {"$elemMatch": {"$eq": lecture_id}}})
+def get_current_team(member_firebase_id):
+    return mongo.db.teams.find_one({"members": {"$elemMatch": {"$eq": member_firebase_id}}, "term": get_current_term()})
 
 
 if __name__ == '__main__':
