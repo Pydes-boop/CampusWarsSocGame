@@ -112,6 +112,10 @@ class Game(TimedItem):
         else:
             return 'LOST'
 
+    @property
+    def json(self):
+        return self.__dict__
+
 
 class TheGreatPurge(Thread):
     running: bool
