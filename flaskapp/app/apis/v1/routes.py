@@ -17,7 +17,7 @@ import json
 from apis.v1.database import interface
 from apis.v1.database.interface import add_room, add_lecture, get_all_rooms, find_closest_room, add_lectures_to_user, \
     add_question_to_quiz, add_user, get_users_of_lecture, get_full_name_of_current_lecture_in_room, get_current_team, \
-    get_player_name, get_current_quizzes, get_questions_of_quiz, get_time_table_of_room, get_all_lecture_ids
+    get_player_name, get_current_quizzes, get_questions_of_quiz, get_time_table_of_room, get_all_lecture_ids, get_colour_of_team
 from bson.objectid import ObjectId
 from apis.v1.database.time_functions import get_current_term, get_time_as_seconds
 
@@ -50,20 +50,18 @@ class RoomFinder(Resource):
     # todo @Robin insert your stuff instead of my dummy stuff
     def get(self):
         result = []
-        r = lambda: random.randint(0, 255)
-        j = 1
         for i in get_all_rooms():
-            color = '#%02X%02X%02X' % (r(), r(), r())
+            occupier = team_state.get_room_occupier(i['roomName'])
+            color = get_colour_of_team(occupier)
             item = {
                 "location":
                     {"longitude": i["location"]["coordinates"][0],
                      "latitude": i["location"]["coordinates"][1]},
                 "roomName": i["roomName"],
                 "_id": str(i["_id"]),
-                "occupier": {"color": color, "name": "Team" + str(j)},
+                "occupier": {"color": color, "name": occupier},
                 "currentLecture": get_full_name_of_current_lecture_in_room(i['_id'])
             }
-            j = j + 1
             result.append(item)
         return jsonify(result)
 
