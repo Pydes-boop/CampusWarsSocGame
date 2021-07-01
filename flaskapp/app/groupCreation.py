@@ -40,7 +40,7 @@ def create_groups():
                     social_network.add_edge(users[i], users[j], weight=(1 / len(users)), counter=1)
     for u, v, d in social_network.edges(data=True):
         d['weight'] = d['weight'] / d['counter']
-
+    return social_network # todo: remove this line
     max_groups = len(social_network.nodes) / 5
     max_group_size = 5
 
@@ -64,8 +64,7 @@ def create_groups():
     user_groups = []
     for group in possible_groups:
         if x[group].value() == 1.0:
-            # user_groups.append(Group(generate_team_name(), get_random_color(), group))
-            user_groups.append(group)
+            user_groups.append(Group(generate_team_name(), get_random_color(), group))
     # return interface.add_new_teams(user_groups) todo: swap with line below
     return user_groups
 
