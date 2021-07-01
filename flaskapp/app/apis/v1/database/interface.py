@@ -183,7 +183,7 @@ def get_questions_of_quiz(quiz_id):
     return list(mongo.db.question.find({"quizID": quiz_id}))
 
 
-def get_current_team():
+def get_current_team(lecture_id):
     return mongo.db.teams.find_one({"members": {"$elemMatch": {"$eq": lecture_id}}})
 
 

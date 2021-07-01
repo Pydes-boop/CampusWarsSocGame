@@ -15,7 +15,7 @@ from apis.v1.decorators import request_requires
 import random
 
 from apis.v1.database.interface import add_room, add_lecture, get_all_rooms, find_closest_room, add_lectures_to_user, \
-    add_question_to_quiz, add_user, get_users_of_lecture, get_full_name_of_current_lecture_in_room
+    add_question_to_quiz, add_user, get_users_of_lecture, get_full_name_of_current_lecture_in_room, get_current_team
 from bson.objectid import ObjectId
 
 from data_handler import live_data, team_state
@@ -35,6 +35,7 @@ class RoomFinder(Resource):
         if room is None:
             return jsonify('nothing near you')
         name = room['roomName']
+        room["_id"] = "23"
         team_state.increase_team_presence_in_room(team=request.headers['team'], room=name)
         live_data.room_queue(uid=request.headers['uid'], team=request.headers['team'], room=name)
         return_room = {'occupancy': team_state.get_all_team_scores_in_room(name), 'occupier': team_state.mw[name].team,
@@ -150,8 +151,7 @@ class Lectures(Resource):
 class MyGroup(Resource):
     @request_requires(headers=['uid'])
     def get(self):
-        # todo @Marina: function that returns a team of the given uid
-        ...
+        return jsonify(get_current_team(request.headers['uid']))
 
 
 @api.resource('/start')
