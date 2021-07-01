@@ -143,7 +143,7 @@ class Echo(Resource):
 @api.resource('/lectures')
 class Lectures(Resource):
     def post(self):
-        set_user_lectures(request.headers["uid"], request.headers["lectures"])
+        add_lectures_to_user(request.headers["uid"], request.headers["lectures"])
         return
 
 
