@@ -65,8 +65,7 @@ def create_groups():
     for group in possible_groups:
         if x[group].value() == 1.0:
             user_groups.append(Group(generate_team_name(), get_random_color(), group))
-    interface.add_new_teams(user_groups)
-    pass
+    return interface.add_new_teams(user_groups)
 
 
 def happiness(group, social_network):
