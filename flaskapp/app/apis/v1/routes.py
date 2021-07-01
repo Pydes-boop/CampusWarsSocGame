@@ -174,7 +174,7 @@ class Start(Resource):
     @request_requires(headers=['passphrase'])
     def post(self):
         if request.headers['passphrase'] == "YOU ONLY CALL THIS TWICE A YEAR PLS":
-            if groupCreation.create_groups():
+            if groupCreation.create_groups()[0]:
                 return "ok", 200
             else:
                 return "nope", 400
@@ -182,7 +182,7 @@ class Start(Resource):
 
 @api.resource('/question')
 class Question(Resource):
-    @request_requires(headers=['question', 'right_asnwer', 'wrong_answers', 'quiz_id'])
+    @request_requires(headers=['question', 'right_answer', 'wrong_answers', 'quiz_id'])
     def post(self):
         add_question_to_quiz(request.headers['question'], request.headers['right_asnwer'],
                              request.headers['wrong_answers'], request.headers['quiz_id'])
