@@ -65,7 +65,7 @@ def add_lectures_to_user(firebase_id, lectures):
         split_string = lectures[i].split(":")
         name = split_string[0]
         term = split_string[1]
-        entry_exists = len(mongo.db.lectures.find({"name": name, "term": term})) > 0
+        entry_exists = len(list(mongo.db.lectures.find({"name": name, "term": term}))) > 0
         lecture_id = None
         if not entry_exists:
             item = {
