@@ -48,8 +48,10 @@ public class HttpHeader {
         SharedPreferences settings = ctx.getSharedPreferences("userdata", 0);
         String UID = settings.getString("UID", "empty");
         String name = settings.getString("name", "empty");
+        String team = settings.getString("team", "noTeam");
         header.put("uid", "\"" + UID + "\"");
         header.put("name", "\"" + name + "\"");
+        header.put("team", "\"" + team + "\"");
     }
 
     public void buildRoomFinderHeader(double latitude, double longitude){
@@ -66,7 +68,7 @@ public class HttpHeader {
             lectures += ",\"" + arr.getJSONObject(i).get("stp_sp_titel") + ": " + arr.getJSONObject(i).get("semester_id") + "\"";
         }
         lectures += "]";
-        header.put("\"lectures\"", lectures);
+        header.put("lectures", lectures);
     }
 
     public void buildGroupsHeader(){

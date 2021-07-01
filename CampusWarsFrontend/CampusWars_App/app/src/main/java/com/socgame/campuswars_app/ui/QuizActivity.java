@@ -33,6 +33,7 @@ public class QuizActivity extends AppCompatActivity implements View.OnClickListe
      *
      * written by Jonas and Daniel
      */
+
     private Context ctx;
     private int gid;
     private int pid;
@@ -41,7 +42,6 @@ public class QuizActivity extends AppCompatActivity implements View.OnClickListe
     private String question;
     private String[] wrongAnswers;
     private String correctAnswer;
-
 
     //TODO Link to Server
 
