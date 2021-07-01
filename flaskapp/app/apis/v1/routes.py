@@ -41,7 +41,7 @@ class RoomFinder(Resource):
         live_data.room_queue(uid=request.headers['uid'], team=request.headers['team'], room=name)
         return_room = {'occupancy': team_state.get_all_team_scores_in_room(name),
                        'occupier': team_state.get_room_occupier(name),
-                       'room_name': name, 'lid': room["_id"], 'multiplier': team_state.mw[name].multiplier,
+                       'room_name': name, 'lid': str(room["_id"]), 'multiplier': team_state.mw[name].multiplier,
                        "currentLecture": get_full_name_of_current_lecture_in_room(str(room["_id"]))}
         return jsonify(return_room)
 
