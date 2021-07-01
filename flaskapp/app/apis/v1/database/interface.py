@@ -209,7 +209,7 @@ def get_all_lecture_ids():
 
 
 def get_player_name(firebase_id):
-    return mongo.db.firebase_users.find_one({"firebaseID": firebase_id}, {"name": 1})
+    return mongo.db.firebase_users.find_one({"firebaseID": firebase_id}, {"name": 1})['name']
 
 
 def get_questions_of_quiz(quiz_id):
@@ -219,6 +219,8 @@ def get_questions_of_quiz(quiz_id):
 def get_current_team(member_firebase_id):
     item = mongo.db.teams.find_one(
         {"members": {"$elemMatch": {"$eq": member_firebase_id}}, "term": get_current_term()})
+    if item is None:
+        return "No team"  # todo: @Felix add user count and thresshhold to new matching to return
     item['_id'] = str(item['_id'])
     return item
 
@@ -231,6 +233,10 @@ def get_quiz_info(quiz_id):
     if isinstance(quiz_id, str):
         quiz_id = ObjectId(quiz_id)
     return mongo.db.quiz.find_one({"_id": quiz_id})
+
+
+def get_number_of_players():
+    return len(list(mongo.db.firebase_users.find()))
 
 
 if __name__ == '__main__':
