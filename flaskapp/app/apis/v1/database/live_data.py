@@ -95,8 +95,8 @@ class Game(TimedItem):
     def all_answered(self) -> bool:
         return sum(self.results) >= 0
 
-    def answer(self, pid: int, answer: str):
-        pass  # TODO ask Marina how the questions look exactly
+    def answer(self, pid: int, answer: int):
+        self.results[pid] = answer
 
     def get_player_id(self, uid: str) -> int:
         return list(map(attrgetter('uid'), self.players)).index(uid)
