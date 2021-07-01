@@ -210,7 +210,7 @@ class Test(Resource):
     def get(self):
         # return get_questions_of_quiz(get_current_quizzes(ObjectId("60d78a721ca97fc034f1f5ac"))[0]["_id"])
         # return get_full_name_of_current_lecture_in_room(ObjectId("60d78a721ca97fc034f1f5ac"))
-        return jsonify(str(get_users_of_lecture(get_all_lecture_ids()[0])[0]))
+        return jsonify(str(get_users_of_lecture(ObjectId("60de05235d36922e988511de"))[0]))
 
     if __name__ == '__main__':
         pass
