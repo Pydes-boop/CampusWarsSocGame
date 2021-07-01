@@ -33,9 +33,9 @@ import org.json.JSONObject;
 public class TerritoryFragment extends Fragment  implements GpsObserver //implements View.OnClickListener
 {
     View fragmentView = null;
-    private Context ctx = getContext();
-    private BackendCom bCom = BackendCom.getInstance(ctx);
-    private String lectureId;
+    private Context ctx;
+    private BackendCom bCom;
+    private int lectureId;
     private String lectureHall = "nothing";
     private LatLng lectureLoc = null;
 
@@ -59,6 +59,9 @@ public class TerritoryFragment extends Fragment  implements GpsObserver //implem
         View view = inflater.inflate(R.layout.fragment_territory, container, false);
         this.fragmentView = view;
 
+        ctx = this.getContext();
+        bCom = BackendCom.getInstance(ctx);
+
         Button challenge = (Button) view.findViewById(R.id.challengeButton);
         challenge.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
@@ -69,8 +72,9 @@ public class TerritoryFragment extends Fragment  implements GpsObserver //implem
                     //We use bundles to give parameters to our QuizActivity
                     Bundle b = new Bundle();
                     b.putDouble("latitude", lectureLoc.latitude); //Question
-                    b.putDouble("latitude", lectureLoc.longitude); //Question
+                    b.putDouble("longitude", lectureLoc.longitude); //Question
                     b.putString("roomName", lectureHall); //Challenger name
+                    b.putInt("lid", lectureId); //Challenger name
                     myIntent.putExtras(b);
                     startActivityForResult(myIntent, 0);
                 }
@@ -94,8 +98,10 @@ public class TerritoryFragment extends Fragment  implements GpsObserver //implem
         return view;
     }
 
-    public void setHallInfo(String name, String owner, String lecture)//TODO: maybe add color?
+    public void setHallInfo(String name, String owner, String lecture, LatLng loc)//TODO: maybe add color?
     {
+        lectureLoc = loc;
+
         TextView nameText = fragmentView.findViewById(R.id.lectureHall);
         nameText.setText(name);
         //nameText.setColor(color);
@@ -113,14 +119,16 @@ public class TerritoryFragment extends Fragment  implements GpsObserver //implem
             @Override
             public void onResponse(JSONObject response) {
                 try {
-                    JSONObject loc = response.getJSONObject("location");
-                    lectureLoc = new LatLng(latitude, longitude);
                     JSONObject occupancy = response.getJSONObject("occupancy");
-                    Double multiplier = response.getDouble("multiplier");
                     String occupier = response.getString("occupier");
-                    String name = response.getString("roomName");
 
-                    setHallInfo(name, occupier, "No Lecture currently");
+                    int lid = response.getInt("lid");
+                    lectureId = lid;
+                    double multiplier = response.getDouble("multiplier");
+
+                    String name = response.getString("room_name");
+
+                    setHallInfo(name, occupier, "No Lecture currently", new LatLng(latitude, longitude));
 
                 } catch (Exception e) {
                     Log.d("Error in Roomfinder Call", e.toString());
@@ -143,7 +151,6 @@ public class TerritoryFragment extends Fragment  implements GpsObserver //implem
     @Override
     public void OnLocationUpdate(LatLng loc)
     {
-
         HttpHeader head = new HttpHeader(ctx);
         head.buildRoomFinderHeader(loc.latitude, loc.longitude);
         bCom.roomDetectionPost(roomfinderPostListener(loc.latitude, loc.longitude), httpErrorListener(), head);
