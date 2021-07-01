@@ -42,8 +42,8 @@ class RoomFinder(Resource):
         live_data.room_queue(uid=request.headers['uid'], team=request.headers['team'], room=name)
         return_room = {'occupancy': team_state.get_all_team_scores_in_room(name),
                        'occupier': team_state.get_room_occupier(name),
-                       'room_name': name, 'lid': room["_id"], 'multiplier': team_state.mw[name].multiplier,
-                       "currentLecture": get_full_name_of_current_lecture_in_room(room["_id"])}
+                       'room_name': name, 'lid': str(room["_id"]), 'multiplier': team_state.mw[name].multiplier,
+                       "currentLecture": get_full_name_of_current_lecture_in_room(str(room["_id"]))}
         return jsonify(return_room)
 
     # todo @Robin insert your stuff instead of my dummy stuff
@@ -132,7 +132,8 @@ class QuizAnswer(Resource):
     def post(self):
         """Answer the quiz."""
         live_data.game_queue[request.headers['gid']].refresh()
-        live_data.game_queue.submit_answer(request.headers['gid'], request.headers['pid'], request.headers['outcome'])
+        live_data.game_queue.submit_answer(request.headers['gid'], request.headers['pid'],
+                                           int(request.headers['outcome']))
         return jsonify('ok')
 
 
@@ -179,9 +180,10 @@ class Start(Resource):
 
 @api.resource('/question')
 class Question(Resource):
+    @request_requires(headers=['question', 'right_asnwer', 'wrong_answers', 'quiz_id'])
     def post(self):
-        # todo: get questions from body and process to database
-        add_question_to_quiz(1, 2, 3, 4)
+        add_question_to_quiz(request.headers['question'], request.headers['right_asnwer'],
+                             request.headers['wrong_answers'], request.headers['quiz_id'])
         return "ok", 200
 
 
