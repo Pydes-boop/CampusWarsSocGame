@@ -1,18 +1,26 @@
 __all__ = ()
 
 from time import time
-from datetime import datetime
-
+from datetime import datetime, timezone
+import pytz
 START_SUMMER_TERM = 4
 END_SUMMER_TERM = 9
 
 
 def get_current_time_and_day():
-    now = datetime.now()
+    now = datetime.now(pytz.timezone('Europe/Vienna'))
     midnight = now.replace(hour=0, minute=0, second=0, microsecond=0)
     seconds = (now - midnight).seconds
     result = (seconds, now.weekday())
     return result
+
+
+def get_time_as_seconds(hour, minutes):
+    now = datetime.now()
+    time_needed = now.replace(hour=hour, minute=minutes, second=0)
+    midnight = now.replace(hour=0, minute=0, second=0, microsecond=0)
+    seconds = (time_needed - midnight).seconds
+    return seconds
 
 
 def get_current_term():
