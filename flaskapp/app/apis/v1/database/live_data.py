@@ -16,7 +16,9 @@ from abc import ABCMeta, abstractmethod
 from os import urandom
 from base64 import b64encode
 from apis.v1.database.team_state import TeamState
+from apis.v1.database.interface import get_current_quizzes
 from operator import attrgetter
+from random import choice
 
 from typing import Any, Union, Optional, Dict, List, Tuple
 
@@ -95,8 +97,8 @@ class Game(TimedItem):
     def all_answered(self) -> bool:
         return sum(self.results) >= 0
 
-    def answer(self, pid: int, answer: str):
-        pass  # TODO ask Marina how the questions look exactly
+    def answer(self, pid: int, answer: int):
+        self.results[pid] = answer
 
     def get_player_id(self, uid: str) -> int:
         return list(map(attrgetter('uid'), self.players)).index(uid)
@@ -208,7 +210,7 @@ class QuizQueue(RoomQueue):
             if uid in self and room == self[uid].room == room:  # player adds another into a game
                 opp = self.get_opponent(self[uid])
                 if opp:
-                    game = Game(game_id(), players=[self[uid], opp], question={})
+                    game = Game(game_id(), players=[self[uid], opp], question=choice(get_current_quizzes(room)))  # TODO
                     del self[uid], self[opp.uid]
                     self.game_queue[game.game_id] = game
                     return 'game-incomplete', game
