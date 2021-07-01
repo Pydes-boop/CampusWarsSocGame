@@ -16,11 +16,13 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.google.android.gms.maps.model.LatLng;
 import com.socgame.campuswars_app.R;
 import com.socgame.campuswars_app.communication.BackendCom;
 import com.socgame.campuswars_app.communication.HttpHeader;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class MatchMakingActivity extends AppCompatActivity
@@ -32,9 +34,10 @@ public class MatchMakingActivity extends AppCompatActivity
     private double latitude;
     private double longitude;
     private String roomName;
-    private int lid;
+    private String lid;
     private HttpHeader head;
     private BackendCom bCom;
+    private Bundle quizBundle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -49,14 +52,22 @@ public class MatchMakingActivity extends AppCompatActivity
             this.latitude = b.getDouble("latitude"); //Question
             this.longitude = b.getDouble("longitude"); //Question
             this.roomName = b.getString("roomName"); //Challenger name
-            this.lid = b.getInt("lid");
+            this.lid = b.getString("lid");
         }
-
         this.head = new HttpHeader(ctx);
         head.buildQuizHeader(latitude, longitude, lid, roomName);
 
-        //TODO: start calling http and ui
-        debugChange();
+        //Repeating our Calls every 5 Seconds
+        Handler handler = new Handler();
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                doCommunication(state);
+                handler.postDelayed(this, 5000);
+            }
+        };
+
+        handler.post(runnable);
     }
 
     //this can be deleted
@@ -112,57 +123,89 @@ public class MatchMakingActivity extends AppCompatActivity
                 );
     }
 
-    //TODO: @Daniel, you can ue this or discard the code if yo want. You do you
+    //DONE?
     private void doCommunication(State s)
     {
         switch (s)
         {
             case BEGIN:
-                //bCom.quiz("request");
+                bCom.quizString("request", quizRequestListener(), httpErrorListener(), head);
                 break;
             case REQUEST:
-                //bCom.quiz("refresh");
-                break;
-            case WAIT:
-                //done waiting
-                //TODO: slightly confused, do we instantly swithc to ready?
+                //Request done
+                bCom.quiz("refresh", quizRefreshListener(), httpErrorListener(), head);
                 break;
             case READY:
                 //wait a sec and then change to quiz
-
-                /*
-                Handler handler = new Handler();
-                handler.postDelayed
+                changeUiState(state.READY);
+                Handler handler2 = new Handler();
+                handler2.postDelayed
                 (
                     new Runnable()
                     {
                         @Override
                         public void run()
                         {
-                            Intent myIntent = new Intent(LoadingActivity.this, QuizActivity.class);
-                            //TODO: set quiz info
+                            Intent myIntent = new Intent(MatchMakingActivity.this, QuizActivity.class);
+                            myIntent.putExtras(quizBundle);
                             startActivityForResult(myIntent, 0);
                         }
                     },
                     1000
                 );
-                 */
                 break;
         }
 
         //TODO: always change/iterate state on response
     }
 
-    private Response.Listener<JSONObject> quizRequestListener()
+    private Response.Listener<String> quizRequestListener()
+    {
+        return new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                if(response.toString().contains("ok")){
+                    state = state.REQUEST;
+                    changeUiState(state.REQUEST);
+                    doCommunication(state);
+                }
+            }
+        };
+    }
+
+    private Response.Listener<JSONObject> quizRefreshListener()
     {
         return new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                 try {
+                    quizBundle = new Bundle();
+                    quizBundle.putString("gid", response.getString("gid"));
+                    quizBundle.putString("opp-name", response.getString("opp-name"));
+                    quizBundle.putString("opp-team", response.getString("opp-team"));
+                    quizBundle.putInt("pid", response.getInt("pid"));
+                    JSONObject quiz = response.getJSONObject("quiz");
+                    quizBundle.putString("question", quiz.getString("question"));
+                    quizBundle.putString("correctAnswer", quiz.getString("rightAnswers"));
+                    JSONArray wAnswers = quiz.getJSONArray("wrongAnswers");
+                    String[] wrongAnswers = new String[]{wAnswers.getString(0), wAnswers.getString(1), wAnswers.getString(2)};
+                    quizBundle.putStringArray("wrongAnswers", wrongAnswers);
+                    state = state.READY;
+                    changeUiState(state.WAIT);
 
+                    doCommunication(state);
                 } catch (Exception e) {
                     Log.d("Error in Quiz Request Call", e.toString());
                 }
+            }
+        };
+    }
+
+    private Response.ErrorListener httpErrorListener() {
+        return new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d("HTTP", "Error: " + error.getMessage());
             }
         };
     }

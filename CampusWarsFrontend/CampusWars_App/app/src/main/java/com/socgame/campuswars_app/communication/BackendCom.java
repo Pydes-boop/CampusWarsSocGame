@@ -22,7 +22,7 @@ public class BackendCom {
      *
      * register sends backend a User ID and adds that User to the Database
      *
-     * groups gets a JsonObject with our lectures from a Campus Call, then parses the data and sends it to Backend With UID
+     * lectures gets a JsonObject with our lectures from a Campus Call, then parses the data and sends it to Backend With UID
      *
      *
      * written by Daniel
@@ -84,7 +84,7 @@ public class BackendCom {
         });
     }
 
-    public void groups(JSONObject lectures){
+    public void lectures(JSONObject lectures){
         HttpHeader head = new HttpHeader(this.ctx);
         try {
             head.buildPersonalLecturesHeader(lectures);
@@ -117,6 +117,14 @@ public class BackendCom {
 
     public void quiz(String type, Response.Listener<JSONObject> listener, Response.ErrorListener error, HttpHeader head){
         http.postRequestObject("v1/quiz-" + type, head.getHeaders(), listener, error);
+    }
+
+    public void quizString(String type, Response.Listener<String> listener, Response.ErrorListener error, HttpHeader head){
+        http.postRequestString("v1/quiz-" + type, head.getHeaders(), listener, error);
+    }
+
+    public void group(Response.Listener<JSONObject> listener, Response.ErrorListener error, HttpHeader head){
+        http.getRequestObject("v1/mygroup", head.getHeaders(), listener, error);
     }
 
 

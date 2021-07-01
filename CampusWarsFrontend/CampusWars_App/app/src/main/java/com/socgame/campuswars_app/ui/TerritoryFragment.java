@@ -35,7 +35,7 @@ public class TerritoryFragment extends Fragment  implements GpsObserver //implem
     View fragmentView = null;
     private Context ctx;
     private BackendCom bCom;
-    private int lectureId;
+    private String lectureId;
     private String lectureHall = "nothing";
     private LatLng lectureLoc = null;
 
@@ -66,14 +66,9 @@ public class TerritoryFragment extends Fragment  implements GpsObserver //implem
         challenge.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view)
             {
-                //TODO: re-enable this once it works
-                Intent myIntent = new Intent(view.getContext(), MatchMakingActivity.class);
-                startActivity(myIntent);
-
-                /*
                 if(lectureHall.equals("nothing"))
                 {
-                    Toast.makeText(getActivity(), "You need to enter a lecture hall to challenge people", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getActivity(), lectureHall, Toast.LENGTH_LONG).show();
                 }
                 else
                 {
@@ -83,11 +78,10 @@ public class TerritoryFragment extends Fragment  implements GpsObserver //implem
                     b.putDouble("latitude", lectureLoc.latitude); //Question
                     b.putDouble("longitude", lectureLoc.longitude); //Question
                     b.putString("roomName", lectureHall); //Challenger name
-                    b.putInt("lid", lectureId); //Challenger name
+                    b.putString("lid", lectureId); //Challenger name
                     myIntent.putExtras(b);
                     startActivityForResult(myIntent, 0);
                 }
-                 */
             }
         });
 
@@ -129,18 +123,28 @@ public class TerritoryFragment extends Fragment  implements GpsObserver //implem
             @Override
             public void onResponse(JSONObject response) {
                 try {
+                    String currentLecture = response.getString("currentLecture");
+                    if(currentLecture.equals(null)){
+                        currentLecture = "No Lecture currently";
+                    }
+                    lectureId = response.getString("lid");
+                    double multiplier = response.getDouble("multiplier");
                     JSONObject occupancy = response.getJSONObject("occupancy");
                     String occupier = response.getString("occupier");
 
-                    int lid = response.getInt("lid");
-                    lectureId = lid;
-                    double multiplier = response.getDouble("multiplier");
-
-                    String name = response.getString("room_name");
-
-                    setHallInfo(name, occupier, "No Lecture currently", new LatLng(latitude, longitude));
+                    lectureHall = response.getString("room_name");
+                    setHallInfo(lectureHall, occupier, "No Lecture currently", new LatLng(latitude, longitude));
 
                 } catch (Exception e) {
+                    //Seeing if we are banned right now
+                    //Sadly we have to do it like this because the JSONClass doesnt allow us to check for possible Null Objects and throws Errors instead
+                    try{
+                        String timeOut = response.getString("time_pretty");
+                        Toast.makeText(getActivity(), "You lost and are timed out until: "+ timeOut, Toast.LENGTH_LONG).show();
+                    } catch(Exception x){
+                        //TODO NOTHING NEAR YOU ANSWER REMOVES TEXT
+                        Log.d("Error in Roomfinder Call", e.toString());
+                    }
                     Log.d("Error in Roomfinder Call", e.toString());
                 }
             }

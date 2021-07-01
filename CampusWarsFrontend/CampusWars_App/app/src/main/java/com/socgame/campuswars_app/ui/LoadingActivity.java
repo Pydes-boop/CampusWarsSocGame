@@ -5,13 +5,24 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.socgame.campuswars_app.R;
+import com.socgame.campuswars_app.communication.BackendCom;
+import com.socgame.campuswars_app.communication.HttpHeader;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class LoadingActivity extends AppCompatActivity
 {
@@ -50,10 +61,11 @@ public class LoadingActivity extends AppCompatActivity
             }
         });
 
-        //TODO Add possible preloading Data here
-        //Mock Up Loading
-        //Just waits before it changes the screen
+        //Getting my Group and entering it into my Shared Preferences
+        BackendCom bCom = BackendCom.getInstance(ctx);
+        bCom.group(myGroupGet(settings), httpErrorListener(), new HttpHeader(ctx));
 
+        //Bit of time delay to finish some requests
         Handler handler = new Handler();
         handler.postDelayed
         (
@@ -73,5 +85,32 @@ public class LoadingActivity extends AppCompatActivity
             }
             , 1000
         );
+    }
+
+    private Response.Listener<JSONObject> myGroupGet(SharedPreferences settings)
+    {
+        return new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    String teamName = response.getString("name");
+                    SharedPreferences.Editor editor = settings.edit();
+                    editor.putString("team", teamName);
+                    editor.apply();
+                } catch (JSONException e) {
+                    Log.d("My Group:", e.toString());
+                }
+
+            }
+        };
+    }
+
+    private Response.ErrorListener httpErrorListener() {
+        return new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d("HTTP", "Error: " + error.getMessage());
+            }
+        };
     }
 }
