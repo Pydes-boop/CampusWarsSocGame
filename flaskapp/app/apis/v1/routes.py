@@ -160,7 +160,7 @@ class MyGroup(Resource):
 class Start(Resource):
     @request_requires(headers=['passphrase'])
     def post(self):
-        if request.headers['passphrese'] == "YOU ONLY CALL THIS TWICE A YEAR PLS":
+        if request.headers['passphrase'] == "YOU ONLY CALL THIS TWICE A YEAR PLS":
             groupCreation.create_groups()
         return "ok", 200
 
