@@ -68,24 +68,20 @@ public class BackendCom {
 
     public void register(){
         HttpHeader head = new HttpHeader(ctx);
-        try {
-            http.postRequest("v1/register",head.getHeaders(), new Response.Listener<JSONArray>() {
-                @Override
-                public void onResponse(JSONArray Response) {
-                    //On Response
-                    //Handle Data
-                    Log.d("HTTP", "Success: " + Response.toString());
-                }
-            }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    //Error Handling
-                    Log.d("HTTP", "Error: " + error.getMessage());
-                }
-            });
-        } catch (JSONException e) {
-            Log.d("Error in Register:", e.toString());
-        }
+        http.postRequest("v1/register",head.getHeaders(), new Response.Listener<JSONArray>() {
+            @Override
+            public void onResponse(JSONArray Response) {
+                //On Response
+                //Handle Data
+                Log.d("HTTP", "Success: " + Response.toString());
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                //Error Handling
+                Log.d("HTTP", "Error: " + error.getMessage());
+            }
+        });
     }
 
     public void groups(JSONObject lectures){
@@ -119,10 +115,8 @@ public class BackendCom {
         http.postRequestObject("v1/roomfinder", head.getHeaders(), listener, error);
     }
 
-    public boolean quiz(){
-        //empty method stub
-        //quiz needs to be directly done in the activity as we want to instantly use the data when we get it
-        return false;
+    public void quiz(String type, Response.Listener<JSONObject> listener, Response.ErrorListener error, HttpHeader head){
+        http.postRequestObject("v1/quiz-" + type, head.getHeaders(), listener, error);
     }
 
 
