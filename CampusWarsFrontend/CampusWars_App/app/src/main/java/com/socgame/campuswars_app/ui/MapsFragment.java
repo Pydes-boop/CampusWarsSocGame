@@ -47,7 +47,8 @@ import org.json.JSONObject;
    *
    * written by Jonas
 */
-public class MapsFragment extends Fragment implements GpsObserver {
+public class MapsFragment extends Fragment implements GpsObserver
+{
     private LatLng position = new LatLng(48.2650, 11.6716);//Using campus as default/fallback position;
     private GoogleMap map;
     private Marker localPos;//TODO: maybe google maps has an integrated way to do that?
@@ -85,16 +86,6 @@ public class MapsFragment extends Fragment implements GpsObserver {
         };
     }
 
-    private Response.Listener<JSONArray> roomfinderPostListener() {
-        return new Response.Listener<JSONArray>() {
-            @Override
-            public void onResponse(JSONArray response) {
-                //TODO
-                //WRITE ROOM WE ARE IN INTO FIXED STORAGE OR SOMETHING?
-                //NOOOOOO NOT IN THIS CLASS, but in territorry fragment!
-            }
-        };
-    }
 
     private Response.ErrorListener httpErrorListener() {
         return new Response.ErrorListener() {
@@ -215,8 +206,6 @@ public class MapsFragment extends Fragment implements GpsObserver {
 
         Log.d("GPS", this + " location updated to " + loc.latitude + ", " + loc.longitude);
 
-        //TODO ROOMFINDER CALL HERE?
-        //NOOOOOO THAT HAS NOTHING TO DO WITH THIS CLASS!!
 
         updatePositionMarker();
     }
