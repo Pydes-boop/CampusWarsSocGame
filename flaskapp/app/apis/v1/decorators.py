@@ -41,7 +41,8 @@ def check_timed_out_users(timedoutusers) -> Callable:
                         message=f'You are timed out until {time_pretty} due to: {reason}',
                         time=time,
                         time_pretty=time_pretty,
-                        reason=reason
+                        reason=reason,
+                        timed_out=True
                     ))
             return method(*args, **kwargs)
         return wrapper
