@@ -107,7 +107,10 @@ def get_current_quizzes(room_id):
                                                                             "end": {"$gte": current_time[0]},
                                                                             "day": current_time[1]}}},
                                               {"_id": 1})
-    indices_quizzes = mongo.db.quiz.find({"lectureID": index_lecture})
+    indices_quizzes = list(mongo.db.quiz.find({"lectureID": index_lecture}))
+    if len(indices_quizzes) == 0:
+        room_info = mongo.db.room.find_one({"_id": room_id}, {"_id": 0})
+        indices_quizzes = list(mongo.db.quiz.find({"campusID": room_info["campusID"]}))
     return list(mongo.db.quiz.find({"_id": {"$in": indices_quizzes}}))
 
 
@@ -118,6 +121,18 @@ def add_quiz(name, created_by, lecture_id):
         "name": name,
         "createdBy": created_by,
         "lectureID": lecture_id,
+        "creationDate": datetime.now().isoformat(),
+    }
+    return mongo.db.quiz.insert_one(item).acknowledged
+
+
+def add_campus_quiz(name, created_by, campus_id):
+    if isinstance(campus_id, str):
+        campus_id = ObjectId(campus_id)
+    item = {
+        "name": name,
+        "createdBy": created_by,
+        "campusID": campus_id,
         "creationDate": datetime.now().isoformat(),
     }
     return mongo.db.quiz.insert_one(item).acknowledged
