@@ -16,7 +16,8 @@ import random
 import json
 from apis.v1.database import interface
 from apis.v1.database.interface import add_room, add_lecture, get_all_rooms, find_closest_room, add_lectures_to_user, \
-    add_question_to_quiz, add_user, get_users_of_lecture, get_full_name_of_current_lecture_in_room, get_current_team
+    add_question_to_quiz, add_user, get_users_of_lecture, get_full_name_of_current_lecture_in_room, get_current_team, \
+    get_player_name, get_current_quizzes, get_questions_of_quiz
 from bson.objectid import ObjectId
 
 from data_handler import live_data, team_state
@@ -36,11 +37,11 @@ class RoomFinder(Resource):
         if room is None:
             return jsonify('nothing near you')
         name = room['roomName']
-        room["_id"] = "23" # todo: remove mock for _id and currentLecture
-        # current_lecture = interface.get_full_name_of_current_lecture_in_room(room["_id"])
+        room["_id"] = "23"  # todo: remove mock for _id and currentLecture
         team_state.increase_team_presence_in_room(team=request.headers['team'], room=name)
         live_data.room_queue(uid=request.headers['uid'], team=request.headers['team'], room=name)
-        return_room = {'occupancy': team_state.get_all_team_scores_in_room(name), 'occupier': team_state.mw[name].team,
+        return_room = {'occupancy': team_state.get_all_team_scores_in_room(name),
+                       'occupier': team_state.get_room_occupier(name),
                        'room_name': name, 'lid': room["_id"], 'multiplier': team_state.mw[name].multiplier,
                        "currentLecture": "no lecture"}
         return jsonify(return_room)
@@ -89,6 +90,12 @@ class QuizRequest(Resource):
                              request.headers['team'],
                              request.headers['room'])
         return jsonify('ok')
+
+
+@api.resource('/live-debug')
+class LiveDebug(Resource):
+    def get(self):
+        return jsonify(live_data.room_queue, live_data.quiz_queue, live_data.game_queue)
 
 
 @api.resource('/quiz-refresh')
@@ -185,8 +192,7 @@ class Register(Resource):
 @api.resource('/marina')
 class Test(Resource):
     def get(self):
-        add_user(1, "marina", [ObjectId("60d5dfe18343a7a71befce4b")])
-        return get_users_of_lecture("60d5dfe18343a7a71befce4b")
+        return get_questions_of_quiz(get_current_quizzes(ObjectId("60d789da1ca97fc034f1f5ab"))[0]["_id"])
 
 
 if __name__ == '__main__':
