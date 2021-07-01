@@ -21,6 +21,7 @@ def create_groups():
     and saves the new groups with a random name and color to the db
     :return:
     """
+    # todo @felix fix this
     used_names.clear()
     lectures = {}
     lecture_list = interface.get_all_lecture_ids()
@@ -42,7 +43,7 @@ def create_groups():
         d['weight'] = d['weight'] / d['counter']
     max_groups = len(social_network.nodes) / 5
     max_group_size = 5
-    return lectures
+
     # create list of all possible tables
     possible_groups = [tuple(c) for c in pulp.allcombinations(social_network.nodes, max_group_size)]
 
@@ -64,8 +65,8 @@ def create_groups():
     for group in possible_groups:
         if x[group].value() == 1.0:
             user_groups.append(Group(generate_team_name(), get_random_color(), group))
-    # return interface.add_new_teams(user_groups) todo: swap with line below
-    return user_groups
+    return interface.add_new_teams(user_groups)
+
 
 def happiness(group, social_network):
     """
