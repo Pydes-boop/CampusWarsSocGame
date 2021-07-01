@@ -32,7 +32,7 @@ def check_timed_out_users(timedoutusers) -> Callable:
         @wraps(method)
         def wrapper(*args, **kwargs) -> Any:
             if 'uid' in request.headers and request.headers['uid'] in timedoutusers:
-                return jsonify(f'You are banned until {datetime.fromtimestamp(timedoutusers[request.headers["uid"]]).strftime("%A %d-%m-%Y, %H:%M:%S")}')
+                return jsonify(f'You are banned until {datetime.fromtimestamp(timedoutusers[request.headers["uid"]].time).strftime("%A %d-%m-%Y, %H:%M:%S")}')
             return method(*args, **kwargs)
         return wrapper
     return decorator
