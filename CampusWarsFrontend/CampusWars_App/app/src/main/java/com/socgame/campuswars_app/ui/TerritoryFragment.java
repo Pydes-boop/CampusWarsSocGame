@@ -12,12 +12,17 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Response;
+import com.google.android.gms.maps.model.LatLng;
 import com.socgame.campuswars_app.R;
+import com.socgame.campuswars_app.Sensor.GpsObserver;
+
+import org.json.JSONArray;
 
 /*
 
 */
-public class TerritoryFragment extends Fragment //implements View.OnClickListener
+public class TerritoryFragment extends Fragment  implements GpsObserver //implements View.OnClickListener
 {
     View fragmentView = null;
 
@@ -67,8 +72,8 @@ public class TerritoryFragment extends Fragment //implements View.OnClickListene
             }
         });
 
-        //TODO: get actual info from server
-        setHallInfo("Current Lecture Hall", "Owning Team Name", "Current Lecture");
+
+        registerForContextMenu(getView());
 
         return view;
     }
@@ -84,5 +89,25 @@ public class TerritoryFragment extends Fragment //implements View.OnClickListene
 
         TextView lectureText = fragmentView.findViewById(R.id.textCurrentLecture);
         lectureText.setText(lecture);
+    }
+
+    private Response.Listener<JSONArray> roomfinderPostListener()
+    {
+        return new Response.Listener<JSONArray>() {
+            @Override
+            public void onResponse(JSONArray response) {
+
+                //TODO: get actual info from server
+                setHallInfo("Current Lecture Hall", "Owning Team Name", "Current Lecture");
+            }
+        };
+    }
+
+    @Override
+    public void OnLocationUpdate(LatLng loc)
+    {
+        //maybe safe last location?
+        //maybe do some distance / time checks
+        //TODO ROOMFINDER CALL HERE?
     }
 }
