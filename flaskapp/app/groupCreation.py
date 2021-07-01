@@ -70,9 +70,9 @@ def create_groups():
 def happiness(group, social_network):
     """
     find the happiness a group of people have inbetween themself
-    :param social_network:
-    :param group:
-    :return:
+    :param social_network: nx graph with edges, nodes and weight on edges
+    :param group: list of node names to check
+    :return: sum of all weights between the group
     """
     return_value = 0
     for i in range(0, len(group) - 1):
