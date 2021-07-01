@@ -95,7 +95,7 @@ class QuizRequest(Resource):
 @api.resource('/live-debug')
 class LiveDebug(Resource):
     def get(self):
-        return jsonify(live_data.room_queue, live_data.quiz_queue, [(key, item.json) for key, item in live_data.game_queue.items()])
+        return jsonify(live_data.room_queue, live_data.quiz_queue, dict([(key, item.json) for key, item in live_data.game_queue.items()]))
 
 
 @api.resource('/quiz-refresh')
@@ -128,11 +128,11 @@ class QuizRefresh(Resource):
 
 @api.resource('/quiz-answer')
 class QuizAnswer(Resource):
-    @request_requires(headers=['uid', 'gid', 'pid', 'result'])
+    @request_requires(headers=['uid', 'gid', 'pid', 'result', 'outcome'])
     def post(self):
         """Answer the quiz."""
         live_data.game_queue[request.headers['gid']].refresh()
-        live_data.game_queue.submit_answer(request.headers['gid'], request.headers['pid'],
+        live_data.game_queue.submit_answer(request.headers['gid'], int(request.headers['pid']),
                                            int(request.headers['outcome']))
         return jsonify('ok')
 
