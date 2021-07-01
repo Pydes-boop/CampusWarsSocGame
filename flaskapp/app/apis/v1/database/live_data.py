@@ -62,6 +62,7 @@ class TimedOutUser(TimedItem):
     refresh_max = 600
 
     uid: str
+    time: int
 
 
 @dataclass
@@ -172,7 +173,7 @@ class PurgeQueue(dict, Dict[str, Any], metaclass=ABCMeta):
 class TimedOutUsers(PurgeQueue):
     def __call__(self, uid) -> None:
         if uid not in self:
-            self[uid] = TimedOutUser(uid)
+            self[uid] = TimedOutUser(uid, now() + 600)
 
     def purge(self) -> int:
         count: int = 0
