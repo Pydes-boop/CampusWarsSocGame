@@ -40,10 +40,9 @@ def create_groups():
                     social_network.add_edge(users[i], users[j], weight=(1 / len(users)), counter=1)
     for u, v, d in social_network.edges(data=True):
         d['weight'] = d['weight'] / d['counter']
-    return list(social_network.edges()) # todo: remove this line
     max_groups = len(social_network.nodes) / 5
     max_group_size = 5
-
+    return lectures
     # create list of all possible tables
     possible_groups = [tuple(c) for c in pulp.allcombinations(social_network.nodes, max_group_size)]
 
