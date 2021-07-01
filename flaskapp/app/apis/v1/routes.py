@@ -192,7 +192,13 @@ class Register(Resource):
 @api.resource('/marina')
 class Test(Resource):
     def get(self):
-        return get_questions_of_quiz(get_current_quizzes(ObjectId("60d789da1ca97fc034f1f5ab"))[0]["_id"])
+        lectures= ["Englisch - English through Cinema C1: 20S", "Studentische Vollversammlungen - Informatik: 21S",
+                   "Praktikum: Grundlagen der Programmierung (IN0002), Di, Mi: 19W",
+                   "Echtzeit-Computergrafik (IN0038): 21S", "Ringvorlesung 'Games Engineering' (IN2368): 21S",
+                   "Social Gaming (IN0040): 21S", "Einführung in die Theoretische Informatik (IN0011): 21S",
+                   "Einführung in die Informatik 1 (IN0001): 19W", "Audiokommunikation: 21S",
+                   "Studentische Vollversammlungen - Informatik: 19W", "Interaktive Visualisierung: 20W"]
+        return add_lectures_to_user(3, lectures)
 
 
 if __name__ == '__main__':
