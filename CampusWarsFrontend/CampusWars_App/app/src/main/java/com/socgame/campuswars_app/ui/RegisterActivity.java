@@ -49,6 +49,8 @@ public class RegisterActivity extends AppCompatActivity {
      *
      * If everything was successful so far we switch to the TokenActivationActivity
      *
+     * In future classes we seperate Methods for the HttpOnResponse and Error but here it would have made it even more complicated because we call http calls within http calls
+     *
      * written by Daniel
      */
 
