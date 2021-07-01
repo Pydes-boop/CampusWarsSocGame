@@ -13,7 +13,8 @@ from apis.v1 import v1, api
 import groupCreation
 from apis.v1.decorators import request_requires
 import random
-
+import json
+from apis.v1.database import interface
 from apis.v1.database.interface import add_room, add_lecture, get_all_rooms, find_closest_room, add_lectures_to_user, \
     add_question_to_quiz, add_user, get_users_of_lecture, get_full_name_of_current_lecture_in_room, get_current_team
 from bson.objectid import ObjectId
@@ -36,6 +37,7 @@ class RoomFinder(Resource):
             return jsonify('nothing near you')
         name = room['roomName']
         room["_id"] = "23" # todo: remove mock for _id and currentLecture
+        # current_lecture = interface.get_full_name_of_current_lecture_in_room(room["_id"])
         team_state.increase_team_presence_in_room(team=request.headers['team'], room=name)
         live_data.room_queue(uid=request.headers['uid'], team=request.headers['team'], room=name)
         return_room = {'occupancy': team_state.get_all_team_scores_in_room(name), 'occupier': team_state.mw[name].team,
@@ -145,7 +147,7 @@ class Echo(Resource):
 @api.resource('/lectures')
 class Lectures(Resource):
     def post(self):
-        add_lectures_to_user(request.headers["uid"], request.headers["lectures"])
+        add_lectures_to_user(request.headers["uid"], json.loads(request.headers["lectures"]))
         return
 
 
