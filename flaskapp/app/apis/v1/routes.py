@@ -144,7 +144,8 @@ class QuizState(Resource):
         """Ask the server if the other player has answered yet, if yes show result."""
         live_data.game_queue[request.headers['gid']].refresh()
         if live_data.game_queue[request.headers['gid']].all_answered:
-            return jsonify(live_data.game_queue[request.headers['gid']].get_result_for_player(request.headers['pid']))
+            return jsonify(
+                live_data.game_queue[request.headers['gid']].get_result_for_player(int(request.headers['pid'])))
 
         return jsonify('not yet answered')
 
