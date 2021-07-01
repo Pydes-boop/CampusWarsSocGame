@@ -15,7 +15,7 @@ from bson.objectid import ObjectId
 
 def find_closest_room(lon, lat, max_distance):
     return mongo.db.room.find_one({"location": {"$near": {"$geometry": {"type": "Point", "coordinates": [lon, lat]},
-                                                          "$maxDistance": max_distance}}}, {"_id": 0})
+                                                          "$maxDistance": max_distance}}})
 
 
 # todo evtl occupier live im Überblick behalten weil wegen regelmäßiges update ähnlich der location vom user
@@ -173,6 +173,18 @@ def add_team(member_list):
 
 def get_all_lecture_ids():
     return list(mongo.db.lecture.find({}, {"_id": 1}))
+
+
+def get_player_name(firebase_id):
+    return mongo.db.firebase_users.find_one({"firebaseID": firebase_id}, {"name": 1})
+
+
+def get_questions_of_quiz(quiz_id):
+    return list(mongo.db.question.find({"quizID": quiz_id}))
+
+
+def get_current_team():
+    return mongo.db.teams.find_one({"members": {"$elemMatch": {"$eq": lecture_id}}})
 
 
 if __name__ == '__main__':
