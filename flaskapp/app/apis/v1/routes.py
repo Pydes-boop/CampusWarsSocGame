@@ -16,7 +16,7 @@ import random
 
 from apis.v1.database.interface import add_room, add_lecture, get_all_rooms, find_closest_room, add_lectures_to_user, \
     add_question_to_quiz, add_user, get_users_of_lecture, get_full_name_of_current_lecture_in_room, get_current_team, \
-    get_player_name, get_current_quizzes
+    get_player_name, get_current_quizzes, get_questions_of_quiz
 from bson.objectid import ObjectId
 
 from data_handler import live_data, team_state
@@ -185,7 +185,7 @@ class Register(Resource):
 @api.resource('/marina')
 class Test(Resource):
     def get(self):
-        return get_current_quizzes(ObjectId("60d789da1ca97fc034f1f5ab"))
+        return get_questions_of_quiz(get_current_quizzes(ObjectId("60d789da1ca97fc034f1f5ab"))[0]["_id"])
 
 
 if __name__ == '__main__':
