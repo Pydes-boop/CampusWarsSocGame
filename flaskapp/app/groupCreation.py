@@ -1,11 +1,9 @@
-import numpy as np
 import networkx as nx
 import pulp
 from apis.v1.utils.random_stuff import get_random_color, generate_team_name
 from dataclasses import dataclass
-
+from flaskapp.app.apis.v1.database import interface
 from typing import Any
-# used solution for wedding seating problem
 
 
 @dataclass
@@ -16,10 +14,15 @@ class Group:
 
 
 def create_groups():
-    # todo: @marina I need the saved lectures with its attendants
-    lectures = {"Audiokommunikation: 21S": ["uid1", "uid2", "uid3"],
-                "Didaktisches und pädagogisches Training für Tutoren (IN9028): 21S": ["uid3", "uid5"],
-                "Echtzeit-Computergrafik (IN0038): 21S": ["uid1", "uid2", "uid4", "uid5"]} # remove this line after db integration
+    """
+    uses the wedding seating problem and solution to match users to groups, gets the lectures and users from the db,
+    and saves the new groups with a random name and color to the db
+    :return:
+    """
+    lectures = {}
+    lecture_list = interface.get_all_lecture_ids()
+    for lecture in lecture_list:
+        lectures[lecture] = interface.get_users_of_lecture(lecture)
     social_network = nx.Graph()
     for title, attendants in lectures.items():
         social_network.add_nodes_from(attendants)
@@ -60,11 +63,7 @@ def create_groups():
     for group in possible_groups:
         if x[group].value() == 1.0:
             user_groups.append(Group(generate_team_name(), get_random_color(), group))
-    user_groups = [["uid1", "uid3", "uid5"], ["udi2", "uid4"]] # remove this line after db integration
-    #todo: @Robin teamname generator and color generator fills data
-    user_groups = {"Teamname1": ["uid1", "uid3", "uid5"], "Teamname2": ["udi2", "uid4"]}
-    group_colors = {"Teamname1": "rot", "Teamname2": "blau"}
-    # todo: @Marina: please fill the database with the user_groups{list{str}}
+    interface.add_new_teams(user_groups)
     pass
 
 
