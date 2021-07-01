@@ -115,7 +115,7 @@ class QuizRefresh(Resource):
                 {
                     'gid': game.game_id,  # game_id: a 24 byte string to identify each game
                     'pid': game.get_player_id(request.headers['uid']),  # player_id: 0 or 1 identifies player in game
-                    'opp-name': 'It was you all along',  # name of the opponent TODO ask Marina how to get the name
+                    'opp-name': get_player_name(request.headers['uid']),
                     'opp-team': game.players[not game.get_player_id(request.headers['uid'])].team,
                     # name of the opponent team
                     'quiz': game.question,
