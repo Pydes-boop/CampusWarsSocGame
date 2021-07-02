@@ -18,7 +18,7 @@ from apis.v1.database import interface
 from apis.v1.database.interface import add_room, add_lecture, get_all_rooms, find_closest_room, add_lectures_to_user, \
     add_question_to_quiz, add_user, get_users_of_lecture, get_full_name_of_current_lecture_in_room, get_current_team, \
     get_player_name, get_current_quizzes, get_questions_of_quiz, get_time_table_of_room, get_all_lecture_ids, \
-    get_current_team_with_member_names, get_colour_of_team
+    get_current_team_with_member_names, get_colour_of_team,get_all_lecture_names
 from bson.objectid import ObjectId
 from apis.v1.database.time_functions import get_current_term, get_time_as_seconds
 
@@ -227,138 +227,10 @@ class TimeTable(Resource):
 @api.resource('/marina')
 class Test(Resource):
     def get(self):
-        add_lecture("Einführung in die Theoretische Informatik (IN0011)", get_current_term(),
-                    [{"start": get_time_as_seconds(14, 15), "end": get_time_as_seconds(16, 0),
-                      "roomID": ObjectId("60d78a721ca97fc034f1f5ac"), "day": 0},
-                     {"start": get_time_as_seconds(14, 15),
-                      "end": get_time_as_seconds(16, 0),
-                      "roomID": ObjectId("60d78a721ca97fc034f1f5ac"),
-                      "day": 3},
-                     ])
-        add_lecture("Grundlagen Rechnernetze und Verteilte Systeme (IN0010)", get_current_term(),
-                    [{"start": get_time_as_seconds(10, 0),
-                      "end": get_time_as_seconds(12, 0),
-                      "roomID": ObjectId("60d789da1ca97fc034f1f5ab"),
-                      "day": 0},
-                     {"start": get_time_as_seconds(10, 0),
-                      "end": get_time_as_seconds(12, 0),
-                      "roomID": ObjectId("60d78a721ca97fc034f1f5ac"),
-                      "day": 1},
-                     ])
-        add_lecture("Grundlagen: Algorithmen und Datenstrukturen (IN0007)", get_current_term(),
-                    [{"start": get_time_as_seconds(14, 0),
-                      "end": get_time_as_seconds(16, 0),
-                      "roomID": ObjectId("60d78a721ca97fc034f1f5ac"),
-                      "day": 1},
-                     {"start": get_time_as_seconds(13, 15),
-                      "end": get_time_as_seconds(14, 15),
-                      "roomID": ObjectId("60d78a721ca97fc034f1f5ac"),
-                      "day": 2},
-                     ])
-        add_lecture("Marina Test Lecture (7777)", get_current_term(),
-                    [{"start": get_time_as_seconds(14, 0),
-                      "end": get_time_as_seconds(16, 0),
-                      "roomID": ObjectId("60d78a721ca97fc034f1f5ac"),
-                      "day": 1},
-                     {"start": get_time_as_seconds(13, 15),
-                      "end": get_time_as_seconds(18, 15),
-                      "roomID": ObjectId("60d78a721ca97fc034f1f5ac"),
-                      "day": 3},
-                     ])
-        add_user("1", "Hans", ["Englisch - English through Cinema C1: 20W", "Diskrete Strukturen (IN0015): 19W",
-                               "Einführung in die Informatik 1 (IN0001): 19W", "Französisch A1.1: 19W",
-                               "Social Gaming (IN0040): 21S", "Studentische Vollversammlungen - Informatik: 20W",
-                               "Praktikum: Echtzeit-Computergrafik (IN0039): 21S",
-                               "Analysis für Informatik [MA0902]: 20W",
-                               "Übungen zu Analysis für Informatik [MA0902]: 20W", "Interaktive Visualisierung: 20W",
-                               "Einführung in Informatik für Games Engineering (IN0031): 19W"])
-
-        add_user("2", "Franz",
-                 ["Englisch - English through Cinema C1: 20S", "Studentische Vollversammlungen - Informatik: 21S",
-                  "Praktikum: Grundlagen der Programmierung (IN0002), Di, Mi: 19W",
-                  "Echtzeit-Computergrafik (IN0038): 21S", "Ringvorlesung 'Games Engineering' (IN2368): 21S",
-                  "Social Gaming (IN0040): 21S", "Einführung in die Theoretische Informatik (IN0011): 21S",
-                  "Einführung in die Informatik 1 (IN0001): 19W", "Audiokommunikation: 21S",
-                  "Studentische Vollversammlungen - Informatik: 19W", "Interaktive Visualisierung: 20W"])
-
-        add_user("3", "Peter",
-                 ["Praktikum: Echtzeit-Computergrafik (IN0039): 21S", "Englisch - English through Cinema C1: 20W",
-                  "Übungen zu Analysis für Informatik [MA0902]: 20W",
-                  "Einführung in die Theoretische Informatik (IN0011): 21S",
-
-                  "Praktikum: Grundlagen der Programmierung (IN0002), Di, Mi: 19W", "Französisch A1.1: 19W",
-                  "Übungen zu Einführung in Informatik für Games Engineering(IN0031): 19W",
-                  "Studentische Vollversammlungen - Informatik: 19W", "Analysis für Informatik [MA0902]: 20W",
-                  "Didaktisches und pädagogisches Training für Tutoren (IN9028): 21S",
-                  "Studentische Vollversammlungen - Informatik: 21S"])
-        add_user("4", "Lisa",
-                 ["Praktikum: Echtzeit-Computergrafik (IN0039): 21S",
-                  "Praktikum: Grundlagen der Programmierung (IN0002), Di, Mi: 19W",
-                  "Interaktionsmethoden und -geräte (IN0033): 20W", "Englisch - English through Cinema C1: 20S",
-                  "Englisch - English through Cinema C1: 20W",
-                  "Einführung in die Theoretische Informatik (IN0011): 21S", "Social Gaming (IN0040): 21S",
-                  "Einführung in Informatik für Games Engineering (IN0031): 19W",
-                  "Numerisches Programmieren (IN0019): 21S",
-                  "Grundlagen: Algorithmen und Datenstrukturen (IN0007): 20S",
-                  "Studentische Vollversammlungen - Informatik: 20S"])
-
-        add_user("5", "Klara",
-                 ["Englisch - English through Cinema C1: 20W", "Interaktive Visualisierung: 20W",
-                  "Studentische Vollversammlungen - Informatik: 21S",
-                  "Übungen zu Lineare Algebra für Informatik [MA0901]: 20S",
-                  "Praktikum Social Gaming (IN0041): 21S",
-                  "Übungen zu Einführung in Informatik für Games Engineering(IN0031): 19W",
-                  "Studentische Vollversammlungen - Informatik: 19W",
-                  "Einführung in die Theoretische Informatik (IN0011): 21S",
-                  "Modellierung mit Blender (IN2282): 20W", "Studentische Vollversammlungen - Informatik: 20S",
-                  "Analysis für Informatik [MA0902]: 20W"])
-        add_user("6", "Johannes",
-                 ["Betriebssysteme und hardwarenahe Programmierung für Games (IN0034): 20W",
-                  "Studentische Vollversammlungen - Informatik: 20S", "Numerisches Programmieren (IN0019): 21S",
-                  "Übungen zu Einführung in die Theoretische Informatik (IN0011), Mo, Di, Fr: 21S",
-                  "Modellierung mit Blender (IN2282): 20W", "Echtzeit-Computergrafik (IN0038): 20S",
-                  "Ringvorlesung 'Games Engineering' (IN2368): 21S",
-                  "Übungen zu Diskrete Strukturen (IN0015) - 1 (Mo): 19W", "Grundlagen: Datenbanken (IN0008): 20W",
-                  "Interaktionsmethoden und -geräte (IN0033): 20W", "Englisch - English through Cinema C1: 20S"])
-        add_user("7", "Mimi",
-                 ["Numerisches Programmieren (IN0019): 21S", "Ringvorlesung 'Games Engineering' (IN2368): 21S",
-                  "Lineare Algebra für Informatik [MA0901]: 20S",
-                  "Studentische Vollversammlungen - Informatik: 20S",
-                  "Übungen zu Interaktionsmethoden und -geräte (IN0033): 20W",
-                  "Echtzeit-Computergrafik (IN0038): 21S",
-                  "Übungen zu Einführung in die Softwaretechnik (IN0006) 27 Gruppen: 20S",
-                  "Einführung in die Informatik 1 (IN0001): 19W",
-                  "Praktikum: Echtzeit-Computergrafik (IN0039): 21S", "Englisch - English through Cinema C1: 20S",
-                  "Übungen zu Grundlagen: Algorithmen und Datenstrukturen (IN0007), Mo, Di: 20S"])
-        add_user("8", "Pokemon",
-                 ["Echtzeit-Computergrafik (IN0038): 20S", "Grundlagen der Künstlichen Intelligenz (IN2062): 20W",
-                  "Grundlagen: Algorithmen und Datenstrukturen (IN0007): 20S", "Französisch A1.1: 19W",
-                  "Englisch - English through Cinema C1: 20W",
-                  "Didaktisches und pädagogisches Training für Tutoren (IN9028): 21S",
-                  "Studentische Vollversammlungen - Informatik: 20S",
-                  "Praktikum: Echtzeit-Computergrafik (IN0039): 20S", "Ringvorlesung 'Games Engineering' (IN2368): 21S",
-                  "Diskrete Strukturen (IN0015): 19W",
-                  "Lineare Algebra für Informatik [MA0901]: 20S"])
-        add_user("9", "Sophie",
-                 ["Modellierung mit Blender (IN2282): 20W",
-                  "Übungen zu Einführung in die Softwaretechnik (IN0006) 27 Gruppen: 20S",
-                  "Praktikum: Echtzeit-Computergrafik (IN0039): 20S", "Echtzeit-Computergrafik (IN0038): 21S",
-                  "Audiokommunikation: 21S", "Praktikum Social Gaming (IN0041): 21S",
-                  "Studentische Vollversammlungen - Informatik: 20S",
-                  "Übungen zu Grundlagen: Algorithmen und Datenstrukturen (IN0007), Mo, Di: 20S",
-                  "Übungen zu Diskrete Strukturen (IN0015) - 1 (Mo): 19W", "Geschichtswelten (IN2290): 20W",
-                  "Studentische Vollversammlungen - Informatik: 19W"])
-        add_user("10", "Hannes",
-                 ["Übungen zu Analysis für Informatik [MA0902]: 20W", "Diskrete Strukturen (IN0015): 20W",
-                  "Englisch - English through Cinema C1: 20W", "Studentische Vollversammlungen - Informatik: 19W",
-                  "Didaktisches und pädagogisches Training für Tutoren (IN9028): 21S",
-                  "Praktikum: Echtzeit-Computergrafik (IN0039): 21S",
-                  "Einführung in die Theoretische Informatik (IN0011): 21S",
-                  "Grundlagen der Künstlichen Intelligenz (IN2062): 20W",
-                  "Übungen zu Grundlagen: Algorithmen und Datenstrukturen (IN0007), Mo, Di: 20S",
-                  "Echtzeit-Computergrafik (IN0038): 21S",
-                  "Übungen zu Einführung in Informatik für Games Engineering(IN0031): 19W"])
-        return "success"
+        items= []
+        for i in get_all_lecture_names():
+            items.append(i["name"].encode('iso-8859-1').decode('utf-8'))
+        return jsonify(items)
 
 
 if __name__ == '__main__':

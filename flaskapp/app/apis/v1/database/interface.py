@@ -257,5 +257,9 @@ def get_number_of_players():
     return len(list(mongo.db.firebase_users.find()))
 
 
+def get_all_lecture_names():
+    return mongo.db.lecture.find({}, {"name": 1})
+
+
 if __name__ == '__main__':
     pass
