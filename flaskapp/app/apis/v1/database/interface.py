@@ -48,7 +48,7 @@ def add_lecture(name, term, timetable=[]):
             "timetable": timetable
         }
         return mongo.db.lecture.insert_one(item).acknowledged
-    #todo
+    # todo
     return True
 
 
@@ -244,6 +244,13 @@ def get_colour_of_team(team_name):
     if result is None:
         return "#212121"
     return result["colour"]
+
+
+def get_escaped_by_db(text):
+    mongo.db.text.insert_one({"text": text})
+    returned_text = mongo.db.text.find_one()["text"]
+    mongo.db.text.delete_many({})
+    return returned_text
 
 
 def get_quiz_info(quiz_id):

@@ -18,7 +18,7 @@ from apis.v1.database import interface
 from apis.v1.database.interface import add_room, add_lecture, get_all_rooms, find_closest_room, add_lectures_to_user, \
     add_question_to_quiz, add_user, get_users_of_lecture, get_full_name_of_current_lecture_in_room, get_current_team, \
     get_player_name, get_current_quizzes, get_questions_of_quiz, get_time_table_of_room, get_all_lecture_ids, \
-    get_current_team_with_member_names, get_colour_of_team, get_all_lecture_names
+    get_escaped_by_db, get_current_team_with_member_names, get_colour_of_team, get_all_lecture_names
 from bson.objectid import ObjectId
 from apis.v1.database.time_functions import get_current_term, get_time_as_seconds
 import codecs
@@ -178,7 +178,8 @@ class Lectures(Resource):
         if "encoding_format" in request.headers:
             lectures = json.loads(request.headers["lectures"])
             lectures = list(
-                map(lambda x: ftfy.fix_text(x.encode(request.headers["encoding_format"]).decode('utf-8')), lectures))
+                map(lambda x: ftfy.fix_text(
+                    get_escaped_by_db(x.encode(request.headers["encoding_format"]).decode('utf-8'))), lectures))
 
             return add_lectures_to_user(request.headers["uid"], lectures)
         else:
@@ -245,9 +246,11 @@ class Test(Resource):
                      .decode('utf-8'))
         items.append(i["name"].encode().decode('unicode-escape'))
         items.append(ftfy.fix_text('uÌˆnicode'))
-        add_lecture(ftfy.fix_text(i["name"]), get_current_term())
+        # add_lecture(ftfy.fix_text(i["name"]), get_current_term())
+        # add_lecture(ftfy.fix_text())
+
         # add_lecture(i["name"].encode("unicode_escape").decode("utf-8"), get_current_term())
-        return items
+        return get_escaped_by_db("äää")
 
 
 if __name__ == '__main__':
