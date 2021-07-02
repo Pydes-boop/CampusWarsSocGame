@@ -232,7 +232,8 @@ class Test(Resource):
         # items.append(i["name"].encode('iso-8859-1').decode('utf-8'))
         # items.append(bytes(i["name"], 'iso-8859-1').decode('utf-8'))
         items.append(i["name"])
-        items.append(codecs.decode(i["name"], 'unicode-escape'))
+        my_bytes = bytes(i["name"], 'utf-8')
+        items.append(my_bytes.decode('unicode_escape'))
         return items
 
 
