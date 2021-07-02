@@ -200,6 +200,7 @@ class Start(Resource):
                 return jsonify({'created-groups': True})
             else:
                 return jsonify({'created-groups': False})
+        return jsonify({'message':'You are not allowed to restart'})
 
 
 @api.resource('/question')
