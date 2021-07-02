@@ -77,6 +77,15 @@ public class LoadingActivity extends AppCompatActivity
                     if(loggedIn){
                         Intent myIntent = new Intent(LoadingActivity.this, MainScreenActivity.class);
                         startActivityForResult(myIntent, 0);
+
+                        //Test code TODO: get a login for this test account
+                        /*
+                        SharedPreferences settigs = ctx.getSharedPreferences("userdata", 0);
+                        SharedPreferences.Editor editor = settings.edit();
+                        editor.putString("UID", "1");
+                        editor.apply();
+                        */
+
                     }else{
                         Intent myIntent = new Intent(LoadingActivity.this, LoginActivity.class);
                         startActivityForResult(myIntent, 0);

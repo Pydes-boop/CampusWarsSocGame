@@ -40,6 +40,7 @@ public class TerritoryFragment extends Fragment  implements GpsObserver //implem
     private LatLng lectureLoc = null;
 
     //TODO: create an update method which calls the server
+    //We already have one. It is called "OnLocationUpdate" and gets called a lot
 
     public TerritoryFragment()
     {

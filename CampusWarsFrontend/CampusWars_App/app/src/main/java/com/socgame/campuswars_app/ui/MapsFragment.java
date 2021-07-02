@@ -21,12 +21,14 @@ import android.view.ViewGroup;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
@@ -176,14 +178,18 @@ public class MapsFragment extends Fragment implements GpsObserver
             Location loc = latLngToLocation(position);
             float distance = loc.distanceTo(locCam);
 
-            if(distance < 100 || distance > 1000)
+            if(distance < 400 || distance > 10000 || localPos == null)
             {
-                //TODO: smooth camera
+                //create smooth camera move
+                CameraPosition camPos = new CameraPosition.Builder()
+                        .target(position)//move camera
+                        .zoom(17.0f)//Zoom in
+                        .tilt(20.0f)//slight tilt
+                        .build();
 
-                //move camera
-                map.moveCamera(CameraUpdateFactory.newLatLng(position));
-                //Zoom in
-                map.animateCamera(CameraUpdateFactory.zoomTo(17.0f));
+                //apply
+                CameraUpdate applyCam = CameraUpdateFactory.newCameraPosition(camPos);
+                map.animateCamera(applyCam);
             }
 
             //remove outdated marker

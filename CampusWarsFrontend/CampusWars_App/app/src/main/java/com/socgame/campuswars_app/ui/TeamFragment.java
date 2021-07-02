@@ -97,21 +97,27 @@ public class TeamFragment extends Fragment
     {
         ListView listView = fragmentView.findViewById(R.id.memberList);
 
-        //TODO: Create custom Array Adapter (not needed, unless we show more info)
+        //no custom Array Adapter (not needed, unless we show more info)
         //ArrayAdapter<String> itemsAdapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_activated_1, array);
         ArrayAdapter<String> itemsAdapter = new ArrayAdapter<String>(getContext(), R.layout.teammember, names);
         listView.setAdapter(itemsAdapter);
     }
 
-    public void setTeamInfo(String name, int memberCount, int controlledHalls, String color)//TODO: maybe add team color?
+    public void setTeamInfo(String name, int memberCount, int controlledHalls, String color)
     {
-        //TODO EITHER FIX ISSUES WITH TRANSPARENCY OR USE COLOR WITHOUT TRANSPARENCY
+        /*
+        //This looked pretty bad
         String desaturatedColor = color.replaceAll("#", "");
         desaturatedColor = "#80" + desaturatedColor;
+        */
+        int colorIndex = Color.parseColor(color);
 
         TextView nameText = fragmentView.findViewById(R.id.teamName);
         nameText.setText(name);
-        nameText.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor(desaturatedColor)));
+        nameText.setTextColor(colorIndex);
+
+        //This doesnt look nice
+        // nameText.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor(desaturatedColor)));
 
         TextView memberText = fragmentView.findViewById(R.id.textCurrentMembers);
         memberText.setText(memberCount + " Members");
@@ -139,7 +145,8 @@ public class TeamFragment extends Fragment
                     setTeamInfo(teamName, members.length, 0, color);
 
                     //Setting Button Color to Team Color
-                    button.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor(color)));
+                    //No, I dont like this
+                    //button.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor(color)));
                 } catch (JSONException e) {
                     Log.d("My Group:", e.toString());
                 }

@@ -22,20 +22,21 @@
 
                 android:layout_height="45sp"
                 android:layout_marginTop="20sp"
-                android:autoSizeMaxTextSize="30sp"
-
-                android:autoSizeTextType="uniform"
 
                 android:background="@drawable/button_rounded"
                 android:drawableLeft="@drawable/ic_territory"
+                android:paddingLeft="10sp"
+
                 android:elevation="15sp"
 
-                android:gravity="center"
-                android:paddingLeft="10sp"
-                android:text="Nothing near you"
+                android:text="Not in a Lecture Hall"
                 android:textColor="@color/text"
+                android:textStyle="bold"
 
-                android:textStyle="bold" />
+                android:autoSizeMaxTextSize="30sp"
+                android:autoSizeTextType="uniform"
+                android:gravity="center"
+                />
 
             <Space
                 android:layout_width="1dp"
