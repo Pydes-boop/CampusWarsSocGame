@@ -240,6 +240,7 @@ class Test(Resource):
                      .encode('latin-1')
                      .decode('utf-8'))
         items.append(i["name"].encode('unicode_escape')
+                     .decode('utf-8')
                      .decode('utf-8'))
         return items
 
