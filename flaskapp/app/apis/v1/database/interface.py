@@ -60,10 +60,12 @@ def add_user(firebase_id, name, lectures=[]):
     if not entry_exists:
         item = {
             "firebaseID": firebase_id,
-            "name": name,
-            "lectures": lectures
+            "name": name
         }
-        return mongo.db.firebase_users.insert_one(item).acknowledged
+        if mongo.db.firebase_users.insert_one(item).acknowledged:
+            return add_lectures_to_user(firebase_id, lectures)
+        else:
+            return False
     else:
         return False
 
