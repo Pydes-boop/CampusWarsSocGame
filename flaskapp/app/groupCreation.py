@@ -45,14 +45,17 @@ def create_groups():
         social_network.add_edge(user, choice(list(social_network.nodes())), weight=0.0001, counter=1)
     for u, v, d in social_network.edges(data=True):
         d['weight'] = d['weight'] / d['counter']
-    if len(social_network.nodes) % 5 > 0:
-        max_groups = int((len(social_network.nodes) / 5) + 1)
+    min_group_size = 4
+    max_group_size = 6
+    if len(social_network.nodes) % min_group_size > 0:
+        max_groups = int((len(social_network.nodes) / min_group_size) + 1)
     else:
-        max_groups = int(len(social_network.nodes) / 5)
-    max_group_size = 5
+        max_groups = int(len(social_network.nodes) / min_group_size)
 
     # create list of all possible tables
-    possible_groups = [tuple(c) for c in pulp.allcombinations(social_network.nodes, max_group_size)]
+    possible_groups = []
+    for i in range(min_group_size, max_group_size + 1):
+        possible_groups.extend([tuple(c) for c in pulp.combination(social_network.nodes, max_group_size)])
 
     # create a binary variable to state that a table setting is used
     x = pulp.LpVariable.dicts('table', possible_groups,
@@ -72,7 +75,7 @@ def create_groups():
     for group in possible_groups:
         if x[group].value() == 1.0:
             user_groups.append(Group(generate_team_name(), get_random_color(), group))
-    #return user_groups
+    # return user_groups
     return interface.add_new_teams(user_groups)
 
 
