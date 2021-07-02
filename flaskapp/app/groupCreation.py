@@ -55,7 +55,7 @@ def create_groups():
     # create list of all possible tables
     possible_groups = []
     for i in range(min_group_size, max_group_size + 1):
-        possible_groups.extend([tuple(c) for c in pulp.combination(social_network.nodes, max_group_size)])
+        possible_groups.extend([tuple(c) for c in pulp.combination(social_network.nodes, i)])
 
     # create a binary variable to state that a table setting is used
     x = pulp.LpVariable.dicts('table', possible_groups,
