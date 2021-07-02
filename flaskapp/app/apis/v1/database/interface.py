@@ -180,7 +180,7 @@ def get_time_table_of_room(room_id):
                     {"name": lec["name"] + ": " + lec["term"], "day_as_int": e["day"],
                      "day": get_day_as_string(e["day"]),
                      "start": get_seconds_as_string(e["start"]), "end": get_seconds_as_string(e["end"])})
-    items.sort(key=lambda x: (x["name"], x["start"]))
+    items = sorted(key=lambda x: (x["name"], x["start"]))
     return items
 
 
