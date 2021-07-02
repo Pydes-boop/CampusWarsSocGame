@@ -231,8 +231,8 @@ class Test(Resource):
         i = list(get_all_lecture_names())[len(list(get_all_lecture_names())) - 1]
         # items.append(i["name"].encode('iso-8859-1').decode('utf-8'))
         # items.append(bytes(i["name"], 'iso-8859-1').decode('utf-8'))
-
-        return i["name"].decode("latin-1")
+        return unicode(i["name"], 'latin-1')
+        
 
 
 if __name__ == '__main__':
