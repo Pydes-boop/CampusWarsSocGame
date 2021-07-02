@@ -56,12 +56,16 @@ def add_lecture(name, term, timetable=[]):
 def add_user(firebase_id, name, lectures=[]):
     if lectures is None:
         lectures = []
-    item = {
-        "firebaseID": firebase_id,
-        "name": name,
-        "lectures": lectures
-    }
-    return mongo.db.firebase_users.insert_one(item).acknowledged
+    entry_exists = len(list(mongo.db.lecture.find({"firebaseID": firebase_id}))) > 0
+    if not entry_exists:
+        item = {
+            "firebaseID": firebase_id,
+            "name": name,
+            "lectures": lectures
+        }
+        return mongo.db.firebase_users.insert_one(item).acknowledged
+    else:
+        return False
 
 
 # todo schöner machen mit exists
