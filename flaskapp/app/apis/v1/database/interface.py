@@ -113,12 +113,12 @@ def get_current_quizzes(room_id):
                                          "timetable": {"$elemMatch": {"start": {"$lt": current_time[0]},
                                                                       "end": {"$gte": current_time[0]},
                                                                       "roomID": room_id,
-                                                                      "day": current_time[1]}}})
+                                                                      "day": current_time[1]}}}, {"_id": 1})
     if lecture is None:
-        return list(mongo.db.quiz.find({"campusID": room_info["campusID"]}, {"_id": 1}))
-    result = list(mongo.db.quiz.find({"lectureID": lecture["_id"]}, {"_id": 1}))
+        return list(mongo.db.quiz.find({"campusID": room_info["campusID"]}))
+    result = list(mongo.db.quiz.find({"lectureID": lecture["_id"]}))
     if len(result) == 0:
-        return list(mongo.db.quiz.find({"campusID": room_info["campusID"]}, {"_id": 1}))
+        return list(mongo.db.quiz.find({"campusID": room_info["campusID"]}))
     return result
 
 
