@@ -175,15 +175,12 @@ class Echo(Resource):
 @api.resource('/lectures')
 class Lectures(Resource):
     def post(self):
-        if "encoding_format" in request.headers:
-            lectures = json.loads(request.headers["lectures"])
-            lectures = list(
-                map(lambda x: ftfy.fix_text(
-                    get_escaped_by_db(x.encode(request.headers["encoding_format"]).decode('utf-8'))), lectures))
-
-            return add_lectures_to_user(request.headers["uid"], lectures)
-        else:
-            return add_lectures_to_user(request.headers["uid"], json.loads(request.headers["lectures"]))
+        lectures = json.loads(request.headers["lectures"])
+        lecturesList = []
+        for lec in lectures:
+            lecturesList.append(
+                ftfy.fix_text(get_escaped_by_db(lec.encode(request.headers["encoding_format"]).decode('utf-8'))))
+        return add_lectures_to_user(request.headers["uid"], lectures)
 
 
 @api.resource('/mygroup')
