@@ -60,6 +60,7 @@ public class HttpHeader {
     }
 
     public void buildPersonalLecturesHeader(JSONObject pLectures) throws JSONException {
+        header.put("encodingformat", "iso-8859-1");
         String lectures = "[";
         JSONArray arr = pLectures.getJSONObject("rowset").getJSONArray("row");
 
@@ -68,6 +69,7 @@ public class HttpHeader {
             lectures += ",\"" + arr.getJSONObject(i).getString("stp_sp_titel").replace("\"", "").replace(":", "") + ": " + arr.getJSONObject(i).get("semester_id") + "\"";
         }
         lectures += "]";
+
         header.put("lectures", lectures);
     }
 
