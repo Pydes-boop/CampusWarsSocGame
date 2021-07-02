@@ -178,7 +178,7 @@ class Lectures(Resource):
         if "encoding_format" in request.headers:
             lectures = json.loads(request.headers["lectures"])
             lectures = list(
-                map(lambda x: x.encode(ftfy.fix_text(request.headers["encoding_format"]).decode('utf-8')), lectures))
+                map(lambda x: ftfy.fix_text(x.encode(request.headers["encoding_format"]).decode('utf-8')), lectures))
 
             return add_lectures_to_user(request.headers["uid"], lectures)
         else:
