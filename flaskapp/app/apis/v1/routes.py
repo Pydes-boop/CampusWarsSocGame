@@ -233,10 +233,13 @@ class Test(Resource):
         # items.append(bytes(i["name"], 'iso-8859-1').decode('utf-8'))
         items.append(i["name"])
         my_bytes = bytes(i["name"], 'utf-8')
+        test = i["name"].replace("\\u", "\\\\u")
         items.append(my_bytes.decode('unicode_escape'))
         items.append(i["name"].encode('latin-1')
                      .decode('unicode_escape')
                      .encode('latin-1')
+                     .decode('utf-8'))
+        items.append(test.encode('unicode_escape')
                      .decode('utf-8'))
         return items
 
