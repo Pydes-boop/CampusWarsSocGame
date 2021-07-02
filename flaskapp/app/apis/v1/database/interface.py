@@ -48,9 +48,8 @@ def add_lecture(name, term, timetable=[]):
             "timetable": timetable
         }
         return mongo.db.lecture.insert_one(item).acknowledged
-    else:
-        return mongo.db.lecture.update_one({"name": name, "term": term},
-                                           {"$set": {"timetable": timetable}}).matched_count > 0
+    # todo
+    return True
 
 
 def add_user(firebase_id, name, lectures=[]):
@@ -60,14 +59,11 @@ def add_user(firebase_id, name, lectures=[]):
     if not entry_exists:
         item = {
             "firebaseID": firebase_id,
-            "name": name
+            "name": name,
+            "lectures": lectures
         }
-        if mongo.db.firebase_users.insert_one(item).acknowledged:
-            return add_lectures_to_user(firebase_id, lectures)
-        else:
-            return False
-    else:
-        return False
+        return mongo.db.firebase_users.insert_one(item).acknowledged
+    return True
 
 
 # todo schöner machen mit exists
@@ -247,6 +243,13 @@ def get_colour_of_team(team_name):
     return result["colour"]
 
 
+def get_escaped_by_db(text):
+    mongo.db.text.insert_one({"text": text})
+    returned_text = mongo.db.text.find_one()["text"]
+    mongo.db.text.delete_many({})
+    return returned_text
+
+
 def get_quiz_info(quiz_id):
     if isinstance(quiz_id, str):
         quiz_id = ObjectId(quiz_id)
@@ -255,6 +258,10 @@ def get_quiz_info(quiz_id):
 
 def get_number_of_players():
     return len(list(mongo.db.firebase_users.find()))
+
+
+def get_all_lecture_names():
+    return mongo.db.lecture.find({}, {"name": 1})
 
 
 if __name__ == '__main__':
