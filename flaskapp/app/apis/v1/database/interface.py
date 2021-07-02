@@ -63,6 +63,7 @@ def add_user(firebase_id, name, lectures=[]):
             "lectures": lectures
         }
         return mongo.db.firebase_users.insert_one(item).acknowledged
+    return True
 
 
 # todo schöner machen mit exists
