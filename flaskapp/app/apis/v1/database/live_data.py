@@ -86,14 +86,16 @@ class Game(TimedItem):
     Question: Optional[Dict[str, Any]]
     readiness: List[bool]
     time: int
+    name: Optional[str]
 
-    def __init__(self, game_id: str, players: List[User], question: Dict[str, Any], time: int = future()):
+    def __init__(self, game_id: str, players: List[User], name: str, question: Dict[str, Any], time: int = future()):
         self.game_id = game_id
         self.players = players
         self.results = [-2, -2]
         self.question = question
         self.readiness = [False, False]
         self.time = time
+        self.name = name
 
     def player_in_game(self, uid: str) -> bool:
         return uid in map(attrgetter('uid'), self.players)
@@ -222,7 +224,8 @@ class RoomQueue(PurgeQueue):
         """Get all users that are in a room."""
         return [user for user in self.get_users_in_room(room) if user.team == team]
 
-    def get_random_users_in_room_from_other_team(self, room: str, team: str, number_of_players: int) -> Optional[List[User]]:
+    def get_random_users_in_room_from_other_team(self, room: str, team: str, number_of_players: int) -> Optional[
+        List[User]]:
         """Get a certain number of randomly selected players in a room."""
         users = self.get_users_in_room_from_team(room, team)
         shuffle(users)
@@ -248,11 +251,14 @@ class QuizQueue(RoomQueue):
             if uid in self and room == self[uid].room == room:  # player adds another into a game
                 opp = self.get_opponent(self[uid])
                 if opp:
+                    quiz = choice(get_current_quizzes(ObjectId(lid)))
                     game = Game(game_id=game_id(),
                                 players=[self[uid], opp],
-                                question=choice(get_questions_of_quiz((choice(get_current_quizzes(ObjectId(lid)))["_id"])))
+                                question=choice(get_questions_of_quiz(quiz["_id"])),
+                                name=quiz["name"]
+
                                 # question=choice(get_questions_of_quiz(choice(get_current_quizzes(ObjectId(lid)))))
-                    )  # TODO
+                                )  # TODO
                     del self[uid], self[opp.uid]
                     self.game_queue[game.game_id] = game
                     return 'game-incomplete', game
