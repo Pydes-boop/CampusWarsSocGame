@@ -215,7 +215,7 @@ class Question(Resource):
 class Register(Resource):
     def post(self):
         status = add_user(request.headers["uid"], request.headers["name"])
-        return jsonify({'success': status}), 200
+        return jsonify({'success': status})
 
 
 @api.resource('/timetable')
@@ -228,27 +228,7 @@ class TimeTable(Resource):
 @api.resource('/marina')
 class Test(Resource):
     def get(self):
-        items = []
-        i = list(get_all_lecture_names())[len(list(get_all_lecture_names())) - 1]
-        # items.append(i["name"].encode('iso-8859-1').decode('utf-8'))
-        # items.append(bytes(i["name"], 'iso-8859-1').decode('utf-8'))
-        items.append(i["name"])
-        my_bytes = bytes(i["name"], 'utf-8')
-        test = i["name"].replace("\\u", "\\\\u")
-        items.append(my_bytes.decode('unicode_escape'))
-        items.append(i["name"].encode('latin-1')
-                     .decode('unicode_escape')
-                     .encode('latin-1')
-                     .decode('utf-8'))
-        items.append(i["name"].encode('unicode_escape')
-                     .decode('utf-8'))
-        items.append(i["name"].encode().decode('unicode-escape'))
-        items.append(ftfy.fix_text('uÌˆnicode'))
-        # add_lecture(ftfy.fix_text(i["name"]), get_current_term())
-        # add_lecture(ftfy.fix_text())
-
-        # add_lecture(i["name"].encode("unicode_escape").decode("utf-8"), get_current_term())
-        return get_escaped_by_db("äää")
+        return str(type(add_user("54", "Testname")))
 
 
 if __name__ == '__main__':
