@@ -38,13 +38,15 @@ class RoomFinder(Resource):
         lat, lon, = map(float, [request.headers['longitude'], request.headers['latitude']])
         room = find_closest_room(lat, lon, 30)
         if room is None:
-            return jsonify('nothing near you')
+            return jsonify({"message": 'nothing near you'})
         name = room['roomName']
         team_state.increase_team_presence_in_room(team=request.headers['team'], room=name)
         live_data.room_queue(uid=request.headers['uid'], team=request.headers['team'], room=name)
-        return_room = {'occupancy': team_state.get_all_team_scores_in_room(name),
+        return_room = {"message": "closest room to you:",
+                       'occupancy': team_state.get_all_team_scores_in_room(name),
                        'occupier': team_state.get_room_occupier(name),
-                       'room_name': name, 'lid': str(room["_id"]), 'multiplier': team_state.mw[name].multiplier,
+                       'room_name': name, 'lid': str(room["_id"]),
+                       'multiplier': team_state.mw[name].multiplier,
                        "currentLecture": get_full_name_of_current_lecture_in_room(str(room["_id"]))}
         return jsonify(return_room)
 
