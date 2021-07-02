@@ -176,7 +176,8 @@ class Lectures(Resource):
     def post(self):
         if "encoding_format" in request.headers:
             lectures = json.loads(request.headers["lectures"])
-            lectures = list(map(lambda x: x.encode(request.headers["encoding_format"]).decode('utf8'), lectures))
+            lectures = list(map(lambda x: x.encode(request.headers["encoding_format"]).decode('utf-8'), lectures))
+            add_lecture(bytes(lectures[0], 'iso-8859-1').decode('utf-8'), get_current_term())
             return add_lectures_to_user(request.headers["uid"], lectures)
         else:
             return add_lectures_to_user(request.headers["uid"], json.loads(request.headers["lectures"]))
