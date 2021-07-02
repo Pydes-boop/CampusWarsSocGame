@@ -87,7 +87,7 @@ class RoomJoin(Resource):
         """Users can announce that they are in a room."""
         team_state.increase_team_presence_in_room(team=request.headers['team'], room=request.headers['room'])
         live_data.room_queue(uid=request.headers['uid'], team=request.headers['team'], room=request.headers['room'])
-        return jsonify('ok')
+        return jsonify({'joined': True})
 
 
 @api.resource('/quiz-request')
@@ -99,7 +99,7 @@ class QuizRequest(Resource):
         live_data.quiz_queue(request.headers['uid'],
                              request.headers['team'],
                              request.headers['room'])
-        return jsonify('ok')
+        return jsonify({'quiz-request': True})
 
 
 @api.resource('/live-debug')
@@ -136,7 +136,7 @@ class QuizRefresh(Resource):
                     'game-ready': descriptor == 'game'  # unimportant
                 }
             )
-        return jsonify('nothing')
+        return jsonify({'nothing': True})
 
 
 @api.resource('/quiz-answer')
@@ -148,7 +148,7 @@ class QuizAnswer(Resource):
         live_data.game_queue[request.headers['gid']].refresh()
         live_data.game_queue.submit_answer(request.headers['gid'], int(request.headers['pid']),
                                            int(request.headers['outcome']))
-        return jsonify('ok')
+        return jsonify({'quiz-answer': True})
 
 
 @api.resource('/quiz-state')
@@ -163,7 +163,7 @@ class QuizState(Resource):
             if result == 'LOST': live_data.timedout_users(request.headers['uid'])
             return jsonify(result)
 
-        return jsonify('not yet answered')
+        return jsonify({'not yet answered': True})
 
 
 @api.resource('/echo')
@@ -197,25 +197,25 @@ class Start(Resource):
     def post(self):
         if request.headers['passphrase'] == "YOU ONLY CALL THIS TWICE A YEAR PLS":
             if groupCreation.create_groups()[0]:
-                return "ok", 200
+                return jsonify({'created-groups': True}), 200
             else:
-                return "nope", 400
+                return jsonify({'created-groups': False}), 400
 
 
 @api.resource('/question')
 class Question(Resource):
     @request_requires(headers=['question', 'right_answer', 'wrong_answers', 'quiz_id'])
     def post(self):
-        add_question_to_quiz(request.headers['question'], request.headers['right_answer'],
-                             request.headers['wrong_answers'], request.headers['quiz_id'])
-        return "ok", 200
+        status = add_question_to_quiz(request.headers['question'], request.headers['right_answer'],
+                                      request.headers['wrong_answers'], request.headers['quiz_id'])
+        return jsonify({'sucess': status}), 200
 
 
 @api.resource('/register')
 class Register(Resource):
     def post(self):
-        add_user(request.headers["uid"], request.headers["name"])
-        return "ok", 200
+        status = add_user(request.headers["uid"], request.headers["name"])
+        return jsonify({'success': status}), 200
 
 
 @api.resource('/timetable')
