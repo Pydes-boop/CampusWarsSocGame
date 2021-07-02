@@ -4,6 +4,7 @@ from apis.v1.utils.random_stuff import get_random_color, generate_team_name, use
 from dataclasses import dataclass
 from apis.v1.database import interface
 from typing import Any
+from random import choice
 
 
 @dataclass
@@ -39,6 +40,10 @@ def create_groups():
                     social_network[users[i]][users[j]]['counter'] += 1
                 else:
                     social_network.add_edge(users[i], users[j], weight=(1 / len(users)), counter=1)
+    loners = nx.isolates(social_network)
+    for user in list(loners):
+        social_network.add_edge(user, choice(list(social_network.nodes())), weight=0.0001, counter=1)
+        social_network.add_edge(user, choice(list(social_network.nodes())), weight=0.0001, counter=1)
     for u, v, d in social_network.edges(data=True):
         d['weight'] = d['weight'] / d['counter']
     max_groups = len(social_network.nodes) / 5
