@@ -21,20 +21,21 @@
 
             android:layout_height="45sp"
             android:layout_marginTop="20sp"
-            android:autoSizeMaxTextSize="30sp"
-
-            android:autoSizeTextType="uniform"
 
             android:background="@drawable/button_rounded"
             android:drawableLeft="@drawable/ic_group_icon"
 
             android:elevation="15sp"
-            android:gravity="center"
             android:paddingLeft="10sp"
-            android:text="Your Team Name"
 
+            android:text="Not in a Team Yet"
             android:textColor="@color/text"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+
+            android:autoSizeMaxTextSize="30sp"
+            android:autoSizeTextType="uniform"
+            android:gravity="center"
+            />
 
         <Space
             android:layout_width="1dp"
@@ -79,7 +80,7 @@
                     android:id="@+id/textCurrentMembers"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:text="5 People"
+                    android:text="1 People"
 
                     android:gravity="center"
                     android:textColor="@color/text"
@@ -109,7 +110,7 @@
                     android:id="@+id/textCurrentControll"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:text="10%"
+                    android:text="0%"
 
                     android:gravity="center"
                     android:textColor="@color/text"
