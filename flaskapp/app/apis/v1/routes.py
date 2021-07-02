@@ -197,9 +197,9 @@ class Start(Resource):
     def post(self):
         if request.headers['passphrase'] == "YOU ONLY CALL THIS TWICE A YEAR PLS":
             if groupCreation.create_groups()[0]:
-                return jsonify({'created-groups': True}), 200
+                return jsonify({'created-groups': True})
             else:
-                return jsonify({'created-groups': False}), 400
+                return jsonify({'created-groups': False})
 
 
 @api.resource('/question')
@@ -208,8 +208,7 @@ class Question(Resource):
     def post(self):
         status = add_question_to_quiz(request.headers['question'], request.headers['right_answer'],
                                       request.headers['wrong_answers'], request.headers['quiz_id'])
-        return jsonify({'sucess': status}), 200
-
+        return jsonify({'success': status})
 
 @api.resource('/register')
 class Register(Resource):
