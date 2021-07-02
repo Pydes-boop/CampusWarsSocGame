@@ -221,11 +221,8 @@ class TimeTable(Resource):
 
 @api.resource('/marina')
 class Test(Resource):
-    def get(self):
-        # return get_questions_of_quiz(get_current_quizzes(ObjectId("60d78a721ca97fc034f1f5ac"))[0]["_id"])
-        # return get_full_name_of_current_lecture_in_room(ObjectId("60d78a721ca97fc034f1f5ac"))
-
-        return jsonify(groupCreation.create_groups())
+    def post(self):
+        return json.loads(request.headers["lectures"])
 
 
 if __name__ == '__main__':
