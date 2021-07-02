@@ -228,7 +228,7 @@ class TimeTable(Resource):
 class Test(Resource):
     def get(self):
         items= []
-        i = get_all_lecture_names()[len(get_all_lecture_names())-1]
+        i = list(get_all_lecture_names())[len(list(get_all_lecture_names()))-1]
         items.append(i["name"].encode('iso-8859-1').decode('utf-8'))
         return jsonify(items)
 
