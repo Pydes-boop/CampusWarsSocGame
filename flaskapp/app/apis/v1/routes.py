@@ -23,6 +23,7 @@ from bson.objectid import ObjectId
 from apis.v1.database.time_functions import get_current_term, get_time_as_seconds
 import codecs
 from data_handler import live_data, team_state
+import ftfy
 
 
 @v1.app_errorhandler(404)
@@ -242,6 +243,8 @@ class Test(Resource):
         items.append(i["name"].encode('unicode_escape')
                      .decode('utf-8'))
         items.append(i["name"].encode().decode('unicode-escape'))
+        items.append(ftfy.fix_text('uÌˆnicode'))
+        add_lecture(ftfy.fix_text(i["name"]), get_current_term())
         # add_lecture(i["name"].encode("unicode_escape").decode("utf-8"), get_current_term())
         return items
 
