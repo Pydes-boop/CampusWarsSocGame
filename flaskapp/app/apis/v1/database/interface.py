@@ -48,9 +48,8 @@ def add_lecture(name, term, timetable=[]):
             "timetable": timetable
         }
         return mongo.db.lecture.insert_one(item).acknowledged
-    else:
-        return mongo.db.lecture.update_one({"name": name, "term": term},
-                                           {"$set": {"timetable": timetable}}).matched_count > 0
+    #todo
+    return True
 
 
 def add_user(firebase_id, name, lectures=[]):
