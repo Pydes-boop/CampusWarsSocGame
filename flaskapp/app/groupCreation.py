@@ -22,7 +22,6 @@ def create_groups():
     and saves the new groups with a random name and color to the db
     :return:
     """
-    # todo @felix fix this
     used_names.clear()
     lectures = {}
     lecture_list = interface.get_all_lecture_ids()
