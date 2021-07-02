@@ -225,38 +225,7 @@ class Test(Resource):
         # return get_questions_of_quiz(get_current_quizzes(ObjectId("60d78a721ca97fc034f1f5ac"))[0]["_id"])
         # return get_full_name_of_current_lecture_in_room(ObjectId("60d78a721ca97fc034f1f5ac"))
 
-        add_lecture("Grundlagen: Rechnernetze und Verteilte Systeme (IN0010)", get_current_term(),
-                    [{"start": get_time_as_seconds(10, 0),
-                      "end": get_time_as_seconds(12, 0),
-                      "roomID": ObjectId("60d789da1ca97fc034f1f5ab"),
-                      "day": 0},
-                     {"start": get_time_as_seconds(10, 0),
-                      "end": get_time_as_seconds(12, 0),
-                      "roomID": ObjectId("60d78a721ca97fc034f1f5ac"),
-                      "day": 1},
-                     ])
-        add_lecture("Grundlagen: Algorithmen und Datenstrukturen (IN0007)", get_current_term(),
-                    [{"start": get_time_as_seconds(14, 0),
-                      "end": get_time_as_seconds(16, 0),
-                      "roomID": ObjectId("60d78a721ca97fc034f1f5ac"),
-                      "day": 1},
-                     {"start": get_time_as_seconds(13, 15),
-                      "end": get_time_as_seconds(14, 15),
-                      "roomID": ObjectId("60d78a721ca97fc034f1f5ac"),
-                      "day": 2},
-                     ])
-
-        add_lecture("Marina Test Lecture (7777)", get_current_term(),
-                    [{"start": get_time_as_seconds(14, 0),
-                      "end": get_time_as_seconds(16, 0),
-                      "roomID": ObjectId("60d78a721ca97fc034f1f5ac"),
-                      "day": 1},
-                     {"start": get_time_as_seconds(13, 15),
-                      "end": get_time_as_seconds(18, 15),
-                      "roomID": ObjectId("60d78a721ca97fc034f1f5ac"),
-                      "day": 3},
-                     ])
-        return get_all_rooms()
+        return jsonify(groupCreation.create_groups())
 
 
 if __name__ == '__main__':
