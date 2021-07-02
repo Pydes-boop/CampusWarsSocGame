@@ -68,15 +68,19 @@ public class FirebaseCom{
             editor.putString("email", user.getEmail());
             String name = user.getEmail().split("@")[0];
             editor.putString("name", name);
+            editor.putString("UID", user.getUid());
             editor.apply();
 
             //Getting Id Token For User and writing it into fixed Storage
+            //Had to remove this because it could change if the user switches devices and i cant stop it :/
+            /*
             user.getIdToken(false).addOnSuccessListener(result -> {
                 String idToken = result.getToken();
                 editor.putString("UID", idToken);
                 editor.apply();
                 this.UID = settings.getString("UID", "empty");
             });
+            */
 
             //Collecting User Data from Fixed Storage and putting it into our live Singleton
             this.email = settings.getString("email", "empty");
