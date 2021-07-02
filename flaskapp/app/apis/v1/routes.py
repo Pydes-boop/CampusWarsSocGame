@@ -21,7 +21,7 @@ from apis.v1.database.interface import add_room, add_lecture, get_all_rooms, fin
     get_current_team_with_member_names, get_colour_of_team, get_all_lecture_names
 from bson.objectid import ObjectId
 from apis.v1.database.time_functions import get_current_term, get_time_as_seconds
-
+import codecs
 from data_handler import live_data, team_state
 
 
@@ -231,7 +231,7 @@ class Test(Resource):
         i = list(get_all_lecture_names())[len(list(get_all_lecture_names())) - 1]
         # items.append(i["name"].encode('iso-8859-1').decode('utf-8'))
         # items.append(bytes(i["name"], 'iso-8859-1').decode('utf-8'))
-        return bytes("\\u0259", 'ascii').decode('unicode-escape')
+        return codecs.decode(i["name"], 'unicode-escape')
 
 
 if __name__ == '__main__':
