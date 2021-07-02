@@ -38,6 +38,7 @@ public class MatchMakingActivity extends AppCompatActivity
     private HttpHeader head;
     private BackendCom bCom;
     private Bundle quizBundle;
+    private boolean switchedToQuiz = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -62,8 +63,12 @@ public class MatchMakingActivity extends AppCompatActivity
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                doCommunication(state);
-                handler.postDelayed(this, 5000);
+                Log.d("RUNNABLE RUNNING", "false");
+                if(switchedToQuiz != true) {
+                    Log.d("RUNNABLE RUNNING", state.toString());
+                    doCommunication(state);
+                    handler.postDelayed(this, 5000);
+                }
             }
         };
 
@@ -134,10 +139,12 @@ public class MatchMakingActivity extends AppCompatActivity
             case REQUEST:
                 //Request done
                 bCom.quiz("refresh", quizRefreshListener(), httpErrorListener(), head);
+                Log.d("REFRESH", "REFESH");
                 break;
             case READY:
                 //wait a sec and then change to quiz
                 changeUiState(state.READY);
+                Log.d("RUNNING", "RUNNING");
                 Handler handler2 = new Handler();
                 handler2.postDelayed
                 (
@@ -146,6 +153,7 @@ public class MatchMakingActivity extends AppCompatActivity
                         @Override
                         public void run()
                         {
+                            switchedToQuiz = true;
                             Intent myIntent = new Intent(MatchMakingActivity.this, QuizActivity.class);
                             myIntent.putExtras(quizBundle);
                             startActivityForResult(myIntent, 0);
@@ -186,12 +194,13 @@ public class MatchMakingActivity extends AppCompatActivity
                     quizBundle.putInt("pid", response.getInt("pid"));
                     JSONObject quiz = response.getJSONObject("quiz");
                     quizBundle.putString("question", quiz.getString("question"));
-                    quizBundle.putString("correctAnswer", quiz.getString("rightAnswers"));
+                    quizBundle.putString("correctAnswer", quiz.getString("rightAnswer"));
                     JSONArray wAnswers = quiz.getJSONArray("wrongAnswers");
                     String[] wrongAnswers = new String[]{wAnswers.getString(0), wAnswers.getString(1), wAnswers.getString(2)};
                     quizBundle.putStringArray("wrongAnswers", wrongAnswers);
-                    state = state.READY;
+
                     changeUiState(state.WAIT);
+                    state = state.READY;
 
                     doCommunication(state);
                 } catch (Exception e) {

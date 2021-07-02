@@ -123,9 +123,12 @@ public class BackendCom {
         http.postRequestString("v1/quiz-" + type, head.getHeaders(), listener, error);
     }
 
+    public void quizAnswer(String type, Response.Listener<String> listener, Response.ErrorListener error, HttpHeader head){
+        http.postRequestString("v1/quiz-" + type, head.getHeaders(), listener, error);
+    }
+
     public void group(Response.Listener<JSONObject> listener, Response.ErrorListener error, HttpHeader head){
         http.getRequestObject("v1/mygroup", head.getHeaders(), listener, error);
     }
-
 
 }

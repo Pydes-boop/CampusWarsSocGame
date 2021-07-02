@@ -77,4 +77,11 @@ public class HttpHeader {
         header.put("lid", lid);
         header.put("room", roomName);
     }
+
+    public void buildQuizAnswerHeader(String pid, String gid, String result, String outcome){
+        header.put("gid", gid);
+        header.put("pid", pid);
+        header.put("result", result);
+        header.put("outcome", outcome);
+    }
 }

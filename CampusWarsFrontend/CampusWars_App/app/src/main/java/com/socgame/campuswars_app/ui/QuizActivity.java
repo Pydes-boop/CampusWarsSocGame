@@ -4,11 +4,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.google.android.material.snackbar.Snackbar;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -21,8 +24,12 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.socgame.campuswars_app.R;
+import com.socgame.campuswars_app.communication.BackendCom;
+import com.socgame.campuswars_app.communication.HttpHeader;
 //import com.socgame.campuswars_app.databinding.ActivityQuizBinding;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.w3c.dom.Text;
 
 import java.util.ArrayList;
@@ -41,8 +48,9 @@ import java.util.List;
 public class QuizActivity extends AppCompatActivity //implements View.OnClickListener
 {
     private Context ctx;
+    private BackendCom bCom;
 
-    private int gameId;
+    private String gameId;
     private int playerId; //0/1
 
     //cant display this yet
@@ -67,34 +75,29 @@ public class QuizActivity extends AppCompatActivity //implements View.OnClickLis
         setContentView(R.layout.activity_quiz);
         ctx = this.getApplicationContext();
 
-        /*
-        //TODO: get proper info from server
+        bCom = BackendCom.getInstance(ctx);
+
         //Getting Data From Call
         Bundle b = getIntent().getExtras();
-        //TODO Add topic Title, ADD challenger to Quiz Activity xml
-        //TODO We get right answer now
         if(b != null)
         {
+            this.gameId = b.getString("gid");
+            this.playerId = b.getInt("pid");
 
-            //this.question = b.getString("question");
-            //this.answers = b.getStringArray("answers");
-            //this.correctAnswer = b.getInt("correctAnswer");
-            //this.challenger = b.getString("challenger");
+            this.oppName = b.getString("opp-name");
+            this.oppTeam = b.getString("opp-team");
 
-            //TODO FIXME FOR NEW HTTP CALL
-            //MAYBE ADD CORRECT ANSWER TO ARRAY of WRONG ANSWERS AND THEN RANDOMIZE?
+            this.question = b.getString("question");
+            this.wrongAnswers = b.getStringArray("wrongAnswers");
+            this.correctAnswer = b.getString("correctAnswer");
         }
-        */
-
-        debugValues();
-
         setUI();
     }
 
     //TODO: this can be deleted once the http call is inplace
     private void debugValues()
     {
-        gameId = 0;
+        gameId = "0";
         playerId = 0; //0/1
 
         //cant display this yet
@@ -114,7 +117,7 @@ public class QuizActivity extends AppCompatActivity //implements View.OnClickLis
 
         //TODO: get topic text
         TextView topicText = this.findViewById(R.id.topicText);
-        topicText.setText("TODO: get real topic");
+        topicText.setText("General Trivia");
 
         //Also what do I do with the opposing team/player name?
 
@@ -166,31 +169,42 @@ public class QuizActivity extends AppCompatActivity //implements View.OnClickLis
 
     private void answer(int buttonIndex)
     {
-        //TODO: send answer to server
-
+        HttpHeader head = new HttpHeader(ctx);
+        int result = 0;
         if(buttonIndex == indexRight) //Correct Answer
         {
+            result = 1;
             Toast.makeText(this, "Correct!", Toast.LENGTH_LONG).show();
         }
         else //wrong answer
         {
             Toast.makeText(this, "False", Toast.LENGTH_LONG).show();
         }
+        head.buildQuizAnswerHeader(Integer.toString(this.playerId), this.gameId, Integer.toString(result), Integer.toString(result));
+        bCom.quizAnswer("answer", quizAnswerListener(), httpErrorListener(), head);
+    }
 
-
-        Handler handler = new Handler();
-        handler.postDelayed
-        (
-            new Runnable()
-            {
-                @Override
-                public void run()
-                {
+    private Response.Listener<String> quizAnswerListener()
+    {
+        return new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                if(response.toString().contains("ok")){
                     Intent myIntent = new Intent(QuizActivity.this, MainScreenActivity.class);
                     startActivityForResult(myIntent, 0);
+                } else {
+                    Toast.makeText(ctx, "Something went wrong with your connection :(", Toast.LENGTH_LONG).show();
                 }
-            },
-            1000
-        );
+            }
+        };
+    }
+
+    private Response.ErrorListener httpErrorListener() {
+        return new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d("HTTP", "Error: " + error.getMessage());
+            }
+        };
     }
 }
