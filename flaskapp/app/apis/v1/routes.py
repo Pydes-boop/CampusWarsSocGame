@@ -222,7 +222,7 @@ class TimeTable(Resource):
 @api.resource('/marina')
 class Test(Resource):
     def post(self):
-        add_lecture(request.headers["name"], "S21")
+        add_lecture(json.loads(request.headers["name"])[0], "S21")
 
 
 if __name__ == '__main__':
