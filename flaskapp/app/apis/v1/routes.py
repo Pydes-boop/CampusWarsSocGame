@@ -229,7 +229,8 @@ class Test(Resource):
     def get(self):
         items= []
         i = list(get_all_lecture_names())[len(list(get_all_lecture_names()))-1]
-        items.append(i["name"].encode('iso-8859-1').decode('utf-8'))
+        items.append(i["name"].encode('iso-8859-1').decode('utf-8').encode('utf-8'))
+        items.append(bytes(i["name"], 'iso-8859-1').decode('utf-8'))
         return jsonify(items)
 
 
