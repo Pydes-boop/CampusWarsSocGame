@@ -38,12 +38,19 @@ def get_all_rooms():
 
 
 def add_lecture(name, term, timetable=[]):
-    item = {
-        "name": name,
-        "term": term,
-        "timetable": timetable
-    }
-    return mongo.db.lecture.insert_one(item).acknowledged
+    if timetable is None:
+        timetable = []
+    entry_exists = len(list(mongo.db.lecture.find({"name": name, "term": term}))) > 0
+    if not entry_exists:
+        item = {
+            "name": name,
+            "term": term,
+            "timetable": timetable
+        }
+        return mongo.db.lecture.insert_one(item).acknowledged
+    else:
+        return mongo.db.lecture.update_one({"name": name, "term": term},
+                                           {"$set": {"timetable": timetable}}).matched_count > 0
 
 
 def add_user(firebase_id, name, lectures=[]):
@@ -59,7 +66,6 @@ def add_user(firebase_id, name, lectures=[]):
 
 # todo schöner machen mit exists
 def add_lectures_to_user(firebase_id, lectures):
-    items = []
     for i in range(len(lectures)):
         split_string = lectures[i].split(":")
         name = split_string[0]
@@ -68,28 +74,13 @@ def add_lectures_to_user(firebase_id, lectures):
             name += split_string[j]
             j = j + 1
         term = split_string[j][1:]
-        entry_exists = len(list(mongo.db.lecture.find({"name": name, "term": term}))) > 0
-        items.append(entry_exists)
-        lecture_id = None
-        if not entry_exists:
-            item = {
-                "name": name,
-                "term": term,
-                "timetable": []
-            }
-            result = mongo.db.lecture.insert_one(item)
-            if not result.acknowledged:
-                return False
-            lecture_id = result.inserted_id
-        else:
-            lecture_id = mongo.db.lecture.find_one({"name": name, "term": term}, {"_id": 1})["_id"]
-        # todo why dict
-        # if mongo.db.firebase_users.update_one({"firebaseID": firebase_id},
-        #                                      {"$push": {"lectures": lecture_id}}).matched_count == 0:
-        # return False
-        mongo.db.firebase_users.update_one({"firebaseID": firebase_id},
-                                           {"$push": {"lectures": lecture_id}})
-    return items
+        if not add_lecture(name, term):
+            return False
+        lecture_id = mongo.db.lecture.find_one({"name": name, "term": term}, {"_id": 1})["_id"]
+        if not mongo.db.firebase_users.update_one({"firebaseID": firebase_id},
+                                                  {"$push": {"lectures": lecture_id}}).matched_count > 0:
+            return False
+    return True
 
 
 def add_question_to_quiz(question, right_answer, wrong_answers, quiz_id):
