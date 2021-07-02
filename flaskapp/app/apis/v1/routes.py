@@ -174,8 +174,12 @@ class Echo(Resource):
 @api.resource('/lectures')
 class Lectures(Resource):
     def post(self):
-        add_lectures_to_user(request.headers["uid"], json.loads(request.headers["lectures"]))
-        return
+        if "encoding_format" in request.headers:
+            lectures = json.loads(request.headers["lectures"])
+            lectures = list(map(lambda x: x.decode('iso-8859-1').encode('utf8'), lectures))
+            return add_lectures_to_user(request.headers["uid"], lectures)
+        else:
+            return add_lectures_to_user(request.headers["uid"], json.loads(request.headers["lectures"]))
 
 
 @api.resource('/mygroup')
@@ -230,7 +234,7 @@ class Test(Resource):
                       "roomID": ObjectId("60d78a721ca97fc034f1f5ac"),
                       "day": 3},
                      ])
-        add_lecture("Grundlagen: Rechnernetze und Verteilte Systeme (IN0010)", get_current_term(),
+        add_lecture("Grundlagen Rechnernetze und Verteilte Systeme (IN0010)", get_current_term(),
                     [{"start": get_time_as_seconds(10, 0),
                       "end": get_time_as_seconds(12, 0),
                       "roomID": ObjectId("60d789da1ca97fc034f1f5ab"),
@@ -280,6 +284,7 @@ class Test(Resource):
                  ["Praktikum: Echtzeit-Computergrafik (IN0039): 21S", "Englisch - English through Cinema C1: 20W",
                   "Übungen zu Analysis für Informatik [MA0902]: 20W",
                   "Einführung in die Theoretische Informatik (IN0011): 21S",
+
                   "Praktikum: Grundlagen der Programmierung (IN0002), Di, Mi: 19W", "Französisch A1.1: 19W",
                   "Übungen zu Einführung in Informatik für Games Engineering(IN0031): 19W",
                   "Studentische Vollversammlungen - Informatik: 19W", "Analysis für Informatik [MA0902]: 20W",
