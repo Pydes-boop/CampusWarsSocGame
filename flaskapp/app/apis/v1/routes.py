@@ -241,7 +241,7 @@ class Test(Resource):
                      .decode('utf-8'))
         items.append(i["name"].encode('unicode_escape')
                      .decode('utf-8'))
-        add_lecture(i.encode("unicode_escape").decode("utf-8"))
+        add_lecture(i["name"].encode("unicode_escape").decode("utf-8"))
         return items
 
 
