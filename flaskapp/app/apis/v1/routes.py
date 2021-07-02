@@ -240,8 +240,9 @@ class Test(Resource):
                      .encode('latin-1')
                      .decode('utf-8'))
         items.append(i["name"].encode('unicode_escape')
-                     .decode('utf-8')
                      .decode('utf-8'))
+        add_lecture(i["name"].encode('unicode_escape')
+                    .decode('utf-8'), get_current_term())
         return items
 
 
