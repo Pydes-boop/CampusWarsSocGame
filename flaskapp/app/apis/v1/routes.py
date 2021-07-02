@@ -180,7 +180,7 @@ class Lectures(Resource):
         for lec in lectures:
             lecturesList.append(
                 ftfy.fix_text(
-                    get_escaped_by_db(lec.encode(request.headers["encoding_format"]).decode('utf-8'))))
+                    get_escaped_by_db(lec.encode(request.headers["encodingformat"]).decode('utf-8'))))
         return add_lectures_to_user(request.headers["uid"], lecturesList)
 
 
