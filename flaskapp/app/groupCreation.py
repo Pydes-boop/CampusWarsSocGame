@@ -45,7 +45,10 @@ def create_groups():
         social_network.add_edge(user, choice(list(social_network.nodes())), weight=0.0001, counter=1)
     for u, v, d in social_network.edges(data=True):
         d['weight'] = d['weight'] / d['counter']
-    max_groups = len(social_network.nodes) / 5
+    if len(social_network.nodes) % 5 > 0:
+        max_groups = int((len(social_network.nodes) / 5) + 1)
+    else:
+        max_groups = int(len(social_network.nodes) / 5)
     max_group_size = 5
 
     # create list of all possible tables
