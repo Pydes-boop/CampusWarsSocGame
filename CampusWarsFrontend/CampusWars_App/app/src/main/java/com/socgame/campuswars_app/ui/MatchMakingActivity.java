@@ -23,6 +23,7 @@ import com.socgame.campuswars_app.communication.BackendCom;
 import com.socgame.campuswars_app.communication.HttpHeader;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 public class MatchMakingActivity extends AppCompatActivity
@@ -56,6 +57,8 @@ public class MatchMakingActivity extends AppCompatActivity
             this.lid = b.getString("lid");
         }
         this.head = new HttpHeader(ctx);
+        Log.d("HTTP QUIZ REQUEST", this.roomName);
+        Log.d("HTTP QUIZ REQUEST", roomName);
         head.buildQuizHeader(latitude, longitude, lid, roomName);
 
         //Repeating our Calls every 5 Seconds
@@ -134,7 +137,7 @@ public class MatchMakingActivity extends AppCompatActivity
         switch (s)
         {
             case BEGIN:
-                bCom.quizString("request", quizRequestListener(), httpErrorListener(), head);
+                bCom.quiz("request", quizRequestListener(), httpErrorListener(), head);
                 break;
             case REQUEST:
                 //Request done
@@ -167,15 +170,18 @@ public class MatchMakingActivity extends AppCompatActivity
         //TODO: always change/iterate state on response
     }
 
-    private Response.Listener<String> quizRequestListener()
+    private Response.Listener<JSONObject> quizRequestListener()
     {
-        return new Response.Listener<String>() {
+        return new Response.Listener<JSONObject>() {
             @Override
-            public void onResponse(String response) {
-                if(response.toString().contains("ok")){
+            public void onResponse(JSONObject response) {
+                try {
+                    response.getString("quiz-request");
                     state = state.REQUEST;
                     changeUiState(state.REQUEST);
                     doCommunication(state);
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
             }
         };
