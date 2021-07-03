@@ -132,17 +132,17 @@ def alternative_calculation():
     copied_list = []
     for i in current_partition:
         copied_list.append(i[:])
-    # result = {"before": {"name": "before", "list": copied_list}, "swapList": [], "swaps": []}
+    result = {"before": {"name": "before", "list": copied_list}, "swapList": [], "swaps": []}
 
     while should_swap_again:
         next_swap = find_next_swap(social_network, current_partition, min_group_size, max_group_size)
-        # result["swaps"].append(next_swap["sum"])
-        # result["swapList"].append(next_swap)
+        result["swaps"].append(next_swap["sum"])
+        result["swapList"].append(next_swap)
         if next_swap["sum"] == 0:
             break
         if biggest_change < next_swap["sum"]:
             biggest_change = next_swap["sum"]
-        if next_swap["sum"] < biggest_change * 0.1:
+        if next_swap["sum"] < biggest_change * 0.01:
             should_swap_again = False
         if not next_swap["player1"] is None:
             player = current_partition[next_swap["partition1"]].pop(next_swap["player1"])
@@ -150,11 +150,12 @@ def alternative_calculation():
         if not next_swap["player2"] is None:
             player = current_partition[next_swap["partition2"]].pop(next_swap["player2"])
             current_partition[next_swap["partition1"]].append(player)
-    # result["after"] = current_partition
+
+    result["after"] = current_partition
     teams = []
     for group in current_partition:
         teams.append(Group(generate_team_name(), get_random_color(), group))
-    return interface.add_new_teams(teams)
+    return result
 
 
 def find_next_swap(graph, current_partition, min_size, max_size):
