@@ -19,6 +19,7 @@ from apis.v1.database.team_state import TeamState
 from apis.v1.database.interface import get_current_quizzes, get_questions_of_quiz
 from operator import attrgetter
 from random import choice
+from contextlib import suppress
 from bson import ObjectId
 
 from typing import Any, Union, Optional, Dict, List, Tuple
@@ -245,7 +246,8 @@ class QuizQueue(RoomQueue):
         if uid in self:
             game = self.game_queue.is_player_in_game(uid)
             if game:  # player was added to a game before
-                del self[uid]
+                with suppress(KeyError):
+                    del self[uid]
                 return 'game', game
 
             if uid in self and room == self[uid].room == room:  # player adds another into a game
