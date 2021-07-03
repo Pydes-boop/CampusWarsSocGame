@@ -151,7 +151,9 @@ def alternative_calculation():
             player = current_partition[next_swap["partition2"]].pop(next_swap["player2"])
             current_partition[next_swap["partition1"]].append(player)
     # result["after"] = current_partition
-
+    teams = []
+    for group in current_partition:
+        teams.append(Group(generate_team_name(), get_random_color(), group))
     return interface.add_new_teams(current_partition)
 
 
