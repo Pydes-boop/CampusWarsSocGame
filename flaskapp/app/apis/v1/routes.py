@@ -37,7 +37,7 @@ class RoomFinder(Resource):
     @request_requires(headers=['uid', 'team', 'latitude', 'longitude'])
     def post(self):
         lat, lon, = map(float, [request.headers['longitude'], request.headers['latitude']])
-        room = find_closest_room(lat, lon, 30)
+        room = find_closest_room(lat, lon, 50)
         if room is None:
             return jsonify({"message": 'nothing near you'})
         name = room['roomName']
