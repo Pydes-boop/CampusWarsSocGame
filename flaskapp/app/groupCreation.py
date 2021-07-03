@@ -92,3 +92,107 @@ def happiness(group, social_network):
             if social_network.has_edge(group[i], group[j]):
                 return_value += social_network[group[i]][group[j]]['weight']
     return return_value
+
+
+def alternative_calculation():
+    biggest_change = -1
+    used_names.clear()
+    lectures = {}
+    lecture_list = interface.get_all_lecture_ids()
+    for lecture in lecture_list:
+        lectures[lecture] = interface.get_users_of_lecture(lecture)
+    social_network = nx.Graph()
+    for title, attendants in lectures.items():
+        social_network.add_nodes_from(attendants)
+
+    for users in lectures.values():
+        for i in range(0, len(users) - 1):
+            for j in range(i + 1, len(users)):
+                if social_network.has_edge(users[i], users[j]):
+                    social_network[users[i]][users[j]]['weight'] += (1 / len(users))
+                    social_network[users[i]][users[j]]['counter'] += 1
+                else:
+                    social_network.add_edge(users[i], users[j], weight=(1 / len(users)), counter=1)
+    loners = nx.isolates(social_network)
+    for user in list(loners):
+        social_network.add_edge(user, choice(list(social_network.nodes())), weight=0.0001, counter=1)
+        social_network.add_edge(user, choice(list(social_network.nodes())), weight=0.0001, counter=1)
+    for u, v, d in social_network.edges(data=True):
+        d['weight'] = d['weight'] / d['counter']
+    min_group_size = 4
+    max_group_size = 6
+    current_partition = [list(social_network.nodes)[x:x + min_group_size] for x in
+                         range(0, social_network.number_of_nodes(), min_group_size)]
+    if len(current_partition[len(current_partition) - 1]) != min_group_size:
+        last_entries = current_partition[len(current_partition) - 1]
+        current_partition.pop()
+        for i in range(0, len(last_entries)):
+            current_partition[i].append(last_entries[i])
+    should_swap_again = True
+    copied_list = []
+    for i in current_partition:
+        copied_list.append(i[:])
+    # result = {"before": {"name": "before", "list": copied_list}, "swapList": [], "swaps": []}
+
+    while should_swap_again:
+        next_swap = find_next_swap(social_network, current_partition, min_group_size, max_group_size)
+        # result["swaps"].append(next_swap["sum"])
+        # result["swapList"].append(next_swap)
+        if next_swap["sum"] == 0:
+            break
+        if biggest_change < next_swap["sum"]:
+            biggest_change = next_swap["sum"]
+        if next_swap["sum"] < biggest_change * 0.1:
+            should_swap_again = False
+        if not next_swap["player1"] is None:
+            player = current_partition[next_swap["partition1"]].pop(next_swap["player1"])
+            current_partition[next_swap["partition2"]].append(player)
+        if not next_swap["player2"] is None:
+            player = current_partition[next_swap["partition2"]].pop(next_swap["player2"])
+            current_partition[next_swap["partition1"]].append(player)
+    # result["after"] = current_partition
+
+    return interface.add_new_teams(current_partition)
+
+
+def find_next_swap(graph, current_partition, min_size, max_size):
+    best_result = get_best_result_as_dict(0, None, None, None, None)
+    for i, p in enumerate(current_partition):
+        for j, p2 in enumerate(current_partition):
+            if i == j:
+                continue
+            old_sum = happiness(p, graph) + happiness(p2, graph)
+            if len(p) > min_size and len(p2) < max_size:
+                for k in range(0, len(p)):
+                    pl1 = p[k]
+                    new_p = p[:]
+                    new_p.pop(k)
+                    new_p2 = p2[:]
+                    new_p2.append(pl1)
+                    new_sum = happiness(new_p, graph) + happiness(new_p2, graph)
+                    if new_sum - old_sum > best_result["sum"]:
+                        best_result = get_best_result_as_dict(new_sum - old_sum, k, None, i, j)
+            if i <= j:
+                for k in range(0, len(p)):
+                    for m in range(0, len(p2)):
+                        pl1 = p[k]
+                        pl2 = p2[m]
+                        new_p = p[:]
+                        new_p.pop(k)
+                        new_p.append(pl2)
+                        new_p2 = p2[:]
+                        new_p2.pop(m)
+                        new_p2.append(pl1)
+                        new_sum = happiness(new_p, graph) + happiness(new_p2, graph)
+                        if new_sum - old_sum > best_result["sum"]:
+                            best_result = get_best_result_as_dict(new_sum - old_sum, k, m, i, j)
+
+    return best_result
+
+
+def get_best_result_as_dict(sum, pl1, pl2, part1, part2):
+    return {"sum": sum,
+            "player1": pl1,
+            "player2": pl2,
+            "partition1": part1,
+            "partition2": part2}
