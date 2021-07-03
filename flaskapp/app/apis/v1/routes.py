@@ -14,6 +14,7 @@ import groupCreation
 from apis.v1.decorators import request_requires, check_timed_out_users
 import random
 import json
+import threading
 from apis.v1.database import interface
 from apis.v1.database.interface import add_room, add_lecture, get_all_rooms, find_closest_room, add_lectures_to_user, \
     add_question_to_quiz, add_user, get_users_of_lecture, get_full_name_of_current_lecture_in_room, get_current_team, \
@@ -196,10 +197,9 @@ class Start(Resource):
     @request_requires(headers=['passphrase'])
     def post(self):
         if request.headers['passphrase'] == "YOU ONLY CALL THIS TWICE A YEAR PLS":
-            if groupCreation.create_groups()[0]:
-                return jsonify({'created-groups': True})
-            else:
-                return jsonify({'created-groups': False})
+            group_creation = threading.Thread(target=groupCreation.create_groups)
+            group_creation.start()
+            return jsonify({'message': "Started group creation"})
         return jsonify({'message':'You are not allowed to restart'})
 
 
