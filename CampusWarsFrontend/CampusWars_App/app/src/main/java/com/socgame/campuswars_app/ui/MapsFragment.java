@@ -41,6 +41,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.LinkedList;
+import java.util.List;
+
 /**
    * Displays the world map
    * Uses custom design
@@ -49,12 +52,13 @@ import org.json.JSONObject;
    *
    * written by Jonas
 */
-public class MapsFragment extends Fragment implements GpsObserver
-{
+public class MapsFragment extends Fragment implements GpsObserver {
     private LatLng position = new LatLng(48.2650, 11.6716);//Using campus as default/fallback position;
     private GoogleMap map;
     private Marker localPos;//TODO: maybe google maps has an integrated way to do that?
     BackendCom bCom;
+
+    private List<Marker> lectureHalls = new LinkedList<Marker>();
 
     private OnMapReadyCallback callback = new OnMapReadyCallback() {
         @Override
@@ -101,8 +105,7 @@ public class MapsFragment extends Fragment implements GpsObserver
      * @param lecture current lecture title, alternatively any sub-headline
      * @return reference of the Marker. Call Marker.remove() to delete lecture hall
      */
-    public Marker addLectureHall(double lat, double lon, String color, String name, String lecture)
-    {
+    public Marker addLectureHall(double lat, double lon, String color, String name, String lecture) {
         return addLectureHall(new LatLng(lat, lon), color, name, lecture);
     }
 
@@ -115,14 +118,13 @@ public class MapsFragment extends Fragment implements GpsObserver
      * @param lecture current lecture title, alternatively any sub-headline
      * @return reference of the Marker. Call Marker.remove() to delete lecture hall
      */
-    public Marker addLectureHall(LatLng pos, String color, String name, String lecture)
-    {
+    public Marker addLectureHall(LatLng pos, String color, String name, String lecture) {
         //TODO: maybe safe locally for further analysis?
 
         MarkerOptions options = customMarker(pos, name, lecture, color, R.drawable.ic_tower_solid, 2);//defaultMarker(pos, name, lecture, color);
 
         Marker marker = map.addMarker(options);
-
+        lectureHalls.add(marker);
         return marker;
     }
 
@@ -135,8 +137,7 @@ public class MapsFragment extends Fragment implements GpsObserver
     }
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
-    {
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         this.bCom = BackendCom.getInstance(this.getContext());
@@ -154,10 +155,8 @@ public class MapsFragment extends Fragment implements GpsObserver
     }
 
     @Override
-    public void OnLocationUpdate(LatLng loc)
-    {
-        if (loc == null)
-        {
+    public void OnLocationUpdate(LatLng loc) {
+        if (loc == null) {
             Log.e("GPS", this + " recieved null location");
         }
 
@@ -166,20 +165,21 @@ public class MapsFragment extends Fragment implements GpsObserver
         Log.d("GPS", this + " location updated to " + loc.latitude + ", " + loc.longitude);
 
 
+        //TODO: find a better way to call this periodically
+        updateLectureHalls();
+
+
         updatePositionMarker();
     }
 
-    private void updatePositionMarker()
-    {
-        if (map != null)
-        {
+    private void updatePositionMarker() {
+        if (map != null) {
             //Dont always move camera
             Location locCam = latLngToLocation(map.getCameraPosition().target);
             Location loc = latLngToLocation(position);
             float distance = loc.distanceTo(locCam);
 
-            if(distance < 400 || distance > 10000 || localPos == null)
-            {
+            if (distance < 400 || distance > 10000 || localPos == null) {
                 //create smooth camera move
                 CameraPosition camPos = new CameraPosition.Builder()
                         .target(position)//move camera
@@ -205,8 +205,8 @@ public class MapsFragment extends Fragment implements GpsObserver
         return new Response.Listener<JSONArray>() {
             @Override
             public void onResponse(JSONArray response) {
-                try{
-                    for(int i = 0; i < response.length(); i++){
+                try {
+                    for (int i = 0; i < response.length(); i++) {
                         //Getting JSONs
                         JSONObject lectureHall = response.getJSONObject(i);
                         JSONObject location = lectureHall.getJSONObject("location");
@@ -243,6 +243,19 @@ public class MapsFragment extends Fragment implements GpsObserver
     }
 
     //Marker (color) logic
+
+    private void clearAllHalls() {
+        for (Marker h : lectureHalls) {
+            h.remove();
+        }
+    }
+
+    //TODO: find a better place to calls this
+    private void updateLectureHalls()
+    {
+        clearAllHalls();
+        bCom.roomDetectionGet(roomfinderGetListener(), httpErrorListener());
+    }
 
     private MarkerOptions customMarker(LatLng pos, String title, String desc, String color, int drawable, float scale)
     {
