@@ -228,7 +228,7 @@ class TimeTable(Resource):
 @api.resource('/marina')
 class Test(Resource):
     def get(self):
-        return str(type(add_user("54", "Testname")))
+        return jsonify(groupCreation.alternative_calculation()[0])
 
 
 if __name__ == '__main__':
