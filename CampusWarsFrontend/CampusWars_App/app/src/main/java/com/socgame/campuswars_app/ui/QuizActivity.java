@@ -190,6 +190,7 @@ public class QuizActivity extends AppCompatActivity //implements View.OnClickLis
             @Override
             public void onResponse(String response) {
                 if(response.toString().contains("ok")){
+                    //TODO maybe instantly change to screen where we wait for response
                     Intent myIntent = new Intent(QuizActivity.this, MainScreenActivity.class);
                     startActivityForResult(myIntent, 0);
                 } else {
