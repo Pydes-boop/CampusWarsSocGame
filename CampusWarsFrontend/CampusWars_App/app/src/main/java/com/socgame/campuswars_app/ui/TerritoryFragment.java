@@ -39,9 +39,6 @@ public class TerritoryFragment extends Fragment  implements GpsObserver //implem
     private String lectureHall = "nothing";
     private LatLng lectureLoc = null;
 
-    //TODO: create an update method which calls the server
-    //We already have one. It is called "OnLocationUpdate" and gets called a lot
-
     public TerritoryFragment()
     {
         // Required empty public constructor
@@ -125,7 +122,7 @@ public class TerritoryFragment extends Fragment  implements GpsObserver //implem
             public void onResponse(JSONObject response) {
                 try {
                     String currentLecture = response.getString("currentLecture");
-                    if(currentLecture.equals(null)){
+                    if (currentLecture.equals(null)) {
                         currentLecture = "No Lecture currently";
                     }
                     lectureId = response.getString("lid");
@@ -135,18 +132,28 @@ public class TerritoryFragment extends Fragment  implements GpsObserver //implem
 
                     lectureHall = response.getString("room_name");
                     setHallInfo(lectureHall, occupier, "No Lecture currently", new LatLng(latitude, longitude));
-
-                } catch (Exception e) {
-                    //Seeing if we are banned right now
-                    //Sadly we have to do it like this because the JSONClass doesnt allow us to check for possible Null Objects and throws Errors instead
+                } catch(JSONException j){
+                    //if JSONException we know we got a different answer -> eg.: time_out or nothing near me
+                    //This isnt the prettiest way to do it, but i will always get an exception if i check for a key and it isnt there, so i cant do it another way
                     try{
+                        //Checking if there is nothing near me
+                        String message = response.getString("message");
+                        if(message.contains("nothing near you")){
+                            lectureHall = "nothing";
+                            setHallInfo("Not in a lecture hall", "", "", new LatLng(latitude, longitude));
+                        }
+                    } catch(JSONException e){}
+
+                    try{
+                        //Checking if i am timed_out
                         String timeOut = response.getString("time_pretty");
+                        lectureHall = "nothing";
+                        setHallInfo("Timed Out", "", "", new LatLng(latitude, longitude));
                         Toast.makeText(getActivity(), "You lost and are timed out until: "+ timeOut, Toast.LENGTH_LONG).show();
-                    } catch(Exception x){
-                        //TODO NOTHING NEAR YOU ANSWER REMOVES TEXT
-                        Log.d("Error in Roomfinder Call", e.toString());
-                    }
-                    Log.d("Error in Roomfinder Call", e.toString());
+                    } catch(JSONException e){}
+
+                    //We dont log our exceptions here because they will happen when we look for a key and arent sure if it exists
+                    //Log.d("Exception in TimeOut", j.toString());
                 }
             }
         };
@@ -169,9 +176,5 @@ public class TerritoryFragment extends Fragment  implements GpsObserver //implem
         HttpHeader head = new HttpHeader(ctx);
         head.buildRoomFinderHeader(loc.latitude, loc.longitude);
         bCom.roomDetectionPost(roomfinderPostListener(loc.latitude, loc.longitude), httpErrorListener(), head);
-
-        //maybe safe last location?
-        //maybe do some distance / time checks
-        //TODO ROOMFINDER CALL HERE?
     }
 }
