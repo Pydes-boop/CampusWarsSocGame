@@ -16,7 +16,8 @@ RUN pip install --upgrade pip
 ADD ./requirements.txt /var/www/requirements.txt
 RUN pip install -r requirements.txt
 
-RUN apt-get install git
+RUN apt update
+RUN apt install -y git
 RUN git clone https://github.com/networkx/networkx-metis.git
 RUN python3 nenetworkx-metis/setup.py install
 
