@@ -5,7 +5,8 @@ from dataclasses import dataclass
 from apis.v1.database import interface
 from typing import Any
 from random import choice
-
+# import nxmetis
+threshold = 100
 
 @dataclass
 class Group:
@@ -22,35 +23,10 @@ def create_groups():
     and saves the new groups with a random name and color to the db
     :return:
     """
-    used_names.clear()
-    lectures = {}
-    lecture_list = interface.get_all_lecture_ids()
-    for lecture in lecture_list:
-        lectures[lecture] = interface.get_users_of_lecture(lecture)
-    social_network = nx.Graph()
-    for title, attendants in lectures.items():
-        social_network.add_nodes_from(attendants)
-
-    for users in lectures.values():
-        for i in range(0, len(users) - 1):
-            for j in range(i + 1, len(users)):
-                if social_network.has_edge(users[i], users[j]):
-                    social_network[users[i]][users[j]]['weight'] += (1 / len(users))
-                    social_network[users[i]][users[j]]['counter'] += 1
-                else:
-                    social_network.add_edge(users[i], users[j], weight=(1 / len(users)), counter=1)
-    loners = nx.isolates(social_network)
-    for user in list(loners):
-        social_network.add_edge(user, choice(list(social_network.nodes())), weight=0.0001, counter=1)
-        social_network.add_edge(user, choice(list(social_network.nodes())), weight=0.0001, counter=1)
-    for u, v, d in social_network.edges(data=True):
-        d['weight'] = d['weight'] / d['counter']
+    social_network = get_graph()
     min_group_size = 4
+    max_groups = get_max_groups(social_network, min_group_size)
     max_group_size = 6
-    if len(social_network.nodes) % min_group_size > 0:
-        max_groups = int((len(social_network.nodes) / min_group_size) + 1)
-    else:
-        max_groups = int(len(social_network.nodes) / min_group_size)
 
     # create list of all possible tables
     possible_groups = []
@@ -96,29 +72,7 @@ def happiness(group, social_network):
 
 def alternative_calculation():
     biggest_change = -1
-    used_names.clear()
-    lectures = {}
-    lecture_list = interface.get_all_lecture_ids()
-    for lecture in lecture_list:
-        lectures[lecture] = interface.get_users_of_lecture(lecture)
-    social_network = nx.Graph()
-    for title, attendants in lectures.items():
-        social_network.add_nodes_from(attendants)
-
-    for users in lectures.values():
-        for i in range(0, len(users) - 1):
-            for j in range(i + 1, len(users)):
-                if social_network.has_edge(users[i], users[j]):
-                    social_network[users[i]][users[j]]['weight'] += (1 / len(users))
-                    social_network[users[i]][users[j]]['counter'] += 1
-                else:
-                    social_network.add_edge(users[i], users[j], weight=(1 / len(users)), counter=1)
-    loners = nx.isolates(social_network)
-    for user in list(loners):
-        social_network.add_edge(user, choice(list(social_network.nodes())), weight=0.0001, counter=1)
-        social_network.add_edge(user, choice(list(social_network.nodes())), weight=0.0001, counter=1)
-    for u, v, d in social_network.edges(data=True):
-        d['weight'] = d['weight'] / d['counter']
+    social_network = get_graph()
     min_group_size = 4
     max_group_size = 6
     current_partition = [list(social_network.nodes)[x:x + min_group_size] for x in
@@ -199,3 +153,99 @@ def get_best_result_as_dict(sum, pl1, pl2, part1, part2):
             "player2": pl2,
             "partition1": part1,
             "partition2": part2}
+
+
+def get_graph():
+    """
+    creates a nx graph with overlapping lectures/user in lecture as edge weights and students/users as nodes
+    :return:
+    """
+    used_names.clear()
+    lectures = {}
+    lecture_list = interface.get_all_lecture_ids()
+    for lecture in lecture_list:
+        lectures[lecture] = interface.get_users_of_lecture(lecture)
+    social_network = nx.Graph()
+    for title, attendants in lectures.items():
+        social_network.add_nodes_from(attendants)
+
+    for users in lectures.values():
+        for i in range(0, len(users) - 1):
+            for j in range(i + 1, len(users)):
+                if social_network.has_edge(users[i], users[j]):
+                    social_network[users[i]][users[j]]['weight'] += (1 / len(users))
+                    social_network[users[i]][users[j]]['counter'] += 1
+                else:
+                    social_network.add_edge(users[i], users[j], weight=(1 / len(users)), counter=1)
+    loners = nx.isolates(social_network)
+    for user in list(loners):
+        social_network.add_edge(user, choice(list(social_network.nodes())), weight=0.0001, counter=1)
+        social_network.add_edge(user, choice(list(social_network.nodes())), weight=0.0001, counter=1)
+    for u, v, d in social_network.edges(data=True):
+        d['weight'] = d['weight'] / d['counter']
+    return social_network
+
+
+def get_max_groups(social_network, min_group_size=4):
+    if len(social_network.nodes) % min_group_size > 0:
+        max_groups = int((len(social_network.nodes) / min_group_size) + 1)
+    else:
+        max_groups = int(len(social_network.nodes) / min_group_size)
+    return max_groups
+
+
+def metis_calulation():
+    social_network = get_graph()
+    max_groups = get_max_groups(social_network, 5)
+    # teams = nxmetis.partition(social_network, max_groups)[1]
+    # user_groups = []
+    # for team in teams:
+    #     user_groups.append(Group(generate_team_name(), get_random_color(), team))
+    # interface.add_new_teams(user_groups)
+
+
+def greedy_random():
+    """
+    Selects amount of teams random users and adds the strongest connected not yet matched users to their group, if
+    None are available, selects a random one
+    :return:
+    """
+    social_network = get_graph()
+    max_groups = get_max_groups(social_network, 5)
+    all_users = list(social_network.nodes)
+    teams = []
+    graphs = []
+    for i in range(0, max_groups):
+        teams.append([])
+        graphs.append(social_network.copy())
+        start_user = choice(all_users)
+        teams[i].append(start_user)
+        all_users.remove(start_user)
+    for i in range(0, max_groups):
+        for j in range(1, max_groups):
+            graphs[i].remove_node(teams[j % max_groups][0])
+    # Draw the graph according to node positions
+    # pos = nx.spring_layout(social_network)
+    # nx.draw(social_network, pos, with_labels=True)
+    # plt.show()
+    j = 0
+    while len(all_users) > 0:
+        edges = graphs[j].edges(teams[j][0])
+        if len(edges) >= 1:
+            friends = sorted(graphs[j].edges(teams[j][0], data=True), key=lambda x: x[2]['weight'], reverse=True)
+            best_friend = friends[0][1]
+            teams[j].append(best_friend)
+            for graph in graphs:
+                graph.remove_node(best_friend)
+            all_users.remove(best_friend)
+        else:
+            random_user = choice(all_users)
+            teams[j].append(random_user)
+            for graph in graphs:
+                graph.remove_node(random_user)
+            all_users.remove(random_user)
+        j = (j + 1) % max_groups
+        user_groups = []
+        for team in teams:
+            user_groups.append(Group(generate_team_name(), get_random_color(), team))
+        interface.add_new_teams(user_groups)
