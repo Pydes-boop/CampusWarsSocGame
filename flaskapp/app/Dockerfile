@@ -19,8 +19,10 @@ RUN pip install -r requirements.txt
 RUN apt update
 RUN apt-get install libmetis5
 RUN apt install -y git
-RUN git clone https://github.com/networkx/networkx-metis.git
-RUN python3 networkx-metis/setup.py install
+
+# maybe try this sometime
+# RUN git clone https://github.com/networkx/networkx-metis.git
+# RUN python3 networkx-metis/setup.py install
 
 RUN addgroup -gid $GROUP_ID www
 RUN adduser www -uid $USER_ID -ingroup www -shell /bin/sh
