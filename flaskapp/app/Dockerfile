@@ -13,14 +13,17 @@ ADD . /var/www/app
 ADD ./wsgi.py /var/www/app/wsgi.py
 
 RUN pip install --upgrade pip
+RUN pip install virtualenv
 ADD ./requirements.txt /var/www/requirements.txt
+RUN python3 -m venv venv
+RUN source ./venv/bin/activate
 RUN pip install -r requirements.txt
 
 RUN apt update
 RUN apt-get install libmetis5
-RUN apt install -y git
 
-# maybe try this sometime
+# this works on the server but not i the container
+# RUN apt install -y git
 # RUN git clone https://github.com/networkx/networkx-metis.git
 # RUN python3 networkx-metis/setup.py install
 
