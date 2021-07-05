@@ -244,5 +244,11 @@ class Test(Resource):
         return jsonify(groupCreation.alternative_calculation())
 
 
+@api.resource('/felix')
+class AlsoTest(Resource):
+    def get(self):
+        return jsonify(interface.get_all_teams())
+
+
 if __name__ == '__main__':
     pass
