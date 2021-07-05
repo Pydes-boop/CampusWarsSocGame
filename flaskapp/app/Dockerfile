@@ -1,6 +1,10 @@
-FROM python:3.7-slim-buster
+FROM python:3.8-slim-buster
 
 LABEL MAINTAINER="Marina Weber <marina.weber@tum.de>"
+
+ENV VENV=/opt/venv
+RUN python3 -m venv $VENV
+ENV PATH="$VENV/bin:$PATH"
 
 ENV GROUP_ID=1000 \
     USER_ID=1000
@@ -15,8 +19,6 @@ ADD ./wsgi.py /var/www/app/wsgi.py
 RUN pip install --upgrade pip
 RUN pip install virtualenv
 ADD ./requirements.txt /var/www/requirements.txt
-RUN virtualenv venv
-RUN source /venv/bin/activate
 RUN pip install -r requirements.txt
 
 RUN apt update
