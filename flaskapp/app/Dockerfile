@@ -16,6 +16,7 @@ RUN pip install --upgrade pip
 ADD ./requirements.txt /var/www/requirements.txt
 RUN pip install -r requirements.txt
 
+RUN apt-get install libmetis5
 RUN apt update
 RUN apt install -y git
 RUN git clone https://github.com/networkx/networkx-metis.git
