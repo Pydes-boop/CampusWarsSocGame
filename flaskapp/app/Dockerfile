@@ -16,7 +16,7 @@ RUN pip install --upgrade pip
 RUN pip install virtualenv
 ADD ./requirements.txt /var/www/requirements.txt
 RUN virtualenv venv
-RUN source ./venv/bin/activate
+RUN source /venv/bin/activate
 RUN pip install -r requirements.txt
 
 RUN apt update
