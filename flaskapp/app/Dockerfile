@@ -15,7 +15,7 @@ ADD ./wsgi.py /var/www/app/wsgi.py
 RUN pip install --upgrade pip
 RUN pip install virtualenv
 ADD ./requirements.txt /var/www/requirements.txt
-RUN python3 -m venv venv
+RUN virtualenv venv
 RUN source ./venv/bin/activate
 RUN pip install -r requirements.txt
 
