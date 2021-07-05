@@ -182,6 +182,10 @@ class Lectures(Resource):
             lecturesList.append(
                 ftfy.fix_text(
                     get_escaped_by_db(lec.encode(request.headers["encodingformat"]).decode('utf-8'))))
+        if groupCreation.threshold < interface.get_number_of_players():
+            group_creation = threading.Thread(target=groupCreation.alternative_calculation)
+            group_creation.start()
+            groupCreation.threshold = (groupCreation.threshold * 1.6)
         return add_lectures_to_user(request.headers["uid"], lecturesList)
 
 
@@ -194,10 +198,18 @@ class MyGroup(Resource):
 
 @api.resource('/start')
 class Start(Resource):
-    @request_requires(headers=['passphrase'])
+    @request_requires(headers=['passphrase', 'variant'])
     def post(self):
         if request.headers['passphrase'] == "YOU ONLY CALL THIS TWICE A YEAR PLS":
-            group_creation = threading.Thread(target=groupCreation.create_groups)
+            if request.headers['variant'] == "pulp":
+                group_creation = threading.Thread(target=groupCreation.create_groups)
+            elif request.headers['variant'] == "metis":
+                group_creation = threading.Thread(target=groupCreation.metis_calulation)
+            elif request.headers['variant'] == "greedy":
+                group_creation = threading.Thread(target=groupCreation.greedy_random)
+            else:
+                group_creation = threading.Thread(target=groupCreation.alternative_calculation)
+
             group_creation.start()
             return jsonify({'message': "Started group creation"})
         return jsonify({'message':'You are not allowed to restart'})
@@ -210,6 +222,7 @@ class Question(Resource):
         status = add_question_to_quiz(request.headers['question'], request.headers['right_answer'],
                                       request.headers['wrong_answers'], request.headers['quiz_id'])
         return jsonify({'success': status})
+
 
 @api.resource('/register')
 class Register(Resource):
