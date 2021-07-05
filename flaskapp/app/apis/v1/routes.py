@@ -106,8 +106,11 @@ class QuizRequest(Resource):
 @api.resource('/live-debug')
 class LiveDebug(Resource):
     def get(self):
-        return jsonify(live_data.room_queue, live_data.quiz_queue,
-                       dict([(key, item.json) for key, item in live_data.game_queue.items()]))
+        return jsonify(live_data.room_queue,
+                       live_data.quiz_queue,
+                       dict([(key, item.json) for key, item in live_data.game_queue.items()]),
+                       live_data.timedout_users
+                       )
 
 
 @api.resource('/quiz-refresh')
