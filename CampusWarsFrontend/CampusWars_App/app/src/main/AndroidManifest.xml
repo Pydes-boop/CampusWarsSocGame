@@ -20,19 +20,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.NoActionBar"
         android:usesCleartextTraffic="true">
-
-        <activity android:name=".ui.MatchMakingActivity">
-        </activity>
-
+        <activity android:name=".ui.ResultActivity"/>
+        <activity android:name=".ui.MatchMakingActivity"/>
         <activity android:name=".ui.RegisterActivity" />
-
         <activity android:name=".ui.TokenActivationActivity" />
-
-        <activity android:name=".ui.QuizActivity">
-        </activity>
-
+        <activity android:name=".ui.QuizActivity"></activity>
         <activity android:name=".ui.MainScreenActivity" />
-
         <activity android:name=".ui.LoadingActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -40,7 +33,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity android:name=".ui.LoginActivity" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.

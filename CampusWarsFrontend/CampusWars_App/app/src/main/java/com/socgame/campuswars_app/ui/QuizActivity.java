@@ -182,6 +182,11 @@ public class QuizActivity extends AppCompatActivity //implements View.OnClickLis
         }
         head.buildQuizAnswerHeader(Integer.toString(this.playerId), this.gameId, Integer.toString(result), Integer.toString(result));
         bCom.quizAnswer("answer", quizAnswerListener(), httpErrorListener(), head);
+
+
+        //TODO: send proper data to result screen
+        Intent myIntent = new Intent(this, ResultActivity.class);
+        startActivityForResult(myIntent, 0);
     }
 
     private Response.Listener<String> quizAnswerListener()
