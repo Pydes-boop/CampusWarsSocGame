@@ -138,6 +138,7 @@ class Game(TimedItem):
 class TheGreatPurge(Thread):
     running: bool
     data: 'PurgeQueue'
+    purge_wait: int = None
 
     def __init__(self, data: 'PurgeQueue'):
         self.running = True
@@ -151,7 +152,7 @@ class TheGreatPurge(Thread):
 
     def run(self) -> None:
         while self.running:
-            sleep(PURGE_WAIT)
+            sleep(PURGE_WAIT if not hasattr(self, 'purge_wait') and self.purge_wait else self.purge_wait)
             self.data.purge()
 
 
@@ -196,6 +197,7 @@ class TimedOutUsers(PurgeQueue):
 
 class RoomQueue(PurgeQueue):
     team_data: TeamState
+    purge_wait: int = 40
 
     def __init__(self, team_data: Optional[TeamState]):
         self.team_data = team_data
@@ -283,6 +285,7 @@ class QuizQueue(RoomQueue):
 
 class GameQueue(PurgeQueue):
     def __call__(self, players, question):
+        if
         gid = game_id()
         self[gid] = Game(gid, players, question)
 
