@@ -35,7 +35,14 @@ def error_handler(method: Callable) -> Callable:
     @wraps(method)
     def wrapper(*args, **kwargs):
         try: return method(*args, **kwargs)
-        except Exception as ex: return jsonify(exception_factory(ex.__class__.__name__, str(ex), request.url, 500, ''.join(format_exception(None, ex, ex.__traceback__)))), 500
+        except Exception as ex:
+            return jsonify(
+                exception_factory(
+                    ex.__class__.__name__, str(ex),
+                    request.url,
+                    500,
+                    ''.join(format_exception(None, ex, ex.__traceback__)))
+            ), 500
     return wrapper
 
 
