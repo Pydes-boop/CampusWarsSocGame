@@ -11,6 +11,7 @@ from datetime import datetime
 from flask import jsonify, request
 from functools import wraps
 from traceback import format_exception
+import pytz
 from typing import Any, Dict, Callable
 
 
@@ -24,7 +25,7 @@ def exception_factory(
     return dict(
         exception=ex_type,
         description=description,
-        time=datetime.now().timestamp(),
+        time=datetime.now(pytz.timezone('Europe/Vienna')).timestamp(),
         url=url,
         status_code=status,
         tb=tb
