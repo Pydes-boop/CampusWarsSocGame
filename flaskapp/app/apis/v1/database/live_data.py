@@ -258,9 +258,7 @@ class QuizQueue(RoomQueue):
                                 players=[self[uid], opp],
                                 question=choice(get_questions_of_quiz(quiz["_id"])),
                                 name=quiz["name"]
-
-                                # question=choice(get_questions_of_quiz(choice(get_current_quizzes(ObjectId(lid)))))
-                                )  # TODO
+                                )
                     del self[uid], self[opp.uid]
                     self.game_queue[game.game_id] = game
                     return 'game-incomplete', game
