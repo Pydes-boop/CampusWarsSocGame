@@ -53,13 +53,16 @@ def get_max_groups(social_network, min_group_size=4):
 
 def metis_calulation():
     social_network = get_graph()
+    social_network.graph['edge_weight_attr'] = 'weight'
     max_groups = get_max_groups(social_network, 5)
     (edgecuts, parts) = metis.part_graph(social_network, max_groups)
     teams = []
     for i in range(0, max_groups):
         teams.append([])
-    for i in range(len(social_network.nodes)):
-        teams[parts[i]].append(social_network.nodes[i])
+    j = 0
+    for node in social_network.nodes():
+        teams[parts[j]].append(node)
+        j = j + 1
     print(teams)
     # user_groups = []
     # for team in teams:
