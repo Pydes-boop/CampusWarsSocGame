@@ -85,9 +85,10 @@ public class TeamFragment extends Fragment
         return view;
     }
 
-    public void setControl(double percentage){
-        TextView currentControl = fragmentView.findViewById(R.id.textCurrentControl);
-        currentControl.setText(Double.toString(percentage) + "%");
+    public void setControl(double percentage)
+    {
+        TextView currentControl = (TextView) fragmentView.findViewById(R.id.textCurrentControl);
+        currentControl.setText("" + Math.round(percentage) + "%");
     }
 
     public void setMembers(String[] names)

@@ -35,6 +35,7 @@
             android:autoSizeMaxTextSize="30sp"
             android:autoSizeTextType="uniform"
             android:gravity="center"
+            android:textAllCaps="true"
             />
 
         <Space

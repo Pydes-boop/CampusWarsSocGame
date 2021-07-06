@@ -134,7 +134,7 @@ public class ResultActivity extends AppCompatActivity
                 break;
             case LOSE:
                 imageResource = getResources().getIdentifier("@drawable/img_lose", null, this.getPackageName());
-                text = "You Lost...";
+                text = "You Lost..." + "\n" + "You will not be able to participate for 10 minutes";
                 break;
         }
 
