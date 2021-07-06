@@ -205,7 +205,7 @@ class Start(Resource):
     def post(self):
         if request.headers['passphrase'] == "YOU ONLY CALL THIS TWICE A YEAR PLS":
             if request.headers['variant'] == "pulp":
-                group_creation = threading.Thread(target=groupCreation.create_groups)
+                group_creation = threading.Thread(target=groupCreation.wedding_seating)
             elif request.headers['variant'] == "metis":
                 group_creation = threading.Thread(target=groupCreation.metis_calulation)
             elif request.headers['variant'] == "greedy":
