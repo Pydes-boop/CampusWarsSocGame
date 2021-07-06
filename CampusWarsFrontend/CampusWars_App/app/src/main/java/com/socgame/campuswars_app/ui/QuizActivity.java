@@ -53,10 +53,10 @@ public class QuizActivity extends AppCompatActivity //implements View.OnClickLis
     private String gameId;
     private int playerId; //0/1
 
-    //cant display this yet
     private String oppName;
     private String oppTeam;
 
+    private String topic;
     private String question;
     private String[] wrongAnswers;//3 lang
     private String correctAnswer;
@@ -81,6 +81,7 @@ public class QuizActivity extends AppCompatActivity //implements View.OnClickLis
         {
             this.gameId = b.getString("gid");
             this.playerId = b.getInt("pid");
+            this.topic = b.getString("topic");
 
             this.oppName = b.getString("opp-name");
             this.oppTeam = b.getString("opp-team");
@@ -96,12 +97,8 @@ public class QuizActivity extends AppCompatActivity //implements View.OnClickLis
     private void setUI()
     {
         //Set UI text
-
-        //TODO: get topic text
         TextView topicText = this.findViewById(R.id.topicText);
-        topicText.setText("General Trivia");
-
-        //Also what do I do with the opposing team/player name?
+        topicText.setText(topic);
 
 
         //Question text
