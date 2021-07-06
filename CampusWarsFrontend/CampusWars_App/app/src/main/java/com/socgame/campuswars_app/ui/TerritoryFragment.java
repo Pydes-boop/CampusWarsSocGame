@@ -115,6 +115,12 @@ public class TerritoryFragment extends Fragment  implements GpsObserver //implem
         lectureText.setText(lecture);
     }
 
+    private void setTimeOut(boolean timeOut)
+    {
+        TextView text = (TextView) getActivity().findViewById(R.id.timeoutID);
+        text.setVisibility((timeOut ?  View.VISIBLE : View.INVISIBLE));
+    }
+
     private Response.Listener<JSONObject> roomfinderPostListener(double latitude, double longitude)
     {
         return new Response.Listener<JSONObject>() {
@@ -123,7 +129,7 @@ public class TerritoryFragment extends Fragment  implements GpsObserver //implem
                 try {
                     String currentLecture = response.getString("currentLecture");
                     if (currentLecture.equals(null)) {
-                        currentLecture = "No Lecture currently";
+                        currentLecture = "No active Lecture";
                     }
                     lectureId = response.getString("lid");
                     double multiplier = response.getDouble("multiplier");
@@ -131,7 +137,7 @@ public class TerritoryFragment extends Fragment  implements GpsObserver //implem
                     String occupier = response.getString("occupier");
 
                     lectureHall = response.getString("room_name");
-                    setHallInfo(lectureHall, occupier, "No Lecture currently", new LatLng(latitude, longitude));
+                    setHallInfo(lectureHall, occupier, "No active Lecture", new LatLng(latitude, longitude));
                 } catch(JSONException j){
                     //if JSONException we know we got a different answer -> eg.: time_out or nothing near me
                     //This isnt the prettiest way to do it, but i will always get an exception if i check for a key and it isnt there, so i cant do it another way
@@ -147,10 +153,14 @@ public class TerritoryFragment extends Fragment  implements GpsObserver //implem
                     try{
                         //Checking if i am timed_out
                         String timeOut = response.getString("time_pretty");
-                        lectureHall = "nothing";
-                        setHallInfo("Timed Out", "", "", new LatLng(latitude, longitude));
+                        //lectureHall = "nothing";
+                        //setHallInfo("Timed Out", "", "", new LatLng(latitude, longitude));
+                        setTimeOut(true);
                         Toast.makeText(getActivity(), "You lost and are timed out until: "+ timeOut, Toast.LENGTH_LONG).show();
-                    } catch(JSONException e){}
+                    } catch(JSONException e)
+                    {
+                        setTimeOut(false);
+                    }
 
                     //We dont log our exceptions here because they will happen when we look for a key and arent sure if it exists
                     //Log.d("Exception in TimeOut", j.toString());
