@@ -218,8 +218,8 @@ def get_player_name(firebase_id):
 
 def get_current_team_with_member_names(firebase_id):
     my_team = get_current_team(firebase_id)
-    if type(my_team) is dict:
-        return my_team
+    if my_team is None:
+        return None
     my_team["members"] = list(map(lambda x: get_player_name(x), my_team["members"]))
     return my_team
 
