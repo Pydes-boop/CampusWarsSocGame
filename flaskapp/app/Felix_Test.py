@@ -1,5 +1,5 @@
 import groupCreation
-from apis.v1.database.interface import get_all_teams
+# from apis.v1.database.interface import get_all_teams
 import metis
 
 def metis_calulation():
