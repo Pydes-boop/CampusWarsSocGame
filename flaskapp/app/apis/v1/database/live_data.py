@@ -138,7 +138,7 @@ class Game(TimedItem):
 class TheGreatPurge(Thread):
     running: bool
     data: 'PurgeQueue'
-    purge_wait: int = None
+    purge_wait: int = PURGE_WAIT
 
     def __init__(self, data: 'PurgeQueue'):
         self.running = True
@@ -152,7 +152,7 @@ class TheGreatPurge(Thread):
 
     def run(self) -> None:
         while self.running:
-            sleep(PURGE_WAIT if not hasattr(self, 'purge_wait') and not self.purge_wait else self.purge_wait)
+            sleep(self.purge_wait)
             self.data.purge()
 
 
