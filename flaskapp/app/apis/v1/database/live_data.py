@@ -21,6 +21,7 @@ from operator import attrgetter
 from random import choice
 from contextlib import suppress
 from bson import ObjectId
+import pytz
 
 from typing import Any, Union, Optional, Dict, List, Tuple
 
@@ -32,7 +33,7 @@ REFRESH_MAX_GAME: int = 720
 
 PURGE_WAIT: int = 150
 
-now = lambda: int(datetime.now().timestamp())
+now = lambda: int(datetime.now(tz=pytz.timezone('Europe/Vienna')).timestamp())
 future = lambda: now() + LIFE_TIME_USER * 60
 
 game_id = lambda: b64encode(urandom(24)).decode('utf-8')
