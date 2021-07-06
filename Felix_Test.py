@@ -41,7 +41,7 @@ def get_graph():
         social_network.add_edge(user, choice(list(social_network.nodes())), weight=0.0001, counter=1)
         social_network.add_edge(user, choice(list(social_network.nodes())), weight=0.0001, counter=1)
     for u, v, d in social_network.edges(data=True):
-        d['weight'] = d['weight'] / d['counter']
+        d['weight'] = int((d['weight'] / d['counter']) * 10000)
     return social_network
 
 def get_max_groups(social_network, min_group_size=4):
