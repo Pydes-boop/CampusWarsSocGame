@@ -92,7 +92,7 @@ class QuizRequest(Resource):
     @request_requires(headers=['uid', 'team', 'room'])
     def post(self):
         """Tell us that you would like a quiz."""
-        if request.headers['uid'] in live_data.room_queue:
+        if request.headers['uid'] not in live_data.room_queue:
             return jsonify({'quiz-request': False, 'reason': 'not in a room'})
         live_data.quiz_queue(request.headers['uid'],
                              request.headers['team'],
