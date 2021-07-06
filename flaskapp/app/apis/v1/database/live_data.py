@@ -284,10 +284,9 @@ class QuizQueue(RoomQueue):
 
 
 class GameQueue(PurgeQueue):
-    def __call__(self, players, question):
-        if
-        gid = game_id()
-        self[gid] = Game(gid, players, question)
+    def __call__(self, gid: str):
+        if gid in self:
+            self[gid].refresh()
 
     def is_player_in_game(self, uid: str) -> Optional[Game]:
         for game in self.values():
