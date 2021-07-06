@@ -15,7 +15,7 @@ class Group:
     members: Any
 
 
-def create_groups():
+def wedding_seating():
     """
     uses the wedding seating problem and solution to match users to groups
     (see https://coin-or.github.io/pulp/CaseStudies/a_set_partitioning_problem.html)
@@ -195,6 +195,10 @@ def get_max_groups(social_network, min_group_size=4):
 
 
 def metis_calulation():
+    """
+    uses the c library metis for efficient partitioning based on weighted graph
+    :return:
+    """
     social_network = get_graph()
     social_network.graph['edge_weight_attr'] = 'weight'
     # for metis to use the weights, they have to be int
