@@ -75,8 +75,6 @@ public class QuizActivity extends AppCompatActivity //implements View.OnClickLis
         setContentView(R.layout.activity_quiz);
         ctx = this.getApplicationContext();
 
-        bCom = BackendCom.getInstance(ctx);
-
         //Getting Data From Call
         Bundle b = getIntent().getExtras();
         if(b != null)
@@ -92,22 +90,6 @@ public class QuizActivity extends AppCompatActivity //implements View.OnClickLis
             this.correctAnswer = b.getString("correctAnswer");
         }
         setUI();
-    }
-
-    //TODO: this can be deleted once the http call is inplace
-    private void debugValues()
-    {
-        gameId = "0";
-        playerId = 0; //0/1
-
-        //cant display this yet
-        oppName = "test enemy";
-        oppTeam = "evil team";
-
-        question = "What is the average air speed velocity of a laden swallow?";
-        String[] temp = {"40 m/s", "Faster than an ant, slower than a bee", "Wouldnt you like to know, weatherboy?"};
-        wrongAnswers = temp;//3 lang
-        correctAnswer = "What do you mean, an African or European Swallow?";
     }
 
 
@@ -169,7 +151,7 @@ public class QuizActivity extends AppCompatActivity //implements View.OnClickLis
 
     private void answer(int buttonIndex)
     {
-        HttpHeader head = new HttpHeader(ctx);
+
         int result = 0;
         if(buttonIndex == indexRight) //Correct Answer
         {
@@ -180,37 +162,17 @@ public class QuizActivity extends AppCompatActivity //implements View.OnClickLis
         {
             Toast.makeText(this, "False", Toast.LENGTH_LONG).show();
         }
-        head.buildQuizAnswerHeader(Integer.toString(this.playerId), this.gameId, Integer.toString(result), Integer.toString(result));
-        bCom.quizAnswer("answer", quizAnswerListener(), httpErrorListener(), head);
 
+        Bundle b = new Bundle();
+        b.putString("opp-name", oppName); //Challenger name
+        b.putString("opp-team", oppTeam); //Challenger team
+        b.putString("playerId", Integer.toString(this.playerId)); //PlayerId
+        b.putString("gameId", this.gameId); //gameId
+        b.putString("result", Integer.toString(result)); //game result
 
-        //TODO: send proper data to result screen
+        //DONE: send proper data to result screen
         Intent myIntent = new Intent(this, ResultActivity.class);
+        myIntent.putExtras(b);
         startActivityForResult(myIntent, 0);
-    }
-
-    private Response.Listener<String> quizAnswerListener()
-    {
-        return new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                if(response.toString().contains("ok")){
-                    //TODO maybe instantly change to screen where we wait for response
-                    Intent myIntent = new Intent(QuizActivity.this, MainScreenActivity.class);
-                    startActivityForResult(myIntent, 0);
-                } else {
-                    Toast.makeText(ctx, "Something went wrong with your connection :(", Toast.LENGTH_LONG).show();
-                }
-            }
-        };
-    }
-
-    private Response.ErrorListener httpErrorListener() {
-        return new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.d("HTTP", "Error: " + error.getMessage());
-            }
-        };
     }
 }

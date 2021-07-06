@@ -204,6 +204,18 @@ public class HttpSingleton {
             HttpSingleton.getInstance(ctx).addToRequestQueue(stringRequest);
         }
     }
+
+    public void getRequestStringParams(String route, HashMap<String, String> params, Response.Listener<String> listener, Response.ErrorListener errlsn){
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, this.url + route, listener, errlsn) {
+            //this is the part, that adds the header to the request
+            @Override
+            public Map<String, String> getHeaders() {
+                Map<String, String> parameters = params;
+                return parameters;
+            }
+        };
+        HttpSingleton.getInstance(ctx).addToRequestQueue(stringRequest);
+    }
 }
 
 

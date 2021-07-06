@@ -51,14 +51,12 @@ public class MatchMakingActivity extends AppCompatActivity
 
         Bundle b = getIntent().getExtras();
         if(b != null){
-            this.latitude = b.getDouble("latitude"); //Question
-            this.longitude = b.getDouble("longitude"); //Question
-            this.roomName = b.getString("roomName"); //Challenger name
+            this.latitude = b.getDouble("latitude");
+            this.longitude = b.getDouble("longitude");
+            this.roomName = b.getString("roomName");
             this.lid = b.getString("lid");
         }
         this.head = new HttpHeader(ctx);
-        Log.d("HTTP QUIZ REQUEST", this.roomName);
-        Log.d("HTTP QUIZ REQUEST", roomName);
         head.buildQuizHeader(latitude, longitude, lid, roomName);
 
         //Repeating our Calls every 5 Seconds
@@ -66,9 +64,7 @@ public class MatchMakingActivity extends AppCompatActivity
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                Log.d("RUNNABLE RUNNING", "false");
                 if(switchedToQuiz != true) {
-                    Log.d("RUNNABLE RUNNING", state.toString());
                     doCommunication(state);
                     handler.postDelayed(this, 5000);
                 }
@@ -210,7 +206,7 @@ public class MatchMakingActivity extends AppCompatActivity
 
                     doCommunication(state);
                 } catch (Exception e) {
-                    Log.d("Error in Quiz Request Call", e.toString());
+                    Log.d("Error in Quiz Refresh Call", e.toString());
                 }
             }
         };

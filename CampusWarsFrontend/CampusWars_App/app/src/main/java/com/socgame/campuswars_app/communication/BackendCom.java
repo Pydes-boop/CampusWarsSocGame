@@ -120,11 +120,11 @@ public class BackendCom {
     }
 
     public void quizString(String type, Response.Listener<String> listener, Response.ErrorListener error, HttpHeader head){
-        http.postRequestString("v1/quiz-" + type, head.getHeaders(), listener, error);
+        http.getRequestStringParams("v1/quiz-" + type, head.getHeaders(), listener, error);
     }
 
-    public void quizAnswer(String type, Response.Listener<String> listener, Response.ErrorListener error, HttpHeader head){
-        http.postRequestString("v1/quiz-" + type, head.getHeaders(), listener, error);
+    public void quizAnswer(String type, Response.Listener<JSONObject> listener, Response.ErrorListener error, HttpHeader head){
+        http.postRequestObject("v1/quiz-" + type, head.getHeaders(), listener, error);
     }
 
     public void group(Response.Listener<JSONObject> listener, Response.ErrorListener error, HttpHeader head){
