@@ -104,7 +104,6 @@ public class ResultActivity extends AppCompatActivity
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                Log.d("RUNNING", "RUNNING");
                 bCom.quizString("state", quizStateListener(), httpErrorListener(), head);
                 if(gotQuizState == false){
                     handler.postDelayed(this, 5000);
@@ -156,10 +155,9 @@ public class ResultActivity extends AppCompatActivity
             public void onResponse(JSONObject response) {
                 try {
                     //if we get key quiz answer it will always contain "ok"
-
-                    Log.d("WAS IT OKAY?" ,response.getString("quiz-answer"));
+                    response.getString("quiz-answer");
                 } catch (JSONException e) {
-                    Log.d("Quiz_Answer", "Something went wrong with sending the Quiz Answer");
+                    Log.d("Quiz_Answer", "Something went wrong with sending the Quiz Answer: " + e.toString());
                 }
             }
         };

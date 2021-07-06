@@ -138,12 +138,10 @@ public class MatchMakingActivity extends AppCompatActivity
             case REQUEST:
                 //Request done
                 bCom.quiz("refresh", quizRefreshListener(), httpErrorListener(), head);
-                Log.d("REFRESH", "REFESH");
                 break;
             case READY:
                 //wait a sec and then change to quiz
                 changeUiState(state.READY);
-                Log.d("RUNNING", "RUNNING");
                 Handler handler2 = new Handler();
                 handler2.postDelayed
                 (
@@ -191,6 +189,7 @@ public class MatchMakingActivity extends AppCompatActivity
                 try {
                     quizBundle = new Bundle();
                     quizBundle.putString("gid", response.getString("gid"));
+                    quizBundle.putString("topic", response.getString("name"));
                     quizBundle.putString("opp-name", response.getString("opp-name"));
                     quizBundle.putString("opp-team", response.getString("opp-team"));
                     quizBundle.putInt("pid", response.getInt("pid"));
