@@ -72,7 +72,7 @@ class MultiplierWatchdog(dict, Dict[str, Room]):
 
     def check(self) -> None:
         """Check whether the occupier multiplier has to be increased or reset."""
-        for room, team in self.team_state.get_occupiers_for_all_rooms():
+        for room, team in self.team_state.get_occupiers_for_all_rooms().items():
             if team == self[room].team:
                 self[room].increase()
             else:
