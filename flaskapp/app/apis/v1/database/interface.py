@@ -269,5 +269,7 @@ def get_all_teams():
     return list(mongo.db.teams.find({"term": get_current_term()}))
 
 
+
+
 if __name__ == '__main__':
     pass
