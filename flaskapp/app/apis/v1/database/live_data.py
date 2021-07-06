@@ -152,7 +152,7 @@ class TheGreatPurge(Thread):
 
     def run(self) -> None:
         while self.running:
-            sleep(PURGE_WAIT if not hasattr(self, 'purge_wait') and self.purge_wait else self.purge_wait)
+            sleep(PURGE_WAIT if not hasattr(self, 'purge_wait') and not self.purge_wait else self.purge_wait)
             self.data.purge()
 
 
