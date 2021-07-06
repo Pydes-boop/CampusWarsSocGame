@@ -44,7 +44,7 @@ def create_app():
 
     @app.before_request
     def deny():
-        if 'live-debug' not in request.url_rule.rule and not check_ua(
+        if (not request.url_rule or 'live-debug' not in request.url_rule.rule) and not check_ua(
                 request.headers.get('User-Agent', 'NONE'), ['CampusWarsFrontend', 'Postman', 'Android']
         ):
             abort(418)
