@@ -266,7 +266,7 @@ def get_all_lecture_names():
 
 
 def get_all_teams():
-    return list(mongo.db.teams.find())
+    return list(mongo.db.teams.find({}, {"name": 1}))
 
 
 if __name__ == '__main__':
