@@ -59,7 +59,7 @@ def metis_calulation():
     for i in range(0, max_groups):
         teams.append([])
     for i, p in enumerate(parts):
-        teams[p].append(social_network.node[i])
+        teams[p].append(social_network.nodes[i])
     print(teams)
     # user_groups = []
     # for team in teams:
