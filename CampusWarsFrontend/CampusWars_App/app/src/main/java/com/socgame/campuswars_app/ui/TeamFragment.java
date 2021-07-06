@@ -1,9 +1,6 @@
 package com.socgame.campuswars_app.ui;
 
 import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
 
@@ -21,19 +18,13 @@ import android.widget.Toast;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.firebase.auth.FirebaseAuth;
 import com.socgame.campuswars_app.R;
 import com.socgame.campuswars_app.communication.BackendCom;
-import com.socgame.campuswars_app.communication.FirebaseCom;
 import com.socgame.campuswars_app.communication.HttpHeader;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /*
     Here we display info about the players team
@@ -79,6 +70,7 @@ public class TeamFragment extends Fragment
         BackendCom bCom = BackendCom.getInstance(ctx);
         HttpHeader header = new HttpHeader(ctx);
         bCom.group(myGroupGet(rally), httpErrorListener(), header);
+        bCom.roomDetectionGet(roomfinderGetListener(), httpErrorListener());
 
 
         rally.setOnClickListener(new View.OnClickListener()
@@ -93,6 +85,11 @@ public class TeamFragment extends Fragment
         return view;
     }
 
+    public void setControl(double percentage){
+        TextView currentControl = fragmentView.findViewById(R.id.textCurrentControl);
+        currentControl.setText(Double.toString(percentage) + "%");
+    }
+
     public void setMembers(String[] names)
     {
         ListView listView = fragmentView.findViewById(R.id.memberList);
@@ -103,7 +100,7 @@ public class TeamFragment extends Fragment
         listView.setAdapter(itemsAdapter);
     }
 
-    public void setTeamInfo(String name, int memberCount, int controlledHalls, String color)
+    public void setTeamInfo(String name, int memberCount, String color)
     {
         /*
         //This looked pretty bad
@@ -121,9 +118,6 @@ public class TeamFragment extends Fragment
 
         TextView memberText = fragmentView.findViewById(R.id.textCurrentMembers);
         memberText.setText(memberCount + " Members");
-
-        TextView controlText = fragmentView.findViewById(R.id.textCurrentControll);
-        controlText.setText(controlledHalls + "%");//WILL THIS BE ABSOLUTE OR PERCENT?
     }
 
     private Response.Listener<JSONObject> myGroupGet(Button button)
@@ -142,7 +136,7 @@ public class TeamFragment extends Fragment
                     }
 
                     setMembers(members);
-                    setTeamInfo(teamName, members.length, 0, color);
+                    setTeamInfo(teamName, members.length, color);
 
                     //Setting Button Color to Team Color
                     //No, I dont like this
@@ -151,6 +145,29 @@ public class TeamFragment extends Fragment
                     Log.d("My Group:", e.toString());
                 }
 
+            }
+        };
+    }
+
+    private Response.Listener<JSONArray> roomfinderGetListener() {
+        return new Response.Listener<JSONArray>() {
+            @Override
+            public void onResponse(JSONArray response) {
+                try {
+                    int counter = 0;
+                    int lectureHallCount = response.length();
+                    for (int i = 0; i < response.length(); i++) {
+                        //Getting JSONs
+                        JSONObject lectureHall = response.getJSONObject(i);
+                        JSONObject occupier = lectureHall.getJSONObject("occupier");
+                        if(occupier.getString("name").contains(teamName)){
+                            counter++;
+                        }
+                    }
+                    setControl((double) (counter / lectureHallCount)*100);
+                } catch (JSONException e) {
+                    Log.d("roomFinderGetListener: ", e.toString());
+                }
             }
         };
     }

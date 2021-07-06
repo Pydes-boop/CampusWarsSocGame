@@ -99,15 +99,14 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
 
-                    android:text="Current Controll:"
-                    android:textStyle="bold"
-
                     android:gravity="center"
+                    android:text="Current Control:"
+
                     android:textColor="@color/text"
-                    />
+                    android:textStyle="bold" />
 
                 <TextView
-                    android:id="@+id/textCurrentControll"
+                    android:id="@+id/textCurrentControl"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:text="0%"
