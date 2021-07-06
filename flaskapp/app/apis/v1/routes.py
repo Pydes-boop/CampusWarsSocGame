@@ -163,7 +163,7 @@ class QuizState(Resource):
         live_data.game_queue[request.headers['gid']].refresh()
         if live_data.game_queue[request.headers['gid']].all_answered:
             result = live_data.game_queue[request.headers['gid']].get_result_for_player(int(request.headers['pid']))
-            live_data.game_queue[request.headers['gid']].set_finished(request.headers['pid'])
+            live_data.game_queue[request.headers['gid']].set_finished(int(request.headers['pid']))
             if live_data.game_queue[request.headers['gid']].is_finished:
                 with suppress(ValueError): del live_data.game_queue[request.headers['gid']]
             if result == 'LOST': live_data.timedout_users(request.headers['uid'])
