@@ -55,7 +55,12 @@ def metis_calulation():
     social_network = get_graph()
     max_groups = get_max_groups(social_network, 5)
     (edgecuts, parts) = metis.part_graph(social_network, max_groups)
-    print(parts)
+    teams = []
+    for i in range(0, max_groups):
+        teams.append([])
+    for i, p in enumerate(parts):
+        teams[p].append(social_network.node[i])
+    print(teams)
     # user_groups = []
     # for team in teams:
     #     user_groups.append(Group(generate_team_name(), get_random_color(), team))
