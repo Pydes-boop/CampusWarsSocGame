@@ -321,10 +321,4 @@ class LiveData:
 
 
 if __name__ == '__main__':
-    game = Game('123',
-                [
-                    User('1234', 123, 'team1', 'MW-1'),
-                    User('124', 123, 'team2', 'MW-1')],
-                {}
-                )
-    print(game.get_player_id('124'))
+    pass

@@ -1,5 +1,6 @@
 amply==0.1.4
 aniso8601==9.0.1
+bson==0.5.10
 certifi==2021.5.30
 chardet==3.0.4
 click==8.0.1
@@ -41,5 +42,3 @@ wcwidth==0.2.5
 Werkzeug==2.0.1
 WTForms==2.3.3
 zipp==3.4.1
-
-

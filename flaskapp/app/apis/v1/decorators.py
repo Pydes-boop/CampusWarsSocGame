@@ -33,10 +33,10 @@ def check_timed_out_users(timedoutusers) -> Callable:
         @wraps(method)
         def wrapper(*args, **kwargs) -> Any:
             if 'uid' in request.headers and request.headers['uid'] in timedoutusers:
-                time = datetime.fromtimestamp(timedoutusers[request.headers["uid"]].time, tz=pytz.timezone("Europe/Vienna"))
+                time = datetime.fromtimestamp(timedoutusers[request.headers["uid"]].time, tz=pytz.timezone('Europe/Vienna'))
                 time_pretty = time.strftime("%A %d-%m-%Y, %H:%M:%S")
                 reason = 'lost quiz'
-                remaining = (time - datetime.now(tz=pytz.timezone("Europe/Vienna")))
+                remaining = (time - datetime.now(tz=pytz.timezone('Europe/Vienna')))
                 return jsonify(
                     dict(
                         message=f'You are timed out until {time_pretty} due to: {reason}',

@@ -254,7 +254,7 @@ $RECYCLE.BIN/
 
 ### Custom
 
-.idea
+../.idea
 reqeust-tests
 sandbox
 *.mem
