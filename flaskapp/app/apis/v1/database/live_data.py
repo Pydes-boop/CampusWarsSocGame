@@ -85,7 +85,7 @@ class Game(TimedItem):
     players: List[User]
     results: List[int]
     Question: Optional[Dict[str, Any]]
-    readiness: List[bool]
+    finished: List[bool]
     time: int
     name: Optional[str]
 
@@ -94,7 +94,7 @@ class Game(TimedItem):
         self.players = players
         self.results = [-2, -2]
         self.question = question
-        self.readiness = [False, False]
+        self.finished = [False, False]
         self.time = time
         self.name = name
 
@@ -102,11 +102,11 @@ class Game(TimedItem):
         return uid in map(attrgetter('uid'), self.players)
 
     @property
-    def ready(self) -> bool:
-        return all(self.readiness)
+    def is_finished(self) -> bool:
+        return all(self.finished)
 
-    def set_ready(self, uid: str, state: bool = True) -> None:
-        self.readiness[self.get_player_id(uid)] = state
+    def set_finished(self, pid: int, state: bool = True) -> None:
+        self.finished[pid] = state
 
     @property
     def all_answered(self) -> bool:

@@ -23,6 +23,7 @@ from apis.v1.database.interface import add_room, add_lecture, get_all_rooms, fin
 from bson.objectid import ObjectId
 from apis.v1.database.time_functions import get_current_term, get_time_as_seconds
 import codecs
+from contextlib import suppress
 from data_handler import live_data, team_state
 import ftfy
 
@@ -133,10 +134,8 @@ class QuizRefresh(Resource):
                     'pid': game.get_player_id(request.headers['uid']),  # player_id: 0 or 1 identifies player in game
                     'opp-name': get_player_name(request.headers['uid']),
                     'opp-team': game.players[not game.get_player_id(request.headers['uid'])].team,
-                    'name': game.name,
-                    # name of the opponent team
-                    'quiz': game.question,
-                    # quiz in the already specified format TODO is there a way to get just a random quiz
+                    'name': game.name,  # name of the opponent team
+                    'quiz': game.question,  # quiz in the already specified format
                     'game-ready': descriptor == 'game'  # unimportant
                 }
             )
@@ -159,11 +158,14 @@ class QuizAnswer(Resource):
 class QuizState(Resource):
     @check_timed_out_users(live_data.timedout_users)
     @request_requires(headers=['uid', 'gid', 'pid'])
-    def get(self):  # TODO maybe think about combining this with the request above
+    def get(self):
         """Ask the server if the other player has answered yet, if yes show result."""
         live_data.game_queue[request.headers['gid']].refresh()
         if live_data.game_queue[request.headers['gid']].all_answered:
             result = live_data.game_queue[request.headers['gid']].get_result_for_player(int(request.headers['pid']))
+            live_data.game_queue[request.headers['gid']].set_finished(request.headers['pid'])
+            if live_data.game_queue[request.headers['gid']].is_finished:
+                with suppress(ValueError): del live_data.game_queue[request.headers['gid']]
             if result == 'LOST': live_data.timedout_users(request.headers['uid'])
             return jsonify(result)
 
