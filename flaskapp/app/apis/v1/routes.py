@@ -12,7 +12,6 @@ from flask_restful import Resource
 from apis.v1 import v1, api
 import groupCreation
 from apis.v1.decorators import request_requires, check_timed_out_users
-import random
 import json
 import threading
 from apis.v1.database import interface
@@ -132,7 +131,7 @@ class QuizRefresh(Resource):
                 {
                     'gid': game.game_id,  # game_id: a 24 byte string to identify each game
                     'pid': game.get_player_id(request.headers['uid']),  # player_id: 0 or 1 identifies player in game
-                    'opp-name': get_player_name(request.headers['uid']),
+                    'opp-name': get_player_name(game.players[not game.get_player_id(request.headers['uid'])].uid),
                     'opp-team': game.players[not game.get_player_id(request.headers['uid'])].team,
                     'name': game.name,  # name of the opponent team
                     'quiz': game.question,  # quiz in the already specified format
