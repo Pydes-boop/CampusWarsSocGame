@@ -32,7 +32,7 @@ def check_timed_out_users(timedoutusers) -> Callable:
     def decorator(method: Callable) -> Callable:
         @wraps(method)
         def wrapper(*args, **kwargs) -> Any:
-            if 'uid' in request.headers and request.headers['uid'] in timedoutusers:
+            if 'uid' in request.headers and request.headers['uid'] in timedoutusers and timedoutusers[request.headers['uid']].is_alive:
                 time = datetime.fromtimestamp(timedoutusers[request.headers["uid"]].time, tz=pytz.timezone('Europe/Vienna'))
                 time_pretty = time.strftime("%A %d-%m-%Y, %H:%M:%S")
                 reason = 'lost quiz'

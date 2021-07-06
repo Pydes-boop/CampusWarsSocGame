@@ -56,6 +56,10 @@ class TimedItem:
         self.freed = True
         self.time = 0
 
+    @property
+    def is_alive(self) -> bool:
+        return self.time < now()
+
 
 @dataclass
 class TimedOutUser(TimedItem):
