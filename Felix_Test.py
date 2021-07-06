@@ -1,4 +1,3 @@
-import groupCreation
 import metis
 import networkx as nx
 from random import choice
