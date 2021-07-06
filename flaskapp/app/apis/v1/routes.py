@@ -15,15 +15,11 @@ from apis.v1.decorators import request_requires, check_timed_out_users
 import json
 import threading
 from apis.v1.database import interface
-from apis.v1.database.interface import add_room, add_lecture, get_all_rooms, find_closest_room, add_lectures_to_user, \
-    add_question_to_quiz, add_user, get_users_of_lecture, get_full_name_of_current_lecture_in_room, get_current_team, \
-    get_player_name, get_current_quizzes, get_questions_of_quiz, get_time_table_of_room, get_all_lecture_ids, \
-    get_escaped_by_db, get_current_team_with_member_names, get_colour_of_team, get_all_lecture_names
-from bson.objectid import ObjectId
-from apis.v1.database.time_functions import get_current_term, get_time_as_seconds
-import codecs
+from apis.v1.database.interface import get_all_rooms, find_closest_room, add_lectures_to_user, \
+    add_question_to_quiz, add_user, get_full_name_of_current_lecture_in_room, get_player_name, get_time_table_of_room, \
+    get_escaped_by_db, get_current_team_with_member_names, get_colour_of_team
 from contextlib import suppress
-from data_handler import live_data, team_state
+from apis.v1.database.data_handler import live_data, team_state
 import ftfy
 
 
@@ -45,7 +41,7 @@ class RoomFinder(Resource):
         team_state.increase_team_presence_in_room(team=request.headers['team'], room=name)
         live_data.room_queue(uid=request.headers['uid'], team=request.headers['team'], room=name)
         return_room = {"message": "closest room to you:",
-                       'occupancy': team_state.get_all_team_scores_in_room(name),
+                       'occupancy': team_state.get_all_team_occupancy_in_room(name),
                        'occupier': team_state.get_room_occupier(name),
                        'room_name': name, 'lid': str(room["_id"]),
                        'multiplier': team_state.mw[name].multiplier,
