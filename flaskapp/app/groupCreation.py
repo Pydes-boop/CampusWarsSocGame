@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from apis.v1.database import interface
 from typing import Any
 from random import choice
-# import nxmetis
+import metis
 threshold = 100
 
 @dataclass
@@ -15,7 +15,7 @@ class Group:
     members: Any
 
 
-def create_groups():
+def wedding_seating():
     """
     uses the wedding seating problem and solution to match users to groups
     (see https://coin-or.github.io/pulp/CaseStudies/a_set_partitioning_problem.html)
@@ -195,13 +195,28 @@ def get_max_groups(social_network, min_group_size=4):
 
 
 def metis_calulation():
+    """
+    uses the c library metis for efficient partitioning based on weighted graph
+    :return:
+    """
     social_network = get_graph()
+    social_network.graph['edge_weight_attr'] = 'weight'
+    # for metis to use the weights, they have to be int
+    for edge in social_network.edges():
+        edge['weight'] = int(edge['weight'] * 10000)
     max_groups = get_max_groups(social_network, 5)
-    # teams = nxmetis.partition(social_network, max_groups)[1]
-    # user_groups = []
-    # for team in teams:
-    #     user_groups.append(Group(generate_team_name(), get_random_color(), team))
-    # interface.add_new_teams(user_groups)
+    (edgecuts, parts) = metis.part_graph(social_network, max_groups)
+    teams = []
+    for i in range(0, max_groups):
+        teams.append([])
+    j = 0
+    for node in social_network.nodes():
+        teams[parts[j]].append(node)
+        j = j + 1
+    user_groups = []
+    for team in teams:
+        user_groups.append(Group(generate_team_name(), get_random_color(), team))
+    interface.add_new_teams(user_groups)
 
 
 def greedy_random():
