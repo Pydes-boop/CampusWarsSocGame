@@ -37,7 +37,7 @@ public class ResultActivity extends AppCompatActivity
     private TextView name = null;
     private TextView team = null;
 
-    private enum WinState{WIN, TIE, LOST};
+    private enum WinState{WIN, TIE, LOSE};
 
     private String oppName, oppTeam, playerId, gameId, result;
 
@@ -133,7 +133,7 @@ public class ResultActivity extends AppCompatActivity
                 imageResource = getResources().getIdentifier("@drawable/img_tie", null, this.getPackageName());
                 text = "You Tied";
                 break;
-            case LOST:
+            case LOSE:
                 imageResource = getResources().getIdentifier("@drawable/img_lose", null, this.getPackageName());
                 text = "You Lost...";
                 break;
@@ -174,7 +174,14 @@ public class ResultActivity extends AppCompatActivity
 
                 } else {
                     gotQuizState = true;
-                    state = WinState.valueOf(response.replace("\"", ""));
+                    if(response.contains("WON")){
+                        state = WinState.WIN;
+                    } else if (response.contains("LOST")){
+                        state = WinState.LOSE;
+                    } else{
+                        state = WinState.TIE;
+                    }
+
                 }
             }
         };
