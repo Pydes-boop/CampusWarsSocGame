@@ -48,7 +48,6 @@ class RoomFinder(Resource):
                        "currentLecture": get_full_name_of_current_lecture_in_room(str(room["_id"]))}
         return jsonify(return_room)
 
-    # todo @Robin insert your stuff instead of my dummy stuff
     def get(self):
         result = []
         for i in get_all_rooms():
@@ -93,6 +92,8 @@ class QuizRequest(Resource):
     @request_requires(headers=['uid', 'team', 'room'])
     def post(self):
         """Tell us that you would like a quiz."""
+        if request.headers['uid'] in live_data.room_queue:
+            return jsonify({'quiz-request': False, 'reason': 'not in a room'})
         live_data.quiz_queue(request.headers['uid'],
                              request.headers['team'],
                              request.headers['room'])
