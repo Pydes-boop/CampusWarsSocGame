@@ -23,7 +23,7 @@ from contextlib import suppress
 from apis.v1.database.data_handler import live_data, team_state
 import ftfy
 
-ROOMFINDER_DISTANCE: int = 30
+ROOMFINDER_DISTANCE: int = 50
 
 
 @v1.app_errorhandler(404)
