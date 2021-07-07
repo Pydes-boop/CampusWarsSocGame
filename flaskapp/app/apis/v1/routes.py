@@ -22,6 +22,8 @@ from contextlib import suppress
 from apis.v1.database.data_handler import live_data, team_state
 import ftfy
 
+ROOMFINDER_TESTING: int = 50
+
 
 @v1.app_errorhandler(404)
 def error_404(_):
@@ -34,7 +36,7 @@ class RoomFinder(Resource):
     @request_requires(headers=['uid', 'team', 'latitude', 'longitude'])
     def post(self):
         lat, lon, = map(float, [request.headers['longitude'], request.headers['latitude']])
-        room = find_closest_room(lat, lon, 70)
+        room = find_closest_room(lat, lon, ROOMFINDER_TESTING)
         if room is None:
             return jsonify({"message": 'nothing near you'})
         name = room['roomName']
