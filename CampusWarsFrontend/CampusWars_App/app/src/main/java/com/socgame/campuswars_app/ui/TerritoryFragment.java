@@ -45,6 +45,7 @@ public class TerritoryFragment extends Fragment  implements GpsObserver //implem
     private String lectureId;
     private String lectureHall = "nothing";
     private LatLng lectureLoc = null;
+    private JSONObject rallyResponse = null;
 
     public TerritoryFragment()
     {
@@ -73,7 +74,7 @@ public class TerritoryFragment extends Fragment  implements GpsObserver //implem
             {
                 if(lectureHall.equals("nothing"))
                 {
-                    Toast.makeText(getActivity(), lectureHall, Toast.LENGTH_LONG).show();
+                    Toast.makeText(getActivity(), "Please enter a lecture hall to challenge an opponent", Toast.LENGTH_LONG).show();
                 }
                 else
                 {
@@ -102,7 +103,6 @@ public class TerritoryFragment extends Fragment  implements GpsObserver //implem
                     HttpHeader head = new HttpHeader(ctx);
                     head.buildRallyHeader(lectureHall);
                     bCom.rally(rallyPostListener(), httpErrorListener(), head, false);
-                    Toast.makeText(getActivity(), "You sent for your troops", Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -186,16 +186,21 @@ public class TerritoryFragment extends Fragment  implements GpsObserver //implem
         return new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
-                try {
-                    SharedPreferences settings = ctx.getSharedPreferences("userdata", 0);
-                    String myName = settings.getString("name", "empty");
-                    String name = response.getString("name");
-                    if(myName.contains("name")){
-                        String room = response.getString("room");
-                        Toast.makeText(getActivity(), name + "needs your help in" + room, Toast.LENGTH_LONG).show();
+                if(rallyResponse == response){
+                    //THIS IS YOUR OWN RESPONSE
+                } else {
+                    try {
+                        SharedPreferences settings = ctx.getSharedPreferences("userdata", 0);
+                        String myName = settings.getString("name", "empty");
+                        String name = response.getString("name");
+                        rallyResponse = response;
+                        if(myName.contains("name")){
+                            String room = response.getString("room");
+                            Toast.makeText(getActivity(), name + "needs your help in" + room, Toast.LENGTH_LONG).show();
+                        }
+                    } catch (Exception e) {
+                        Log.d("Error in Rally Get:", e.toString());
                     }
-                } catch (Exception e) {
-                    Log.d("Error in Rally Get:", e.toString());
                 }
             }
         };
