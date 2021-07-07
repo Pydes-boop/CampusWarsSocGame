@@ -32,6 +32,12 @@ import org.json.JSONObject;
 */
 public class TerritoryFragment extends Fragment  implements GpsObserver //implements View.OnClickListener
 {
+    /**
+     * Shows the current Territory, with some data about who owns it
+     * adds buttons for quiz and rally
+     *
+     * written by Daniel and Jonas
+     */
     View fragmentView = null;
     private Context ctx;
     private BackendCom bCom;

@@ -26,14 +26,15 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-/*
-    Here we display info about the players team
-    including a list of team members
 
-    written by Jonas
- */
 public class TeamFragment extends Fragment
 {
+    /**
+     *Here we display info about the players team
+     *including a list of team members
+     *
+     * UI by Jonas, Calls by Daniel
+     **/
     View fragmentView = null;
 
     private String color;
@@ -103,19 +104,11 @@ public class TeamFragment extends Fragment
 
     public void setTeamInfo(String name, int memberCount, String color)
     {
-        /*
-        //This looked pretty bad
-        String desaturatedColor = color.replaceAll("#", "");
-        desaturatedColor = "#80" + desaturatedColor;
-        */
         int colorIndex = Color.parseColor(color);
 
         TextView nameText = fragmentView.findViewById(R.id.teamName);
         nameText.setText(name);
         nameText.setTextColor(colorIndex);
-
-        //This doesnt look nice
-        // nameText.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor(desaturatedColor)));
 
         TextView memberText = fragmentView.findViewById(R.id.textCurrentMembers);
         memberText.setText(memberCount + " Members");
@@ -139,9 +132,6 @@ public class TeamFragment extends Fragment
                     setMembers(members);
                     setTeamInfo(teamName, members.length, color);
 
-                    //Setting Button Color to Team Color
-                    //No, I dont like this
-                    //button.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor(color)));
                 } catch (JSONException e) {
                     Log.d("My Group:", e.toString());
                 }
