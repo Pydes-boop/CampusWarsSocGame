@@ -75,7 +75,7 @@ class RallyTimout(list, List[RallyItem]):
         with suppress(ValueError):
             self.remove(item)
 
-    def __in__(self, team: str) -> True:
+    def __contains__(self, team: str) -> True:
         return team in map(attrgetter('team'), self)
 
     def get(self, team: str) -> Optional[Dict[str, str]]:
