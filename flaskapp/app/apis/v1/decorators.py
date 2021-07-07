@@ -40,7 +40,7 @@ def check_timed_out_users(timedoutusers) -> Callable:
                 return jsonify(
                     dict(
                         message=f'You are timed out until {time_pretty} due to: {reason}',
-                        timestamp=time,
+                        timestamp=time.timestamp(),
                         total_duration_in_sec=600,
                         minutes_remaining=int(remaining.total_seconds() // 60),
                         seconds_remaining=int(remaining.total_seconds() % 60),
