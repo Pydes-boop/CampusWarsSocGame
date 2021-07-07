@@ -35,7 +35,7 @@ REFRESH_MAX_GAME: int = 720
 
 PURGE_WAIT: int = 150
 
-RALLY_TIMEOUT_MINUTES: int = 1
+RALLY_TIMEOUT_MINUTES: int = 10
 
 now = lambda: int(datetime.now(tz=pytz.timezone('Europe/Vienna')).timestamp())
 future = lambda: now() + LIFE_TIME_USER * 60
