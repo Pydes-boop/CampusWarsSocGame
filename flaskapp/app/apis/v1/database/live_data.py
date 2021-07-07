@@ -49,6 +49,10 @@ class RallyItem:
     room: str
     initiator: str
 
+    @property
+    def json(self) -> Dict[str, str]:
+        return dict(team=self.team, room=self.room, initiator=self.initiator)
+
 
 class RallyTimout(list, List[RallyItem]):
     scheduler: BackgroundScheduler = BackgroundScheduler()

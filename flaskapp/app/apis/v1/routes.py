@@ -14,6 +14,7 @@ import groupCreation
 from apis.v1.decorators import request_requires, check_timed_out_users
 import json
 import threading
+from operator import attrgetter
 from apis.v1.database import interface
 from apis.v1.database.interface import get_all_rooms, find_closest_room, add_lectures_to_user, \
     add_question_to_quiz, add_user, get_full_name_of_current_lecture_in_room, get_player_name, get_time_table_of_room, \
@@ -112,7 +113,8 @@ class LiveDebug(Resource):
         return jsonify(live_data.room_queue,
                        live_data.quiz_queue,
                        dict([(key, item.json) for key, item in live_data.game_queue.items()]),
-                       live_data.timedout_users
+                       live_data.timedout_users,
+                       list(map(attrgetter('json'), live_data.rally_timeout))
                        )
 
 
