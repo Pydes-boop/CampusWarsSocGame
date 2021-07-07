@@ -59,7 +59,7 @@ class RoomFinder(Resource):
         result = []
         for room in get_all_rooms():
             occupier = team_state.get_room_occupier(room['roomName']) or 'Nobody'
-            if occupier:
+            if occupier != 'Nobody':
                 color = get_colour_of_team(occupier)
             else:
                 color = '#212121'
