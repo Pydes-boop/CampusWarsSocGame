@@ -35,31 +35,52 @@ REFRESH_MAX_GAME: int = 720
 
 PURGE_WAIT: int = 150
 
+RALLY_TIMEOUT_MINUTES: int = 1
+
 now = lambda: int(datetime.now(tz=pytz.timezone('Europe/Vienna')).timestamp())
 future = lambda: now() + LIFE_TIME_USER * 60
 
 game_id = lambda: b64encode(urandom(24)).decode('utf-8')
 
 
-class RallyTimout(list, List[str]):
+@dataclass
+class RallyItem:
+    team: str
+    room: str
+    initiator: str
+
+
+class RallyTimout(list, List[RallyItem]):
     scheduler: BackgroundScheduler = BackgroundScheduler()
 
     """Manage all teams that currently are being rallied."""
-    def add(self, team: str) -> bool:
+    def add(self, team: str, room: str, name: str) -> bool:
         """Add team to the list"""
         if team in self: return False
-        self.append(team)
+        rally_item: RallyItem = RallyItem(team, room, name)
+        self.append(rally_item)
         self.scheduler.add_job(self.remove,
                                'date',
-                               run_date=datetime.now(tz=pytz.timezone('Europe/Vienna')) + timedelta(minutes=30),
-                               args=(team,),
-                               id=team)
+                               run_date=datetime.now(tz=pytz.timezone('Europe/Vienna')) + timedelta(minutes=RALLY_TIMEOUT_MINUTES),
+                               args=(rally_item,),
+                               id=f'<{team}: {name}>')
         return True
 
-    def delete(self, team: str) -> None:
+    def delete(self, item: RallyItem) -> None:
         """Free teams once their time is up."""
         with suppress(ValueError):
-            self.remove(team)
+            self.remove(item)
+
+    def __in__(self, team: str) -> True:
+        return team in map(attrgetter('team'), self)
+
+    def get(self, team: str) -> Optional[Dict[str, str]]:
+        try:
+            index = list(map(attrgetter('team'), self)).index(team)
+            item = self[index]
+            return dict(name=item.initiator, room=item.room)
+        except ValueError:
+            return None
 
     def __del__(self) -> None:
         self.scheduler.shutdown(wait=False)
