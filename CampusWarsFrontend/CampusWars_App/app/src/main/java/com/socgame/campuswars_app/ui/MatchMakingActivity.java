@@ -28,6 +28,11 @@ import org.json.JSONObject;
 
 public class MatchMakingActivity extends AppCompatActivity
 {
+    /**
+     * Shows the User if their Quiz is available and if the server has answered to their requests
+     *
+     * written by Daniel and Jonas
+     */
     //The state represents is "what is finished?"
     private enum State  {BEGIN, REQUEST,WAIT, READY};
     private State state = State.BEGIN;
@@ -161,7 +166,6 @@ public class MatchMakingActivity extends AppCompatActivity
                 break;
         }
 
-        //TODO: always change/iterate state on response
     }
 
     private Response.Listener<JSONObject> quizRequestListener()

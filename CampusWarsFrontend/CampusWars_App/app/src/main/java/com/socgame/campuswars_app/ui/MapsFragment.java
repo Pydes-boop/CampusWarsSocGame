@@ -44,15 +44,16 @@ import org.json.JSONObject;
 import java.util.LinkedList;
 import java.util.List;
 
-/**
-   * Displays the world map
-   * Uses custom design
-   * Displays current position
-   * Displays lecture halls
-   *
-   * written by Jonas
-*/
 public class MapsFragment extends Fragment implements GpsObserver {
+    /**
+     * Displays the world map
+     * Uses custom design
+     * Displays current position
+     * Displays lecture halls
+     *
+     * written by Jonas
+     * Calls by Daniel
+     */
     private LatLng position = new LatLng(48.2650, 11.6716);//Using campus as default/fallback position;
     private GoogleMap map;
     private Marker localPos;//TODO: maybe google maps has an integrated way to do that?

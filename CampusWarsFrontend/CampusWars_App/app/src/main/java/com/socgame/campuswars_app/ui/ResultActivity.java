@@ -26,6 +26,12 @@ import org.w3c.dom.Text;
 
 public class ResultActivity extends AppCompatActivity
 {
+    /**
+     *Here we display info about the players team
+     *including a list of team members
+     *
+     * UI by Jonas, Calls by Daniel
+     **/
     private Context ctx;
 
     private TextView loading = null;
@@ -92,7 +98,6 @@ public class ResultActivity extends AppCompatActivity
             this.result = b.getString("result");
             name.setText(this.oppName);
             team.setText(this.oppTeam);
-            Log.d("DATA", gameId + " " + playerId + " " + oppName + " " + oppTeam + " " + result);
         }
 
         HttpHeader head = new HttpHeader(ctx);
@@ -140,9 +145,6 @@ public class ResultActivity extends AppCompatActivity
 
         image.setImageResource(imageResource);
         resText.setText(text);
-
-        //name.setText(oppName);
-        //team.setText(oppTeam);
 
         loading.setVisibility(View.INVISIBLE);
         resultWrapper.setVisibility(View.VISIBLE);

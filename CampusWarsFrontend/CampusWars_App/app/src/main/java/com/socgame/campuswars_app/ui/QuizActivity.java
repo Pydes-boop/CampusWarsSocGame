@@ -37,16 +37,16 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * Gets Data from calling Activity via Bundle
- * creates Quiz Duel between 2 Players
- *
- * sends Data back to Server
- *
- * written by Jonas and Daniel
- */
 public class QuizActivity extends AppCompatActivity //implements View.OnClickListener
 {
+    /**
+     * Gets Data from calling Activity via Bundle
+     * creates Quiz Duel between 2 Players
+     *
+     * sends Data back to Server
+     *
+     * written by Jonas and Daniel
+     */
     private Context ctx;
     private BackendCom bCom;
 
