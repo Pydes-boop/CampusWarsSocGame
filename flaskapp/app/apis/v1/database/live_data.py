@@ -7,7 +7,7 @@ __version__ = "0.0.1"
 
 __all__ = ('LiveData',)
 
-from datetime import datetime
+from datetime import datetime, timedelta
 from dataclasses import dataclass
 from random import shuffle
 from threading import Thread
@@ -22,6 +22,8 @@ from random import choice
 from contextlib import suppress
 from bson import ObjectId
 import pytz
+from apscheduler.schedulers.background import BackgroundScheduler
+
 
 from typing import Any, Union, Optional, Dict, List, Tuple
 
@@ -37,6 +39,30 @@ now = lambda: int(datetime.now(tz=pytz.timezone('Europe/Vienna')).timestamp())
 future = lambda: now() + LIFE_TIME_USER * 60
 
 game_id = lambda: b64encode(urandom(24)).decode('utf-8')
+
+
+class RallyTimout(list, List[str]):
+    scheduler: BackgroundScheduler = BackgroundScheduler()
+
+    """Manage all teams that currently are being rallied."""
+    def add(self, team: str) -> bool:
+        """Add team to the list"""
+        if team in self: return False
+        self.append(team)
+        self.scheduler.add_job(self.remove,
+                               'date',
+                               run_date=datetime.now(tz=pytz.timezone('Europe/Vienna')) + timedelta(minutes=30),
+                               args=(team,),
+                               id=team)
+        return True
+
+    def delete(self, team: str) -> None:
+        """Free teams once their time is up."""
+        with suppress(ValueError):
+            self.remove(team)
+
+    def __del__(self) -> None:
+        self.scheduler.shutdown(wait=False)
 
 
 class TimedItem:
@@ -319,12 +345,14 @@ class LiveData:
     quiz_queue: QuizQueue
     game_queue: GameQueue
     timedout_users: TimedOutUsers
+    rally_timeout: RallyTimout
 
     def __init__(self, team_state: TeamState):
         self.room_queue = RoomQueue(team_state)
         self.game_queue = GameQueue()
         self.quiz_queue = QuizQueue(self.game_queue)
         self.timedout_users = TimedOutUsers()
+        self.rally_timeout = RallyTimout()
 
 
 if __name__ == '__main__':

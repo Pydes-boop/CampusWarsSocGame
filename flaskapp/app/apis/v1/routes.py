@@ -170,6 +170,18 @@ class QuizState(Resource):
         return jsonify({'not yet answered': True})
 
 
+@api.resource('/rally')
+class Rally(Resource):
+    @check_timed_out_users(live_data.timedout_users)
+    @request_requires(headers=['uid', 'team'])
+    def post(self):
+        """Manage Rally request."""
+        if live_data.rally_timeout.add(request.headers['team']):
+            # TODO firebase magic
+            return {'rally': True}
+        return {'rally': False, 'reason': 'already rallying'}
+
+
 @api.resource('/echo')
 class Echo(Resource):
     def get(self):
