@@ -131,4 +131,12 @@ public class BackendCom {
         http.getRequestObject("v1/mygroup", head.getHeaders(), listener, error);
     }
 
+    public void rally(Response.Listener<JSONObject> listener, Response.ErrorListener error, HttpHeader head, boolean get){
+        if(get){
+            http.getRequestObject("v1/rally", head.getHeaders(), listener, error);
+        } else {
+            http.postRequestObject("v1/rally", head.getHeaders(), listener, error);
+        }
+    }
+
 }

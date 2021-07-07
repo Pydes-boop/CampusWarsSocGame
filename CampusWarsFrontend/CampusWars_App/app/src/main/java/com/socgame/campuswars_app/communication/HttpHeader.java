@@ -86,4 +86,8 @@ public class HttpHeader {
         header.put("result", result);
         header.put("outcome", outcome);
     }
+
+    public void buildRallyHeader(String roomName){
+        header.put("room", roomName);
+    }
 }

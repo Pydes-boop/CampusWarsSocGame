@@ -2,6 +2,7 @@ package com.socgame.campuswars_app.ui;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -95,8 +96,14 @@ public class TerritoryFragment extends Fragment  implements GpsObserver //implem
         {
             public void onClick(View view)
             {
-                //TODO: sent notification backend/firebase
-                Toast.makeText(getActivity(), "You sent for your troops", Toast.LENGTH_LONG).show();
+                if(lectureHall.contains("nothing")){
+                    Toast.makeText(getActivity(), "Please enter a lecturehall to start a rally", Toast.LENGTH_LONG).show();
+                } else {
+                    HttpHeader head = new HttpHeader(ctx);
+                    head.buildRallyHeader(lectureHall);
+                    bCom.rally(rallyPostListener(), httpErrorListener(), head, false);
+                    Toast.makeText(getActivity(), "You sent for your troops", Toast.LENGTH_LONG).show();
+                }
             }
         });
 
@@ -175,6 +182,43 @@ public class TerritoryFragment extends Fragment  implements GpsObserver //implem
         };
     }
 
+    private Response.Listener<JSONObject> rallyGetListener(){
+        return new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    SharedPreferences settings = ctx.getSharedPreferences("userdata", 0);
+                    String myName = settings.getString("name", "empty");
+                    String name = response.getString("name");
+                    if(myName.contains("name")){
+                        String room = response.getString("room");
+                        Toast.makeText(getActivity(), name + "needs your help in" + room, Toast.LENGTH_LONG).show();
+                    }
+                } catch (Exception e) {
+                    Log.d("Error in Rally Get:", e.toString());
+                }
+            }
+        };
+    }
+
+    private Response.Listener<JSONObject> rallyPostListener(){
+        return new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    String rallyPossible = response.getString("rally");
+                    if(rallyPossible.contains("false")){
+                        Toast.makeText(getActivity(), "Your Team already has an ongoing Rally!", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(getActivity(), "You sent for your troops!", Toast.LENGTH_SHORT).show();
+                    }
+                } catch (Exception e) {
+                    Log.d("Error in Rally Post:", e.toString());
+                }
+            }
+        };
+    }
+
     private Response.ErrorListener httpErrorListener() {
         return new Response.ErrorListener() {
             @Override
@@ -192,5 +236,8 @@ public class TerritoryFragment extends Fragment  implements GpsObserver //implem
         HttpHeader head = new HttpHeader(ctx);
         head.buildRoomFinderHeader(loc.latitude, loc.longitude);
         bCom.roomDetectionPost(roomfinderPostListener(loc.latitude, loc.longitude), httpErrorListener(), head);
+        //New Header for rally-check
+        head = new HttpHeader(ctx);
+        bCom.rally(rallyGetListener(), httpErrorListener(), head, true);
     }
 }
