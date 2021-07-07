@@ -42,31 +42,35 @@ class RoomFinder(Resource):
         name = room['roomName']
         team_state.increase_team_presence_in_room(team=request.headers['team'], room=name)
         live_data.room_queue(uid=request.headers['uid'], team=request.headers['team'], room=name)
+        occupier = team_state.get_room_occupier(name)
+        team_occupancy = team_state.get_all_team_occupancy_in_room(name)
+        multiplier = team_state.mw[name].multiplier
+        with suppress(KeyError): team_occupancy[occupier] *= multiplier
         return_room = {"message": "closest room to you:",
-                       'occupancy': team_state.get_all_team_occupancy_in_room(name),
-                       'occupier': team_state.get_room_occupier(name),
+                       'occupancy': team_occupancy,
+                       'occupier': occupier,
                        'room_name': name, 'lid': str(room["_id"]),
-                       'multiplier': team_state.mw[name].multiplier,
+                       'multiplier': multiplier,
                        "currentLecture": get_full_name_of_current_lecture_in_room(str(room["_id"]))}
         return jsonify(return_room)
 
     def get(self):
         result = []
-        for i in get_all_rooms():
-            occupier = team_state.get_room_occupier(i['roomName']) or 'Nobody'
+        for room in get_all_rooms():
+            occupier = team_state.get_room_occupier(room['roomName']) or 'Nobody'
             if occupier:
                 color = get_colour_of_team(occupier)
             else:
                 color = '#212121'
-            timetable = get_time_table_of_room(i["_id"])
+            timetable = get_time_table_of_room(room["_id"])
             item = {
                 "location":
-                    {"longitude": i["location"]["coordinates"][0],
-                     "latitude": i["location"]["coordinates"][1]},
-                "roomName": i["roomName"],
-                "_id": str(i["_id"]),
+                    {"longitude": room["location"]["coordinates"][0],
+                     "latitude": room["location"]["coordinates"][1]},
+                "roomName": room["roomName"],
+                "_id": str(room["_id"]),
                 "occupier": {"color": color, "name": occupier},
-                "currentLecture": get_full_name_of_current_lecture_in_room(i['_id']),
+                "currentLecture": get_full_name_of_current_lecture_in_room(room['_id']),
                 "timetable": timetable
             }
             result.append(item)
@@ -187,15 +191,6 @@ class Rally(Resource):
     def get(self):
         """Manage Rally request."""
         return {'rally': live_data.rally_timeout.get(request.headers['team'])}
-
-        # if request.headers['team'] in live_data.rally_timeout:
-        #     return {
-        #         'rally': dict(name=)
-        #     }
-        # if live_data.rally_timeout.add(request.headers['team']):
-        #     # TODO firebase magic
-        #     return {'rally': True}
-        # return {'rally': False, 'reason': 'already rallying'}
 
 
 @api.resource('/echo')
