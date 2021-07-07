@@ -173,13 +173,29 @@ class QuizState(Resource):
 @api.resource('/rally')
 class Rally(Resource):
     @check_timed_out_users(live_data.timedout_users)
-    @request_requires(headers=['uid', 'team'])
+    @request_requires(headers=['uid', 'team', 'room'])
     def post(self):
         """Manage Rally request."""
-        if live_data.rally_timeout.add(request.headers['team']):
-            # TODO firebase magic
+        if live_data.rally_timeout.add(request.headers['team'],
+                                       request.headers['room'],
+                                       get_player_name(request.headers['uid'])):
             return {'rally': True}
         return {'rally': False, 'reason': 'already rallying'}
+
+    @check_timed_out_users(live_data.timedout_users)
+    @request_requires(headers=['uid', 'team'])
+    def get(self):
+        """Manage Rally request."""
+        return {'rally': live_data.rally_timeout.get(request.headers['team'])}
+
+        # if request.headers['team'] in live_data.rally_timeout:
+        #     return {
+        #         'rally': dict(name=)
+        #     }
+        # if live_data.rally_timeout.add(request.headers['team']):
+        #     # TODO firebase magic
+        #     return {'rally': True}
+        # return {'rally': False, 'reason': 'already rallying'}
 
 
 @api.resource('/echo')
@@ -241,8 +257,10 @@ class Question(Resource):
 
 @api.resource('/register')
 class Register(Resource):
+    @request_requires(headers=['uid', 'name'])
     def post(self):
         status = add_user(request.headers["uid"], request.headers["name"])
+
         return jsonify({'success': status})
 
 
