@@ -8,20 +8,21 @@ __version__ = "0.0.1"
 __all__ = ('create_app',)
 
 from os import environ
-from config import DevelopmentConfig
+from config import DevelopmentConfig, ProductionConfig
 from flask import Flask, jsonify, request, abort
-from random import choice
 from apis.v1.routes import v1
 from apis.v1 import mongo
 
 
 def check_ua(ua, candidates) -> bool:
+    """Check if the User-Agent is known."""
     for uac in candidates:
         if uac in ua: return True
     else:
         return False
 
 
+# TODO maybe return a random response later, for now 418 seems fine if the UA check fails
 STATUS = [
     204, 205, 206,
     300, 301, 302, 303, 304, 305, 307, 308,
@@ -33,8 +34,7 @@ STATUS = [
 
 def create_app():
     app = Flask(__name__)
-    app.config.from_object(DevelopmentConfig)
-    # app.register_blueprint(v1)  # TODO update if necessary
+    app.config.from_object(ProductionConfig)
     app.register_blueprint(v1, url_prefix='/v1')
 
     app.config["MONGO_URI"] = 'mongodb://' + environ['MONGODB_USERNAME'] + ':' \
@@ -43,7 +43,8 @@ def create_app():
     mongo.init_app(app)
 
     @app.before_request
-    def deny():
+    def ua_check():
+        """Actual check if the User-Agent is know to us."""
         if (not request.url_rule or 'live-debug' not in request.url_rule.rule) and not check_ua(
                 request.headers.get('User-Agent', 'NONE'), ['CampusWarsFrontend', 'Postman', 'Android']
         ):
@@ -51,6 +52,7 @@ def create_app():
 
     @app.after_request
     def header(response):
+        """Add some headers (That get probably overwritten by nginx.)"""
         response.headers['Server'] = 'CampusWarsBackend/0.0.1'
         response.headers['X-Robots-Tag'] = 'noindex, noarchive'
         response.headers['Accept'] = 'application/json'
