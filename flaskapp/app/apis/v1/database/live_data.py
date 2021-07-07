@@ -7,7 +7,7 @@ __version__ = "0.0.1"
 
 __all__ = ('LiveData',)
 
-from datetime import datetime
+from datetime import datetime, timedelta
 from dataclasses import dataclass
 from random import shuffle
 from threading import Thread
@@ -21,6 +21,9 @@ from operator import attrgetter
 from random import choice
 from contextlib import suppress
 from bson import ObjectId
+import pytz
+from apscheduler.schedulers.background import BackgroundScheduler
+
 
 from typing import Any, Union, Optional, Dict, List, Tuple
 
@@ -32,10 +35,59 @@ REFRESH_MAX_GAME: int = 720
 
 PURGE_WAIT: int = 150
 
-now = lambda: int(datetime.now().timestamp())
+RALLY_TIMEOUT_MINUTES: int = 10
+
+now = lambda: int(datetime.now(tz=pytz.timezone('Europe/Vienna')).timestamp())
 future = lambda: now() + LIFE_TIME_USER * 60
 
 game_id = lambda: b64encode(urandom(24)).decode('utf-8')
+
+
+@dataclass
+class RallyItem:
+    team: str
+    room: str
+    initiator: str
+
+    @property
+    def json(self) -> Dict[str, str]:
+        return dict(team=self.team, room=self.room, initiator=self.initiator)
+
+
+class RallyTimout(list, List[RallyItem]):
+    scheduler: BackgroundScheduler = BackgroundScheduler()
+
+    """Manage all teams that currently are being rallied."""
+    def add(self, team: str, room: str, name: str) -> bool:
+        """Add team to the list"""
+        if team in self: return False
+        rally_item: RallyItem = RallyItem(team, room, name)
+        self.append(rally_item)
+        self.scheduler.add_job(self.remove,
+                               'date',
+                               run_date=datetime.now(tz=pytz.timezone('Europe/Vienna')) + timedelta(minutes=RALLY_TIMEOUT_MINUTES),
+                               args=(rally_item,),
+                               id=f'<{team}: {name}>')
+        return True
+
+    def delete(self, item: RallyItem) -> None:
+        """Free teams once their time is up."""
+        with suppress(ValueError):
+            self.remove(item)
+
+    def __in__(self, team: str) -> True:
+        return team in map(attrgetter('team'), self)
+
+    def get(self, team: str) -> Optional[Dict[str, str]]:
+        try:
+            index = list(map(attrgetter('team'), self)).index(team)
+            item = self[index]
+            return dict(name=item.initiator, room=item.room)
+        except ValueError:
+            return None
+
+    def __del__(self) -> None:
+        self.scheduler.shutdown(wait=False)
 
 
 class TimedItem:
@@ -55,6 +107,10 @@ class TimedItem:
         """Item is to be purged on next collection."""
         self.freed = True
         self.time = 0
+
+    @property
+    def is_alive(self) -> bool:
+        return self.time < now()
 
 
 @dataclass
@@ -85,7 +141,7 @@ class Game(TimedItem):
     players: List[User]
     results: List[int]
     Question: Optional[Dict[str, Any]]
-    readiness: List[bool]
+    finished: List[bool]
     time: int
     name: Optional[str]
 
@@ -94,7 +150,7 @@ class Game(TimedItem):
         self.players = players
         self.results = [-2, -2]
         self.question = question
-        self.readiness = [False, False]
+        self.finished = [False, False]
         self.time = time
         self.name = name
 
@@ -102,11 +158,11 @@ class Game(TimedItem):
         return uid in map(attrgetter('uid'), self.players)
 
     @property
-    def ready(self) -> bool:
-        return all(self.readiness)
+    def is_finished(self) -> bool:
+        return all(self.finished)
 
-    def set_ready(self, uid: str, state: bool = True) -> None:
-        self.readiness[self.get_player_id(uid)] = state
+    def set_finished(self, pid: int, state: bool = True) -> None:
+        self.finished[pid] = state
 
     @property
     def all_answered(self) -> bool:
@@ -134,6 +190,7 @@ class Game(TimedItem):
 class TheGreatPurge(Thread):
     running: bool
     data: 'PurgeQueue'
+    purge_wait: int = PURGE_WAIT
 
     def __init__(self, data: 'PurgeQueue'):
         self.running = True
@@ -147,7 +204,7 @@ class TheGreatPurge(Thread):
 
     def run(self) -> None:
         while self.running:
-            sleep(PURGE_WAIT)
+            sleep(self.purge_wait)
             self.data.purge()
 
 
@@ -192,6 +249,7 @@ class TimedOutUsers(PurgeQueue):
 
 class RoomQueue(PurgeQueue):
     team_data: TeamState
+    purge_wait: int = 40
 
     def __init__(self, team_data: Optional[TeamState]):
         self.team_data = team_data
@@ -258,9 +316,7 @@ class QuizQueue(RoomQueue):
                                 players=[self[uid], opp],
                                 question=choice(get_questions_of_quiz(quiz["_id"])),
                                 name=quiz["name"]
-
-                                # question=choice(get_questions_of_quiz(choice(get_current_quizzes(ObjectId(lid)))))
-                                )  # TODO
+                                )
                     del self[uid], self[opp.uid]
                     self.game_queue[game.game_id] = game
                     return 'game-incomplete', game
@@ -280,9 +336,9 @@ class QuizQueue(RoomQueue):
 
 
 class GameQueue(PurgeQueue):
-    def __call__(self, players, question):
-        gid = game_id()
-        self[gid] = Game(gid, players, question)
+    def __call__(self, gid: str):
+        if gid in self:
+            self[gid].refresh()
 
     def is_player_in_game(self, uid: str) -> Optional[Game]:
         for game in self.values():
@@ -314,19 +370,15 @@ class LiveData:
     quiz_queue: QuizQueue
     game_queue: GameQueue
     timedout_users: TimedOutUsers
+    rally_timeout: RallyTimout
 
     def __init__(self, team_state: TeamState):
         self.room_queue = RoomQueue(team_state)
         self.game_queue = GameQueue()
         self.quiz_queue = QuizQueue(self.game_queue)
         self.timedout_users = TimedOutUsers()
+        self.rally_timeout = RallyTimout()
 
 
 if __name__ == '__main__':
-    game = Game('123',
-                [
-                    User('1234', 123, 'team1', 'MW-1'),
-                    User('124', 123, 'team2', 'MW-1')],
-                {}
-                )
-    print(game.get_player_id('124'))
+    pass

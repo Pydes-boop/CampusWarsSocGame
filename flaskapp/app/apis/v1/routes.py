@@ -12,19 +12,18 @@ from flask_restful import Resource
 from apis.v1 import v1, api
 import groupCreation
 from apis.v1.decorators import request_requires, check_timed_out_users
-import random
 import json
 import threading
+from operator import attrgetter
 from apis.v1.database import interface
-from apis.v1.database.interface import add_room, add_lecture, get_all_rooms, find_closest_room, add_lectures_to_user, \
-    add_question_to_quiz, add_user, get_users_of_lecture, get_full_name_of_current_lecture_in_room, get_current_team, \
-    get_player_name, get_current_quizzes, get_questions_of_quiz, get_time_table_of_room, get_all_lecture_ids, \
-    get_escaped_by_db, get_current_team_with_member_names, get_colour_of_team, get_all_lecture_names
-from bson.objectid import ObjectId
-from apis.v1.database.time_functions import get_current_term, get_time_as_seconds
-import codecs
-from data_handler import live_data, team_state
+from apis.v1.database.interface import get_all_rooms, find_closest_room, add_lectures_to_user, \
+    add_question_to_quiz, add_user, get_full_name_of_current_lecture_in_room, get_player_name, get_time_table_of_room, \
+    get_escaped_by_db, get_current_team_with_member_names, get_colour_of_team
+from contextlib import suppress
+from apis.v1.database.data_handler import live_data, team_state
 import ftfy
+
+ROOMFINDER_TESTING: int = 50
 
 
 @v1.app_errorhandler(404)
@@ -38,38 +37,41 @@ class RoomFinder(Resource):
     @request_requires(headers=['uid', 'team', 'latitude', 'longitude'])
     def post(self):
         lat, lon, = map(float, [request.headers['longitude'], request.headers['latitude']])
-        room = find_closest_room(lat, lon, 70)
+        room = find_closest_room(lat, lon, ROOMFINDER_TESTING)
         if room is None:
             return jsonify({"message": 'nothing near you'})
         name = room['roomName']
         team_state.increase_team_presence_in_room(team=request.headers['team'], room=name)
         live_data.room_queue(uid=request.headers['uid'], team=request.headers['team'], room=name)
+        occupier = team_state.get_room_occupier(name)
+        team_occupancy = team_state.get_all_team_occupancy_in_room(name)
+        multiplier = team_state.mw[name].multiplier
+        with suppress(KeyError): team_occupancy[occupier] *= multiplier
         return_room = {"message": "closest room to you:",
-                       'occupancy': team_state.get_all_team_scores_in_room(name),
-                       'occupier': team_state.get_room_occupier(name),
+                       'occupancy': team_occupancy,
+                       'occupier': occupier,
                        'room_name': name, 'lid': str(room["_id"]),
-                       'multiplier': team_state.mw[name].multiplier,
+                       'multiplier': multiplier,
                        "currentLecture": get_full_name_of_current_lecture_in_room(str(room["_id"]))}
         return jsonify(return_room)
 
-    # todo @Robin insert your stuff instead of my dummy stuff
     def get(self):
         result = []
-        for i in get_all_rooms():
-            occupier = team_state.get_room_occupier(i['roomName']) or 'Nobody'
+        for room in get_all_rooms():
+            occupier = team_state.get_room_occupier(room['roomName']) or 'Nobody'
             if occupier:
                 color = get_colour_of_team(occupier)
             else:
                 color = '#212121'
-            timetable = get_time_table_of_room(i["_id"])
+            timetable = get_time_table_of_room(room["_id"])
             item = {
                 "location":
-                    {"longitude": i["location"]["coordinates"][0],
-                     "latitude": i["location"]["coordinates"][1]},
-                "roomName": i["roomName"],
-                "_id": str(i["_id"]),
+                    {"longitude": room["location"]["coordinates"][0],
+                     "latitude": room["location"]["coordinates"][1]},
+                "roomName": room["roomName"],
+                "_id": str(room["_id"]),
                 "occupier": {"color": color, "name": occupier},
-                "currentLecture": get_full_name_of_current_lecture_in_room(i['_id']),
+                "currentLecture": get_full_name_of_current_lecture_in_room(room['_id']),
                 "timetable": timetable
             }
             result.append(item)
@@ -97,6 +99,8 @@ class QuizRequest(Resource):
     @request_requires(headers=['uid', 'team', 'room'])
     def post(self):
         """Tell us that you would like a quiz."""
+        if request.headers['uid'] not in live_data.room_queue:
+            return jsonify({'quiz-request': False, 'reason': 'not in a room'})
         live_data.quiz_queue(request.headers['uid'],
                              request.headers['team'],
                              request.headers['room'])
@@ -109,7 +113,8 @@ class LiveDebug(Resource):
         return jsonify(live_data.room_queue,
                        live_data.quiz_queue,
                        dict([(key, item.json) for key, item in live_data.game_queue.items()]),
-                       live_data.timedout_users
+                       live_data.timedout_users,
+                       list(map(attrgetter('json'), live_data.rally_timeout))
                        )
 
 
@@ -131,12 +136,10 @@ class QuizRefresh(Resource):
                 {
                     'gid': game.game_id,  # game_id: a 24 byte string to identify each game
                     'pid': game.get_player_id(request.headers['uid']),  # player_id: 0 or 1 identifies player in game
-                    'opp-name': get_player_name(request.headers['uid']),
+                    'opp-name': get_player_name(game.players[not game.get_player_id(request.headers['uid'])].uid),
                     'opp-team': game.players[not game.get_player_id(request.headers['uid'])].team,
-                    'name': game.name,
-                    # name of the opponent team
-                    'quiz': game.question,
-                    # quiz in the already specified format TODO is there a way to get just a random quiz
+                    'name': game.name,  # name of the opponent team
+                    'quiz': game.question,  # quiz in the already specified format
                     'game-ready': descriptor == 'game'  # unimportant
                 }
             )
@@ -159,15 +162,37 @@ class QuizAnswer(Resource):
 class QuizState(Resource):
     @check_timed_out_users(live_data.timedout_users)
     @request_requires(headers=['uid', 'gid', 'pid'])
-    def get(self):  # TODO maybe think about combining this with the request above
+    def get(self):
         """Ask the server if the other player has answered yet, if yes show result."""
         live_data.game_queue[request.headers['gid']].refresh()
         if live_data.game_queue[request.headers['gid']].all_answered:
             result = live_data.game_queue[request.headers['gid']].get_result_for_player(int(request.headers['pid']))
+            live_data.game_queue[request.headers['gid']].set_finished(int(request.headers['pid']))
+            if live_data.game_queue[request.headers['gid']].is_finished:
+                with suppress(ValueError): del live_data.game_queue[request.headers['gid']]
             if result == 'LOST': live_data.timedout_users(request.headers['uid'])
             return jsonify(result)
 
         return jsonify({'not yet answered': True})
+
+
+@api.resource('/rally')
+class Rally(Resource):
+    @check_timed_out_users(live_data.timedout_users)
+    @request_requires(headers=['uid', 'team', 'room'])
+    def post(self):
+        """Manage Rally request."""
+        if live_data.rally_timeout.add(request.headers['team'],
+                                       request.headers['room'],
+                                       get_player_name(request.headers['uid'])):
+            return {'rally': True}
+        return {'rally': False, 'reason': 'already rallying'}
+
+    @check_timed_out_users(live_data.timedout_users)
+    @request_requires(headers=['uid', 'team'])
+    def get(self):
+        """Manage Rally request."""
+        return {'rally': live_data.rally_timeout.get(request.headers['team'])}
 
 
 @api.resource('/echo')
@@ -229,8 +254,10 @@ class Question(Resource):
 
 @api.resource('/register')
 class Register(Resource):
+    @request_requires(headers=['uid', 'name'])
     def post(self):
         status = add_user(request.headers["uid"], request.headers["name"])
+
         return jsonify({'success': status})
 
 

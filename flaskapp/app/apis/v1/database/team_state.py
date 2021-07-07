@@ -24,6 +24,7 @@ MW_INTERVAL: int = 5
 
 @dataclass
 class Room:
+    """Stores the current occupier in a room."""
     room: str
     team: str
     multiplier: float
@@ -34,14 +35,18 @@ class Room:
         self.multiplier = 1.0
 
     def reset(self) -> None:
+        """Reset room multiplier when occupier changes"""
         self.multiplier = 1
 
     def increase(self) -> float:
+        """Increase the occupiers multiplier."""
         self.multiplier = max(1.0, min(self.multiplier + MULTIPLIER_INCREASE, MULTIPLIER_MAX))
         return self.multiplier
 
 
 class MultiplierWatchdog(dict, Dict[str, Room]):
+    """Manage the occupier for each room."""
+
     thread: Thread
     running: bool
     current_interval: int
@@ -66,7 +71,8 @@ class MultiplierWatchdog(dict, Dict[str, Room]):
                 self.check()
 
     def check(self) -> None:
-        for room, team in self.team_state.get_occupiers_for_all_rooms():
+        """Check whether the occupier multiplier has to be increased or reset."""
+        for room, team in self.team_state.get_occupiers_for_all_rooms().items():
             if team == self[room].team:
                 self[room].increase()
             else:
@@ -89,6 +95,7 @@ class MultiplierWatchdog(dict, Dict[str, Room]):
 
 
 class Rooms(defaultdict, DefaultDict[str, int]):
+    """Stores all occupancy values of a team for each room."""
     def __init__(self):
         super(Rooms, self).__init__(int)
 
@@ -109,11 +116,13 @@ class Rooms(defaultdict, DefaultDict[str, int]):
 
 
 class Teams(defaultdict, DefaultDict[str, Rooms]):
+    """Represents all teams an their rooms."""
     def __init__(self):
         super(Teams, self).__init__(Rooms)
 
 
 class TeamState:
+    """General Team State Manager."""
     teams: Teams
     mw: MultiplierWatchdog
 
@@ -125,25 +134,22 @@ class TeamState:
         self.mw.start()
 
     def __call__(self, team: str) -> None:
-        """Create an empty team. Probably useless but it is here."""
+        """Create an empty team."""
         self.teams[team]
 
-    def get_team_score_of_room(self, team: str, room: str) -> int:
-        """Get what score a team has in a certain room."""
+    def get_team_occupancy_of_room(self, team: str, room: str) -> int:
         return self.teams[team][room]
 
-    def get_all_team_scores_in_room(self, room: str) -> Dict[str, int]:
-        """"""
+    def get_all_team_occupancy_in_room(self, room: str) -> Dict[str, int]:
         return dict((name, team[room]) for name, team in self.teams.items())
 
     def get_all_teams_for_all_rooms(self) -> Dict[str, Dict[str, int]]:
-        return dict((room, self.get_all_team_scores_in_room(room)) for room in self.get_rooms())
+        return dict((room, self.get_all_team_occupancy_in_room(room)) for room in self.get_all_rooms())
 
     def get_occupiers_for_all_rooms(self) -> Dict[str, str]:
-        return dict((room, self.get_room_occupier(room)) for room in self.get_rooms())
+        return dict((room, self.get_room_occupier(room)) for room in self.get_all_rooms())
 
     def get_room_occupier(self, room: str) -> Optional[str]:
-        """Get the team that occupies a certain room."""
         all_team_scores = dict(zip(self.teams.keys(), map(itemgetter(room), self.teams.values())))
         if not all_team_scores: return None
         m = max(all_team_scores.values())
@@ -152,26 +158,23 @@ class TeamState:
         if len(teams) > 1 and room in self.mw: return self.mw[room].team
         return teams[0]
 
-    def get_rooms(self) -> Set[str]:
+    def get_all_rooms(self) -> Set[str]:
         rooms = set()
         for room in self.teams.values():
             rooms.update(room.keys())
         return rooms
 
     def is_occupier(self, team: str, room: str) -> bool:
-        """Is a team the occupier of a room."""
         return team in self.get_room_occupier(room)
 
     def increase_team_presence_in_room(self, team: str, room: str, value: int = 1) -> None:
-        """It does what it says."""
         self.teams[team].increase(room, value)
 
     def decrease_team_presence_in_room(self, team: str, room: str, value: int = 1) -> None:
-        """It does what it says."""
         self.teams[team].decrease(room, value)
 
     def save(self, path: Union[Path, str]) -> None:
-        """Save a compressed version to a file."""
+        """Save a compressed representation of the state to a file."""
         Path(path).write_bytes(compress(dumps(self.teams)))
 
     @classmethod
@@ -194,31 +197,3 @@ class TeamState:
 
 if __name__ == '__main__':
     pass
-    # tm = TeamState.from_load('test.mem')
-    # tm = TeamState()
-    # tm('TrustworthyZebras')
-    # tm('BraveSquirrels')
-    # tm['TrustworthyZebras']['MI-1']
-    # tm['TrustworthyZebras']['MI-2']
-    # tm['BraveSquirrels']['MI-1']
-    # tm['BraveSquirrels']['MI-2']
-    # tm.increase_team_presence_in_room('BraveSquirrels', 'MI-2', 30)
-    # tm.increase_team_presence_in_room('TrustworthyZebras', 'MI-2', 30)
-    # print(tm)
-    # tm.save('test.mem')
-    # print(compress(dumps(tm)))
-
-    # tm = TeamState()
-    # tm('TrustworthyZebras')
-    # tm('BraveSquirrels')
-    # tm['TrustworthyZebras']['MI-1']
-    # tm['TrustworthyZebras']['MI-2']
-    # tm['BraveSquirrels']['MI-1']
-    # tm['BraveSquirrels']['MI-2']
-    #
-    # tm.increase_team_presence_in_room('BraveSquirrels', 'MI-2', 30)
-    # tm.increase_team_presence_in_room('TrustworthyZebras', 'MI-2', 30)
-    # print(tm.get_room_occupier('MI-2'))
-    # tm.decrease_team_presence_in_room('BraveSquirrels', 'MI-2')
-    # print(tm.get_room_occupier('MI-2'))
-    # # print(tm)
