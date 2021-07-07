@@ -88,6 +88,7 @@ public class TeamFragment extends Fragment
     public void setControl(double percentage)
     {
         TextView currentControl = (TextView) fragmentView.findViewById(R.id.textCurrentControl);
+        Log.d("DOING THIS", "DOING THIS");
         currentControl.setText("" + Math.round(percentage) + "%");
     }
 
@@ -166,7 +167,7 @@ public class TeamFragment extends Fragment
                         }
                     }
                     setControl((double) (counter / lectureHallCount)*100);
-                } catch (JSONException e) {
+                } catch (Exception e) {
                     Log.d("roomFinderGetListener: ", e.toString());
                 }
             }
