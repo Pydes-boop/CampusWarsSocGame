@@ -14,10 +14,13 @@ from apis.v1.database.time_functions import timestamp
 from apis.v1.database.interface import get_current_quizzes, get_questions_of_quiz
 from contextlib import suppress
 from random import seed, choice, shuffle
-from typing import Optional, Tuple
+from logging import getLogger
 from bson import ObjectId
+from typing import Optional, Tuple
 
 seed(timestamp())
+
+logger = getLogger(__name__)
 
 
 class QuizQueue(TimedQueue):
@@ -31,9 +34,11 @@ class QuizQueue(TimedQueue):
 
     def __call__(self, uid: str, team: str, room: str, lid: str = None) -> Optional[Tuple[str, Game]]:
         if uid in self:
+            logger.info(f'"{uid}" in quizqueue')
             game = self.live_data.game_queue.is_player_in_game(uid)
 
             if game:
+                logger.info(f'"{uid}" in game')
                 with suppress(KeyError): del self[uid]
                 return 'game', game
 
@@ -41,6 +46,7 @@ class QuizQueue(TimedQueue):
             opp = self.get_opponent(self[uid])
 
             if opp:
+                logger.info(f'"{uid}" found opponent {opp.uid}')
                 quiz = choice(get_current_quizzes(ObjectId(lid)))
                 game = Game(
                     game_id=create_game_id(),
