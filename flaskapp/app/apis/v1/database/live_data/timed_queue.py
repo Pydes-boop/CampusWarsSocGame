@@ -92,7 +92,7 @@ class TimedQueue(dict, Dict[str, 'Item']):
     def debug_values(self):
         for item in self:
             r = self[item].__dict__
-            r.update(dict(time=self.get(item).job.debug_eta))
+            r.update(dict(time=self.get(item).eta_debug))
             yield r
 
     def items(self):
