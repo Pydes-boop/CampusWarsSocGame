@@ -169,7 +169,6 @@ public class MapsFragment extends Fragment implements GpsObserver {
         //TODO: find a better way to call this periodically
         updateLectureHalls();
 
-
         updatePositionMarker();
     }
 
@@ -207,6 +206,7 @@ public class MapsFragment extends Fragment implements GpsObserver {
             @Override
             public void onResponse(JSONArray response) {
                 try {
+                    clearAllHalls();
                     for (int i = 0; i < response.length(); i++) {
                         //Getting JSONs
                         JSONObject lectureHall = response.getJSONObject(i);
@@ -259,7 +259,7 @@ public class MapsFragment extends Fragment implements GpsObserver {
     //TODO: find a better place to calls this
     private void updateLectureHalls()
     {
-        clearAllHalls();
+        //clearing halls now in callback
         bCom.roomDetectionGet(roomfinderGetListener(), httpErrorListener());
     }
 
