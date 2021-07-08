@@ -219,6 +219,10 @@ public class MapsFragment extends Fragment implements GpsObserver {
                         double lon = location.getDouble("longitude");
 
                         String lecture = lectureHall.getString("currentLecture");
+                        if(lecture.contains("null")){
+                            lecture = "No Lecture";
+                        }
+
                         String name = lectureHall.getString("roomName");
 
                         String color = occupier.getString("color");

@@ -152,7 +152,7 @@ public class TerritoryFragment extends Fragment  implements GpsObserver //implem
                     String occupier = response.getString("occupier");
 
                     lectureHall = response.getString("room_name");
-                    setHallInfo(lectureHall, occupier, "No active Lecture", new LatLng(latitude, longitude));
+                    setHallInfo(lectureHall, occupier, currentLecture, new LatLng(latitude, longitude));
                     if(currentTimeOut == true){
                         currentTimeOut = false;
                         setTimeOut(currentTimeOut);
