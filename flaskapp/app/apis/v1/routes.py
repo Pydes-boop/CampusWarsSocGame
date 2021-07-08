@@ -40,17 +40,17 @@ class RoomFinder(Resource):
         room = find_closest_room(lat, lon, ROOMFINDER_DISTANCE)
         if room is None:
             return jsonify({"message": 'nothing near you'})
-        name = room['roomName']
-        team_state.increase_team_presence_in_room(team=request.headers['team'], room=name)
-        live_data.room_queue(uid=request.headers['uid'], team=request.headers['team'], room=name)
-        occupier = team_state.get_room_occupier(name)
-        team_occupancy = team_state.get_all_team_occupancy_in_room(name)
-        multiplier = team_state.mw[name].multiplier
+        room_name = room['roomName']
+        team_state.increase_team_presence_in_room(team=request.headers['team'], room=room_name)
+        live_data.room_queue(uid=request.headers['uid'], team=request.headers['team'], room=room_name)
+        occupier = team_state.get_room_occupier(room_name)
+        team_occupancy = team_state.get_all_team_occupancy_in_room(room_name)
+        multiplier = team_state.mw[room_name].multiplier
         with suppress(KeyError): team_occupancy[occupier] *= multiplier
         return_room = {"message": "closest room to you:",
                        'occupancy': team_occupancy,
                        'occupier': occupier,
-                       'room_name': name, 'lid': str(room["_id"]),
+                       'room_name': room_name, 'lid': str(room["_id"]),
                        'multiplier': multiplier,
                        "currentLecture": get_full_name_of_current_lecture_in_room(str(room["_id"]))}
         return jsonify(return_room)
@@ -107,17 +107,6 @@ class QuizRequest(Resource):
         return jsonify({'quiz-request': True})
 
 
-@api.resource('/live-debug')
-class LiveDebug(Resource):
-    def get(self):
-        return jsonify(live_data.room_queue,
-                       live_data.quiz_queue,
-                       dict([(key, item.json) for key, item in live_data.game_queue.items()]),
-                       live_data.timedout_users,
-                       list(map(attrgetter('json'), live_data.rally_timeout))
-                       )
-
-
 @api.resource('/quiz-refresh')
 class QuizRefresh(Resource):
     @check_timed_out_users(live_data.timedout_users)
@@ -138,7 +127,7 @@ class QuizRefresh(Resource):
                     'pid': game.get_player_id(request.headers['uid']),  # player_id: 0 or 1 identifies player in game
                     'opp-name': get_player_name(game.players[not game.get_player_id(request.headers['uid'])].uid),
                     'opp-team': game.players[not game.get_player_id(request.headers['uid'])].team,
-                    'name': game.name,  # name of the opponent team
+                    'name': game.quiz_name,
                     'quiz': game.question,  # quiz in the already specified format
                     'game-ready': descriptor == 'game'  # unimportant
                 }
@@ -194,11 +183,6 @@ class Rally(Resource):
         """Manage Rally request."""
         return {'rally': live_data.rally_timeout.get(request.headers['team'])}
 
-
-@api.resource('/echo')
-class Echo(Resource):
-    def get(self):
-        return "Hallo Echo!", 200
 
 
 @api.resource('/lectures')
@@ -278,6 +262,19 @@ class Test(Resource):
 class AlsoTest(Resource):
     def get(self):
         return jsonify(interface.get_all_teams())
+
+
+@api.resource('/robin')
+@api.resource('/live-debug')
+class LiveDebug(Resource):
+    def get(self):
+        return jsonify(live_data.json)
+
+
+@api.resource('/echo')
+class Echo(Resource):
+    def get(self):
+        return 'Hallo Echo!', 200
 
 
 if __name__ == '__main__':
