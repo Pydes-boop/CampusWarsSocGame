@@ -13,8 +13,8 @@ from apis.v1.database.live_data.items import User, Team
 from apis.v1.database.live_data.timed_queue import TimedQueue
 from typing import Any, List, Dict
 
-MULTIPLIER_INCREASE: float = 0.005
-MULTIPLIER_UPDATE_RATE_SEC: int = 5
+MULTIPLIER_INCREASE: float = 0.0005
+MULTIPLIER_UPDATE_RATE_SEC: int = 3
 
 
 class Multiplier(dict, Dict[str, Team]):
@@ -50,8 +50,8 @@ class Multiplier(dict, Dict[str, Team]):
 class RoomQueue(TimedQueue):
     multiplier: Multiplier
     live_data: 'LiveData'
-    life_time = 600
-    max_refresh = 45
+    life_time = 10
+    max_refresh = 25
 
     def __init__(self, live_data: 'LiveData'):
         super(RoomQueue, self).__init__()
