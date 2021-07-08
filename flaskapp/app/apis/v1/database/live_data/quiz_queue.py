@@ -32,7 +32,7 @@ class QuizQueue(TimedQueue):
         self.live_data = live_data
         super(QuizQueue, self).__init__()
 
-    def __call__(self, uid: str, team: str, room: str, lid: str = None) -> Optional[Tuple[str, Game]]:
+    def __call__(self, uid: str, team: str, room: str, lid: str = None) -> Tuple[str, Optional[Game]]:
         if uid in self:
             game = self.live_data.game_queue.is_player_in_game(uid)
 
@@ -55,8 +55,10 @@ class QuizQueue(TimedQueue):
                     return 'game-incomplete', game
 
                 self.refresh(uid)
+                return 'fresh', None
             else:
                 self[uid] = User(uid, team, room)
+                return 'add', None
 
     def get_opponent(self, user: User) -> Optional[User]:
         users = list(self.values())
