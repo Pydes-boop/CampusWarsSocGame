@@ -33,6 +33,7 @@ class QuizQueue(TimedQueue):
         super(QuizQueue, self).__init__()
 
     def __call__(self, uid: str, team: str, room: str, lid: str = None) -> Optional[Tuple[str, Game]]:
+        return lid
         if uid in self:
             game = self.live_data.game_queue.is_player_in_game(uid)
 
