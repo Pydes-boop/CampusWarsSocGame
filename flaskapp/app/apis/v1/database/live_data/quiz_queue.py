@@ -41,7 +41,6 @@ class QuizQueue(TimedQueue):
                 return 'game', game
 
             if room == self[uid].room:
-                return 'room found'
                 opp = self.get_opponent(self[uid])
                 if opp:
                     quiz = choice(get_current_quizzes(ObjectId(lid)))
@@ -49,7 +48,7 @@ class QuizQueue(TimedQueue):
                         game_id=create_game_id(),
                         players=[self[uid], opp],
                         quiz_name=quiz['name'],
-                        question=choice(get_current_quizzes(quiz['_id']))
+                        question=choice(get_questions_of_quiz(quiz['_id']))
                     )
                     with suppress(KeyError): del self[uid], self[opp.uid]
                     self.live_data.game_queue[game.game_id] = game
