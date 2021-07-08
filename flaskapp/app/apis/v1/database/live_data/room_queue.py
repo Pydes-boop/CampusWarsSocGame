@@ -51,7 +51,7 @@ class RoomQueue(TimedQueue):
     multiplier: Multiplier
     live_data: 'LiveData'
     life_time = 20
-    max_refresh = 40
+    max_refresh = 45
 
     def __init__(self, live_data: 'LiveData'):
         super(RoomQueue, self).__init__()
