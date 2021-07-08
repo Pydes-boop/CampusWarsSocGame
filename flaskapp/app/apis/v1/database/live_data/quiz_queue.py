@@ -37,20 +37,20 @@ class QuizQueue(TimedQueue):
                 with suppress(KeyError): del self[uid]
                 return 'game', game
 
-            if room == self[uid].room:
-                opp = self.get_opponent(self[uid])
+            # if room == self[uid].room:
+            opp = self.get_opponent(self[uid])
 
-                if opp:
-                    quiz = choice(get_current_quizzes(ObjectId(lid)))
-                    game = Game(
-                        game_id=create_game_id(),
-                        players=[self[uid], opp],
-                        quiz_name=quiz['name'],
-                        question=choice(get_current_quizzes(quiz['_id']))
-                    )
-                    with suppress(KeyError): del self[uid], self[opp.uid]
-                    self.live_data.game_queue[game.game_id] = game
-                    return 'game-incomplete', game
+            if opp:
+                quiz = choice(get_current_quizzes(ObjectId(lid)))
+                game = Game(
+                    game_id=create_game_id(),
+                    players=[self[uid], opp],
+                    quiz_name=quiz['name'],
+                    question=choice(get_current_quizzes(quiz['_id']))
+                )
+                with suppress(KeyError): del self[uid], self[opp.uid]
+                self.live_data.game_queue[game.game_id] = game
+                return 'game-incomplete', game
 
             self.refresh(uid)
         else:
