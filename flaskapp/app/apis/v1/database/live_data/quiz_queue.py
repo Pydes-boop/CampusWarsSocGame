@@ -37,7 +37,6 @@ class QuizQueue(TimedQueue):
             game = self.live_data.game_queue.is_player_in_game(uid)
 
             if game:
-                return 'found game'
                 with suppress(KeyError): del self[uid]
                 return 'game', game
 
@@ -45,6 +44,7 @@ class QuizQueue(TimedQueue):
             opp = self.get_opponent(self[uid])
 
             if opp:
+                return 'found opp'
                 logger.info(f'"{uid}" found opponent {opp.uid}')
                 quiz = choice(get_current_quizzes(ObjectId(lid)))
                 game = Game(
