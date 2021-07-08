@@ -1,5 +1,6 @@
 import networkx as nx
 import pulp
+
 from apis.v1.utils.random_stuff import get_random_color, generate_team_name, used_names
 from dataclasses import dataclass
 from apis.v1.database import interface
@@ -7,6 +8,7 @@ from typing import Any
 from random import choice
 import metis
 threshold = 100
+finished = True
 
 @dataclass
 class Group:
@@ -52,6 +54,7 @@ def wedding_seating():
         if x[group].value() == 1.0:
             user_groups.append(Group(generate_team_name(), get_random_color(), group))
     # return user_groups
+    super.finished = True
     return interface.add_new_teams(user_groups)
 
 
@@ -216,6 +219,7 @@ def metis_calulation():
     user_groups = []
     for team in teams:
         user_groups.append(Group(generate_team_name(), get_random_color(), team))
+    super.finished = True
     return interface.add_new_teams(user_groups)
 
 
@@ -263,4 +267,5 @@ def greedy_random():
         user_groups = []
         for team in teams:
             user_groups.append(Group(generate_team_name(), get_random_color(), team))
+        super.finished = True
         interface.add_new_teams(user_groups)

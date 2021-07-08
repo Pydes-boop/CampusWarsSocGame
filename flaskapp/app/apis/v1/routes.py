@@ -213,6 +213,7 @@ class Start(Resource):
     @request_requires(headers=['passphrase', 'variant'])
     def post(self):
         if request.headers['passphrase'] == "YOU ONLY CALL THIS TWICE A YEAR PLS":
+            groupCreation.finished = False
             if request.headers['variant'] == "pulp":
                 group_creation = threading.Thread(target=groupCreation.wedding_seating)
             elif request.headers['variant'] == "metis":
@@ -261,7 +262,7 @@ class Test(Resource):
 @api.resource('/felix')
 class AlsoTest(Resource):
     def get(self):
-        return jsonify(interface.get_all_teams())
+        return jsonify(groupCreation.finished)
 
 
 @api.resource('/robin')
