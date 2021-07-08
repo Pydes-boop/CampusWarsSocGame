@@ -103,10 +103,10 @@ class QuizRequest(Resource):
         """Tell us that you would like a quiz."""
         if request.headers['uid'] not in live_data.room_queue:
             return jsonify({'quiz-request': False, 'reason': 'not in a room'})
-        live_data.quiz_queue(request.headers['uid'],
-                             request.headers['team'],
-                             request.headers['room'])
-        return jsonify({'quiz-request': True})
+        data = live_data.quiz_queue(request.headers['uid'],
+                                    request.headers['team'],
+                                    request.headers['room'])
+        return jsonify({'quiz-request': True, 'data': data})
 
 
 @api.resource('/quiz-refresh')
