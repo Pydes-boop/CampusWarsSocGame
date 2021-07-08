@@ -53,6 +53,8 @@ class RoomFinder(Resource):
                        'room_name': name, 'lid': str(room["_id"]),
                        'multiplier': multiplier,
                        "currentLecture": get_full_name_of_current_lecture_in_room(str(room["_id"]))}
+        if return_room["currentLecture"] is None:
+            return_room["currentLecture"] = "currently no lecture"
         return jsonify(return_room)
 
     def get(self):
