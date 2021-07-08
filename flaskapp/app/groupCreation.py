@@ -205,8 +205,8 @@ def metis_calulation():
     social_network = get_graph()
     social_network.graph['edge_weight_attr'] = 'weight'
     # for metis to use the weights, they have to be int
-    for edge in social_network.edges():
-        edge['weight'] = int(edge['weight'] * 10000)
+    for u, v, d in social_network.edges(data=True):
+        d['weight'] = int(d['weight'] * 10000)
     max_groups = get_max_groups(social_network, 5)
     (edgecuts, parts) = metis.part_graph(social_network, max_groups)
     teams = []
