@@ -21,7 +21,7 @@ seed(timestamp())
 
 
 class QuizQueue(TimedQueue):
-    life_time = 20
+    life_time = 600
     max_refresh = 40
     live_data: 'LiveData'
 
