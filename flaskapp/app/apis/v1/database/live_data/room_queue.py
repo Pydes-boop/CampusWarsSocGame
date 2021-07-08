@@ -23,9 +23,9 @@ class Multiplier(dict, Dict[str, 'Team']):
 
     def __init__(self, queue: Any):
         super(Multiplier, self).__init__()
-        self.scheduler = BackgroundScheduler({'apscheduler.timezone': 'Europe/Vienna'})
-        self.scheduler.start()
-        self.scheduler.add_job(self.check, 'interval', id='multiplier_check', seconds=MULTIPLIER_UPDATE_RATE_SEC)
+        # self.scheduler = BackgroundScheduler({'apscheduler.timezone': 'Europe/Vienna'})
+        # self.scheduler.start()
+        # self.scheduler.add_job(self.check, 'interval', id='multiplier_check', seconds=MULTIPLIER_UPDATE_RATE_SEC)
         self.queue = queue
 
     def check(self) -> None:
@@ -57,6 +57,7 @@ class RoomQueue(TimedQueue):
             self[uid].refresh()
         else:
             self[uid] = User(uid, team, room)
+        self.multiplier.check()
 
     def get_users_in_room(self, room: str) -> List[User]:
         """Get all users that are in a room."""
