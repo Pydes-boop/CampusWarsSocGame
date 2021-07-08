@@ -143,7 +143,7 @@ class QuizAnswer(Resource):
     @request_requires(headers=['uid', 'gid', 'pid', 'result', 'outcome'])
     def post(self):
         """Answer the quiz."""
-        live_data.game_queue[request.headers['gid']].refresh()
+        live_data.game_queue.refresh(request.headers['gid'])
         live_data.game_queue.submit_answer(request.headers['gid'], int(request.headers['pid']),
                                            int(request.headers['outcome']))
         return jsonify({'quiz-answer': True})
@@ -155,7 +155,7 @@ class QuizState(Resource):
     @request_requires(headers=['uid', 'gid', 'pid'])
     def get(self):
         """Ask the server if the other player has answered yet, if yes show result."""
-        live_data.game_queue[request.headers['gid']].refresh()
+        live_data.game_queue.refresh(request.headers['gid'])
         if live_data.game_queue[request.headers['gid']].all_answered:
             result = live_data.game_queue[request.headers['gid']].get_result_for_player(int(request.headers['pid']))
             live_data.game_queue[request.headers['gid']].set_finished(int(request.headers['pid']))

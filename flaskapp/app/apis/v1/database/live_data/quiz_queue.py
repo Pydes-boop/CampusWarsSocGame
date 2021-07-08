@@ -52,7 +52,7 @@ class QuizQueue(TimedQueue):
                     self.live_data.game_queue[game.game_id] = game
                     return 'game-incomplete', game
 
-            self['uid'].refresh()
+            self.refresh(uid)
         else:
             self[uid] = User(uid, team, room)
 
