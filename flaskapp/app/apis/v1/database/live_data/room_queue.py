@@ -23,9 +23,9 @@ class Multiplier(dict, Dict[str, 'Team']):
 
     def __init__(self, queue: Any):
         super(Multiplier, self).__init__()
-        # self.scheduler = BackgroundScheduler({'apscheduler.timezone': 'Europe/Vienna'})
-        # self.scheduler.start()
-        # self.scheduler.add_job(self.check, 'interval', id='multiplier_check', seconds=MULTIPLIER_UPDATE_RATE_SEC)
+        self.scheduler = BackgroundScheduler({'apscheduler.timezone': 'Europe/Vienna'})
+        self.scheduler.start()
+        self.scheduler.add_job(self.check, 'interval', id='multiplier_check', seconds=MULTIPLIER_UPDATE_RATE_SEC)
         self.queue = queue
 
     def check(self) -> None:
@@ -44,12 +44,14 @@ class Multiplier(dict, Dict[str, 'Team']):
 
 class RoomQueue(TimedQueue):
     multiplier: Multiplier
+    live_data: 'LiveData'
     life_time = 20
     max_refresh = 40
 
-    def __init__(self):
+    def __init__(self, live_data: 'LiveData'):
         super(RoomQueue, self).__init__()
         self.multiplier = Multiplier(self)
+        self.live_data = live_data
 
     def __call__(self, uid: str, team: str, room: str) -> None:
         """Add new user or refresh existing one."""
@@ -57,7 +59,10 @@ class RoomQueue(TimedQueue):
             self.refresh(uid)
         else:
             self[uid] = User(uid, team, room)
-        self.multiplier.check()
+
+    def __delitem__(self, key):
+        del self.live_data.quiz_queue[key]
+        super().__delitem__(key)
 
     def get_users_in_room(self, room: str) -> List[User]:
         """Get all users that are in a room."""

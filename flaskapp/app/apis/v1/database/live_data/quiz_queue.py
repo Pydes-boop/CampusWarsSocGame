@@ -48,7 +48,7 @@ class QuizQueue(TimedQueue):
                         quiz_name=quiz['name'],
                         question=choice(get_current_quizzes(quiz['_id']))
                     )
-                    del self[uid], self[opp.uid]
+                    with suppress(KeyError): del self[uid], self[opp.uid]
                     self.live_data.game_queue[game.game_id] = game
                     return 'game-incomplete', game
 
