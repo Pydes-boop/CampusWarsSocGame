@@ -1,4 +1,4 @@
-__all__ = ('now', 'timestamp')
+__all__ = ('now', 'timestamp', 'from_timestamp',)
 
 from time import time
 from datetime import datetime, timezone
@@ -19,6 +19,10 @@ def now() -> datetime:
 
 def timestamp() -> int:
     return int(now().timestamp())
+
+
+def from_timestamp(timestamp: int) -> datetime:
+    return datetime.fromtimestamp(timestamp, tz=tz)
 
 
 def get_current_time_and_day():
