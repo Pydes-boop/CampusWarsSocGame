@@ -64,7 +64,7 @@ class TimedQueue(dict, Dict[str, 'Item']):
         """Attempt to refresh the lifetime of an object."""
         item = self.get(item)
         if item.eta + self.life_time > timestamp() + self.max_refresh: return False
-        item.job.reschedule('interval', start_date=item.eta, seconds=self.life_time)
+        item.job.reschedule('interval', start_date=item.eta_debug, seconds=self.life_time)
         return True
 
     def eta(self, item: str) -> int:
