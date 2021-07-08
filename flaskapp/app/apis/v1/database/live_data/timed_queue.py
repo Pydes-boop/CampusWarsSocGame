@@ -11,6 +11,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.job import Job
 from operator import attrgetter
 from dataclasses import dataclass
+from contextlib import suppress
 from apis.v1.database.time_functions import timestamp
 from typing import Any, Dict
 
@@ -52,8 +53,8 @@ class TimedQueue(dict, Dict[str, 'Item']):
             super(TimedQueue, self).__setitem__(key, value)
 
     def __delitem__(self, key: str) -> None:
-        self.get(key).job.remove()
-        super(TimedQueue, self).__delitem__(key)
+        with suppress(AttributeError): self.get(key).job.remove()
+        with suppress(KeyError): super(TimedQueue, self).__delitem__(key)
 
     def refresh(self, item: str) -> bool:
         """Attempt to refresh the lifetime of an object."""
