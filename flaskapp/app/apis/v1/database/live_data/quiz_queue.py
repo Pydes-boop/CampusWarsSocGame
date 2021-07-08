@@ -60,6 +60,7 @@ class QuizQueue(TimedQueue):
             self.refresh(uid)
         else:
             self[uid] = User(uid, team, room)
+            return 'new user'
 
     def get_opponent(self, user: User) -> Optional[User]:
         users = self.values()
