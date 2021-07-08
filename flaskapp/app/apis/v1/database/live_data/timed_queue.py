@@ -32,6 +32,10 @@ class TimedQueue(dict, Dict[str, 'Item']):
             """Time the object gets 'game ended'"""
             return self.job.next_run_time.timestamp()
 
+        @property
+        def eta_debug(self):
+            return str(self.job.next_run_time)
+
     def __init__(self):
         super(TimedQueue, self).__init__()
         self.scheduler = BackgroundScheduler({'apscheduler.timezone': 'Europe/Vienna'})
@@ -84,6 +88,12 @@ class TimedQueue(dict, Dict[str, 'Item']):
 
     def values(self):
         return map(attrgetter('item'), super().values())
+
+    def debug_values(self):
+        for item in self:
+            r = self[item].__dict__
+            r.update(dict(time=self.get(item).job.debug_eta))
+            yield r
 
     def items(self):
         return zip(self.keys(), self.values())
