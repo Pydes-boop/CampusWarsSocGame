@@ -33,7 +33,7 @@ class Multiplier(dict, Dict[str, 'Team']):
         for room, teams in self.queue.get_each_rooms_occupancies().items():
             if room not in self: self[room] = Team('', 0)
             max_occupancy = max(teams.values())
-            teams = [key for key, value in teams if value == max_occupancy]
+            teams = [key for key, value in teams.items() if value == max_occupancy]
             if self[room].team in teams:
                 self[room].multiplier += MULTIPLIER_INCREASE
             else:
