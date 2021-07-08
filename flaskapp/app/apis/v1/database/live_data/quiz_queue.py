@@ -44,7 +44,6 @@ class QuizQueue(TimedQueue):
             opp = self.get_opponent(self[uid])
             if opp:
                 quiz = choice(get_current_quizzes(ObjectId(lid)))
-                return quiz
                 game = Game(
                     game_id=create_game_id(),
                     players=[self[uid], opp],
