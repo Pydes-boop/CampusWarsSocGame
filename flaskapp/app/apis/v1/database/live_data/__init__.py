@@ -24,7 +24,7 @@ class LiveData:
     rally_timeout: RallyTimeout
 
     def __init__(self):
-        self.room_queue = RoomQueue()
+        self.room_queue = RoomQueue(self)
         self.game_queue = GameQueue()
         self.quiz_queue = QuizQueue(self)
         self.timedout_users = TimedOutUsers()
