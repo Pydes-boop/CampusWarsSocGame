@@ -15,7 +15,7 @@ from apis.v1.database.interface import get_current_quizzes, get_questions_of_qui
 from contextlib import suppress
 from random import seed, choice, shuffle
 from logging import getLogger
-from bson import ObjectId
+from bson.objectid import ObjectId
 from typing import Optional, Tuple
 
 seed(timestamp())
