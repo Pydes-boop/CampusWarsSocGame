@@ -216,7 +216,7 @@ def metis_calulation():
     user_groups = []
     for team in teams:
         user_groups.append(Group(generate_team_name(), get_random_color(), team))
-    interface.add_new_teams(user_groups)
+    return interface.add_new_teams(user_groups)
 
 
 def greedy_random():
