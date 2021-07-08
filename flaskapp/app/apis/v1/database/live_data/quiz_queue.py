@@ -33,7 +33,6 @@ class QuizQueue(TimedQueue):
         super(QuizQueue, self).__init__()
 
     def __call__(self, uid: str, team: str, room: str, lid: str = None) -> Optional[Tuple[str, Game]]:
-        return lid
         if uid in self:
             game = self.live_data.game_queue.is_player_in_game(uid)
 
@@ -41,25 +40,24 @@ class QuizQueue(TimedQueue):
                 with suppress(KeyError): del self[uid]
                 return 'game', game
 
-            # if room == self[uid].room:
-            opp = self.get_opponent(self[uid])
-            if opp:
-                quiz = choice(get_current_quizzes(ObjectId(lid)))
-                game = Game(
-                    game_id=create_game_id(),
-                    players=[self[uid], opp],
-                    quiz_name=quiz['name'],
-                    question=choice(get_current_quizzes(quiz['_id']))
-                )
-                with suppress(KeyError): del self[uid], self[opp.uid]
-                self.live_data.game_queue[game.game_id] = game
-                return 'game-incomplete', game
+            if room == self[uid].room:
+                return 'room found'
+                opp = self.get_opponent(self[uid])
+                if opp:
+                    quiz = choice(get_current_quizzes(ObjectId(lid)))
+                    game = Game(
+                        game_id=create_game_id(),
+                        players=[self[uid], opp],
+                        quiz_name=quiz['name'],
+                        question=choice(get_current_quizzes(quiz['_id']))
+                    )
+                    with suppress(KeyError): del self[uid], self[opp.uid]
+                    self.live_data.game_queue[game.game_id] = game
+                    return 'game-incomplete', game
 
-            self.refresh(uid)
-            return 'refresh'
-        else:
-            self[uid] = User(uid, team, room)
-            return 'new user'
+                self.refresh(uid)
+            else:
+                self[uid] = User(uid, team, room)
 
     def get_opponent(self, user: User) -> Optional[User]:
         users = list(self.values())
