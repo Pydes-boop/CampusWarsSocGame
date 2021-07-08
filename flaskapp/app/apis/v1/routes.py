@@ -121,21 +121,21 @@ class QuizRefresh(Resource):
                                       request.headers['team'],
                                       request.headers['room'],
                                       request.headers['lid'])
-        if result:
-            descriptor, game, = result
-            return jsonify(
-                {
-                    'gid': game.game_id,  # game_id: a 24 byte string to identify each game
-                    'pid': game.get_player_id(request.headers['uid']),  # player_id: 0 or 1 identifies player in game
-                    'opp-name': get_player_name(game.players[not game.get_player_id(request.headers['uid'])].uid),
-                    'opp-team': game.players[not game.get_player_id(request.headers['uid'])].team,
-                    'name': game.quiz_name,
-                    'quiz': game.question,  # quiz in the already specified format
-                    'game-ready': descriptor == 'game'  # unimportant
-                }
-            )
+        # if result:
+        #     descriptor, game, = result
+        #     return jsonify(
+        #         {
+        #             'gid': game.game_id,  # game_id: a 24 byte string to identify each game
+        #             'pid': game.get_player_id(request.headers['uid']),  # player_id: 0 or 1 identifies player in game
+        #             'opp-name': get_player_name(game.players[not game.get_player_id(request.headers['uid'])].uid),
+        #             'opp-team': game.players[not game.get_player_id(request.headers['uid'])].team,
+        #             'name': game.quiz_name,
+        #             'quiz': game.question,  # quiz in the already specified format
+        #             'game-ready': descriptor == 'game'  # unimportant
+        #         }
+        #     )
 
-        return jsonify({'nothing': True})
+        return jsonify({'nothing': True}, result)
 
 
 @api.resource('/quiz-answer')
