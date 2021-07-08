@@ -46,6 +46,7 @@ public class TerritoryFragment extends Fragment  implements GpsObserver //implem
     private String lectureHall = "nothing";
     private LatLng lectureLoc = null;
     private JSONObject rallyResponse = null;
+    private boolean currentTimeOut = false;
 
     public TerritoryFragment()
     {
@@ -130,6 +131,7 @@ public class TerritoryFragment extends Fragment  implements GpsObserver //implem
 
     private void setTimeOut(boolean timeOut)
     {
+        currentTimeOut = false;
         TextView text = (TextView) getActivity().findViewById(R.id.timeoutID);
         text.setVisibility((timeOut ?  View.VISIBLE : View.INVISIBLE));
     }
@@ -151,6 +153,11 @@ public class TerritoryFragment extends Fragment  implements GpsObserver //implem
 
                     lectureHall = response.getString("room_name");
                     setHallInfo(lectureHall, occupier, "No active Lecture", new LatLng(latitude, longitude));
+                    if(currentTimeOut == true){
+                        currentTimeOut = false;
+                        setTimeOut(currentTimeOut);
+                    }
+
                 } catch(JSONException j){
                     //if JSONException we know we got a different answer -> eg.: time_out or nothing near me
                     //This isnt the prettiest way to do it, but i will always get an exception if i check for a key and it isnt there, so i cant do it another way
@@ -168,11 +175,12 @@ public class TerritoryFragment extends Fragment  implements GpsObserver //implem
                         String timeOut = response.getString("time_pretty");
                         //lectureHall = "nothing";
                         //setHallInfo("Timed Out", "", "", new LatLng(latitude, longitude));
-                        setTimeOut(true);
+                        currentTimeOut = true;
+                        setTimeOut(currentTimeOut);
                         Toast.makeText(getActivity(), "You lost and are timed out until: "+ timeOut, Toast.LENGTH_LONG).show();
                     } catch(JSONException e)
                     {
-                        setTimeOut(false);
+                        // If an Exception happens here the server messed up
                     }
 
                     //We dont log our exceptions here because they will happen when we look for a key and arent sure if it exists
