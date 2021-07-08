@@ -200,7 +200,7 @@ class Lectures(Resource):
                 ftfy.fix_text(
                     get_escaped_by_db(lec.encode(request.headers["encodingformat"]).decode('utf-8'))))
         if groupCreation.threshold < interface.get_number_of_players():
-            group_creation = threading.Thread(target=groupCreation.alternative_calculation)
+            group_creation = threading.Thread(target=groupCreation.metis_calulation)
             group_creation.start()
             groupCreation.threshold = (groupCreation.threshold * 1.6)
         return add_lectures_to_user(request.headers["uid"], lecturesList)
@@ -221,12 +221,12 @@ class Start(Resource):
             variables.finished = False
             if request.headers['variant'] == "pulp":
                 group_creation = threading.Thread(target=groupCreation.wedding_seating)
-            elif request.headers['variant'] == "metis":
-                group_creation = threading.Thread(target=groupCreation.metis_calulation)
             elif request.headers['variant'] == "greedy":
                 group_creation = threading.Thread(target=groupCreation.greedy_random)
-            else:
+            elif request.headers['variant'] == "alternative":
                 group_creation = threading.Thread(target=groupCreation.alternative_calculation)
+            else:
+                group_creation = threading.Thread(target=groupCreation.metis_calulation)
 
             group_creation.start()
             return jsonify({'message': "Started group creation"})
