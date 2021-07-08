@@ -266,7 +266,7 @@ class AlsoTest(Resource):
         return jsonify(interface.get_all_teams())
 
 
-@api.resource('/robin')
+# @api.resource('/robin')
 @api.resource('/live-debug')
 class LiveDebug(Resource):
     def get(self):
