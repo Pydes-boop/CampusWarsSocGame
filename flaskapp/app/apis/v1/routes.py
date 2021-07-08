@@ -134,6 +134,8 @@ class QuizRefresh(Resource):
         #             'game-ready': descriptor == 'game'  # unimportant
         #         }
         #     )
+
+        del result['id']
         return jsonify({'nothing': True}, result)
 
 
