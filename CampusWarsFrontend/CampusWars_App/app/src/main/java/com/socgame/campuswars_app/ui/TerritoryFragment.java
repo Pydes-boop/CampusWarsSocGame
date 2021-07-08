@@ -99,7 +99,7 @@ public class TerritoryFragment extends Fragment  implements GpsObserver //implem
             public void onClick(View view)
             {
                 if(lectureHall.contains("nothing")){
-                    Toast.makeText(getActivity(), "Please enter a lecturehall to start a rally", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getActivity(), "Please enter a lecture hall to start a raid", Toast.LENGTH_LONG).show();
                 } else {
                     HttpHeader head = new HttpHeader(ctx);
                     head.buildRallyHeader(lectureHall);
@@ -127,6 +127,7 @@ public class TerritoryFragment extends Fragment  implements GpsObserver //implem
 
         TextView lectureText = fragmentView.findViewById(R.id.textCurrentLecture);
         lectureText.setText(lecture);
+        //lectureText.setText("Debug super long long long long long lecture hall lecture name");
     }
 
     private void setTimeOut(boolean timeOut)
