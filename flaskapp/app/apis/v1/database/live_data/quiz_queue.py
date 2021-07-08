@@ -66,7 +66,7 @@ class QuizQueue(TimedQueue):
     def get_opponent(self, user: User) -> Optional[User]:
         users = list(self.values())
         shuffle(users)
-        return users
+        # return users
         for opp in users:
             if opp.room == user.room and opp.team != user.team:
                 return opp
