@@ -1,4 +1,4 @@
-__all__ = ()
+__all__ = ('now', 'timestamp')
 
 from time import time
 from datetime import datetime, timezone
@@ -10,9 +10,19 @@ from time import strftime
 START_SUMMER_TERM = 4
 END_SUMMER_TERM = 9
 
+tz = pytz.timezone('Europe/Vienna')
+
+
+def now() -> datetime:
+    return datetime.now(tz)
+
+
+def timestamp() -> int:
+    return int(now().timestamp())
+
 
 def get_current_time_and_day():
-    now = datetime.now(pytz.timezone('Europe/Vienna'))
+    now = datetime.now(tz)
     midnight = now.replace(hour=0, minute=0, second=0, microsecond=0)
     seconds = (now - midnight).seconds
     result = (seconds, now.weekday())
