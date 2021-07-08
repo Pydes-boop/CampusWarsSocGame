@@ -21,7 +21,7 @@ def create_game_id(length: int = 24) -> str:
 class GameQueue(TimedQueue):
     def __call__(self, gid: str) -> None:
         if gid in self:
-            self[gid].refresh()
+            self.refresh(gid)
 
     def is_player_in_game(self, uid: str) -> Optional[Game]:
         for game in self.values():
