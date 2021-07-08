@@ -265,8 +265,8 @@ def greedy_random():
                 graph.remove_node(random_user)
             all_users.remove(random_user)
         j = (j + 1) % max_groups
-        user_groups = []
-        for team in teams:
-            user_groups.append(Group(generate_team_name(), get_random_color(), team))
-        variables.finished = True
-        interface.add_new_teams(user_groups)
+    user_groups = []
+    for team in teams:
+        user_groups.append(Group(generate_team_name(), get_random_color(), team))
+    variables.finished = True
+    interface.add_new_teams(user_groups)
