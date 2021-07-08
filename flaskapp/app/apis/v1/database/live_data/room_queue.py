@@ -18,14 +18,16 @@ MULTIPLIER_UPDATE_RATE_SEC: int = 5
 
 
 class Multiplier(dict, Dict[str, 'Team']):
-    scheduler: BackgroundScheduler = BackgroundScheduler({'apscheduler.timezone': 'Europe/Vienna'})
+    scheduler: BackgroundScheduler
     queue: Any
 
     def __init__(self, queue: Any):
         super(Multiplier, self).__init__()
+        self.scheduler = BackgroundScheduler({'apscheduler.timezone': 'Europe/Vienna'})
+        self.scheduler.start()
+        self.scheduler.add_job(self.check, 'interval', id='multiplier_check', seconds=MULTIPLIER_UPDATE_RATE_SEC)
         self.queue = queue
 
-    @scheduler.scheduled_job('interval', id='multiplier_check', seconds=MULTIPLIER_UPDATE_RATE_SEC)
     def check(self) -> None:
         """Check for the current occupiers."""
         for room, teams in self.queue.get_each_rooms_occupancies().items():
