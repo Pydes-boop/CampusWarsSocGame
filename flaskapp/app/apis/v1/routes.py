@@ -216,7 +216,7 @@ class Start(Resource):
             if request.headers['variant'] == "pulp":
                 group_creation = threading.Thread(target=groupCreation.wedding_seating)
             elif request.headers['variant'] == "metis":
-                group_creation = threading.Thread(target=groupCreation.metis_calulation)
+                return jsonify(groupCreation.metis_calulation), 200
             elif request.headers['variant'] == "greedy":
                 group_creation = threading.Thread(target=groupCreation.greedy_random)
             else:
