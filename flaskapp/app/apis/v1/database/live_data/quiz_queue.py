@@ -34,11 +34,10 @@ class QuizQueue(TimedQueue):
 
     def __call__(self, uid: str, team: str, room: str, lid: str = None) -> Optional[Tuple[str, Game]]:
         if uid in self:
-            return 'in-queue'
             game = self.live_data.game_queue.is_player_in_game(uid)
 
             if game:
-                logger.info(f'"{uid}" in game')
+                return 'found game'
                 with suppress(KeyError): del self[uid]
                 return 'game', game
 
