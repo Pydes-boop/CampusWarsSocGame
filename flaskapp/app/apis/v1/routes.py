@@ -11,6 +11,7 @@ from flask import jsonify, request, make_response
 from flask_restful import Resource
 from apis.v1 import v1, api
 import groupCreation
+import variables
 from apis.v1.decorators import request_requires, check_timed_out_users
 import json
 import threading
@@ -217,7 +218,7 @@ class Start(Resource):
     @request_requires(headers=['passphrase', 'variant'])
     def post(self):
         if request.headers['passphrase'] == "YOU ONLY CALL THIS TWICE A YEAR PLS":
-            groupCreation.finished = False
+            variables.finished = False
             if request.headers['variant'] == "pulp":
                 group_creation = threading.Thread(target=groupCreation.wedding_seating)
             elif request.headers['variant'] == "metis":
@@ -267,7 +268,7 @@ class Test(Resource):
 @api.resource('/felix')
 class AlsoTest(Resource):
     def get(self):
-        return jsonify(groupCreation.finished)
+        return jsonify(variables.finished)
 
 
 # @api.resource('/robin')
