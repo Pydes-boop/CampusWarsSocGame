@@ -42,7 +42,6 @@ class QuizQueue(TimedQueue):
 
             # if room == self[uid].room:
             opp = self.get_opponent(self[uid])
-            return opp
             if opp:
                 return 'found opp'
                 logger.info(f'"{uid}" found opponent {opp.uid}')
