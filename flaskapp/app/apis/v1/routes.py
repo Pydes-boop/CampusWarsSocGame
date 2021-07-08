@@ -122,7 +122,7 @@ class QuizRefresh(Resource):
                                       request.headers['room'],
                                       request.headers['lid'])
         if result:
-            descriptor, game, = result
+            # descriptor, game, = result
             # return jsonify(
             #     {
             #         'gid': game.game_id,  # game_id: a 24 byte string to identify each game
