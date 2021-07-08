@@ -2,3 +2,4 @@
 # most stuff is in app/.gitignore
 .idea
 *.assets
+sandbox/*
