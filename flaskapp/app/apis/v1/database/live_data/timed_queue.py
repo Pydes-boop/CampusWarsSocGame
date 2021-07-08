@@ -12,7 +12,7 @@ from apscheduler.job import Job
 from operator import attrgetter
 from dataclasses import dataclass
 from contextlib import suppress
-from apis.v1.database.time_functions import timestamp
+from apis.v1.database.time_functions import timestamp, from_timestamp
 from typing import Any, Dict
 
 
@@ -64,7 +64,7 @@ class TimedQueue(dict, Dict[str, 'Item']):
         """Attempt to refresh the lifetime of an object."""
         item = self.get(item)
         if item.eta + self.life_time > timestamp() + self.max_refresh: return False
-        item.job.reschedule('interval', start_date=item.eta_debug, seconds=self.life_time)
+        item.job.reschedule('interval', start_date=from_timestamp(item.eta), seconds=self.life_time)
         return True
 
     def eta(self, item: str) -> int:
