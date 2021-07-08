@@ -43,8 +43,6 @@ class QuizQueue(TimedQueue):
             # if room == self[uid].room:
             opp = self.get_opponent(self[uid])
             if opp:
-                return 'found opp'
-                logger.info(f'"{uid}" found opponent {opp.uid}')
                 quiz = choice(get_current_quizzes(ObjectId(lid)))
                 game = Game(
                     game_id=create_game_id(),
@@ -65,7 +63,6 @@ class QuizQueue(TimedQueue):
     def get_opponent(self, user: User) -> Optional[User]:
         users = list(self.values())
         shuffle(users)
-        # return users
         for opp in users:
             if opp.room == user.room and opp.team != user.team:
                 return opp
