@@ -54,11 +54,11 @@ class QuizQueue(TimedQueue):
                     self.live_data.game_queue[game.game_id] = game
                     return 'game-incomplete', game
 
-                self.refresh(uid)
-                return 'fresh', None
-            else:
-                self[uid] = User(uid, team, room)
-                return 'add', None
+            self.refresh(uid)
+            return 'fresh', None
+        else:
+            self[uid] = User(uid, team, room)
+            return 'add', None
 
     def get_opponent(self, user: User) -> Optional[User]:
         users = list(self.values())
