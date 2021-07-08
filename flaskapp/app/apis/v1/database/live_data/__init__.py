@@ -34,7 +34,7 @@ class LiveData:
     def json(self):
         return [
             # self.room_queue,
-            list(map(lambda x, x.self.room_queue.values()))
+            list(self.room_queue.debug_values()),
             self.quiz_queue,
             dict([(key, item.json) for key, item in self.game_queue.items()]),
             self.timedout_users,
