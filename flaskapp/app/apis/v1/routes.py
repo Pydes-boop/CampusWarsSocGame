@@ -20,8 +20,10 @@ from apis.v1.database.interface import get_all_rooms, find_closest_room, add_lec
     add_question_to_quiz, add_user, get_full_name_of_current_lecture_in_room, get_player_name, get_time_table_of_room, \
     get_escaped_by_db, get_current_team_with_member_names, get_colour_of_team
 from contextlib import suppress
-from apis.v1.database.data_handler import live_data, team_state
+from apis.v1.database.live_data import LiveData
 import ftfy
+
+live_data = LiveData()
 
 ROOMFINDER_DISTANCE: int = 50
 
@@ -41,27 +43,28 @@ class RoomFinder(Resource):
         if room is None:
             return jsonify({"message": 'nothing near you'})
         room_name = room['roomName']
-        team_state.increase_team_presence_in_room(team=request.headers['team'], room=room_name)
         live_data.room_queue(uid=request.headers['uid'], team=request.headers['team'], room=room_name)
-        occupier = team_state.get_room_occupier(room_name)
-        team_occupancy = team_state.get_all_team_occupancy_in_room(room_name)
-        multiplier = team_state.mw[room_name].multiplier
-        with suppress(KeyError): team_occupancy[occupier] *= multiplier
+        occupier = live_data.room_queue.get_each_rooms_occupiers()[room_name]
+        occupier_team = occupier.team
+        occupier_multiplier = occupier.multiplier
+        team_occupancy = live_data.room_queue.get_each_rooms_occupancies()[room_name]
+        with suppress(KeyError): team_occupancy[occupier_team] *= occupier_multiplier
         return_room = {"message": "closest room to you:",
                        'occupancy': team_occupancy,
-                       'occupier': occupier,
+                       'occupier': occupier_team,
                        'room_name': room_name, 'lid': str(room["_id"]),
-                       'multiplier': multiplier,
+                       'multiplier': occupier_multiplier,
                        "currentLecture": get_full_name_of_current_lecture_in_room(str(room["_id"]))}
         return jsonify(return_room)
 
     def get(self):
         result = []
         for room in get_all_rooms():
-            occupier = team_state.get_room_occupier(room['roomName']) or 'Nobody'
-            if occupier != 'Nobody':
+            occupier = live_data.room_queue.get_each_rooms_occupiers()[room['roomName']].team
+            if occupier:
                 color = get_colour_of_team(occupier)
             else:
+                occupier = 'Nobody'
                 color = '#212121'
             timetable = get_time_table_of_room(room["_id"])
             item = {
@@ -88,7 +91,6 @@ class RoomJoin(Resource):
     @request_requires(headers=['uid', 'team', 'room'])
     def post(self):
         """Users can announce that they are in a room."""
-        team_state.increase_team_presence_in_room(team=request.headers['team'], room=request.headers['room'])
         live_data.room_queue(uid=request.headers['uid'], team=request.headers['team'], room=request.headers['room'])
         return jsonify({'joined': True})
 
@@ -121,18 +123,20 @@ class QuizRefresh(Resource):
                                       request.headers['lid'])
         if result:
             descriptor, game, = result
-            return jsonify(
-                {
-                    'gid': game.game_id,  # game_id: a 24 byte string to identify each game
-                    'pid': game.get_player_id(request.headers['uid']),  # player_id: 0 or 1 identifies player in game
-                    'opp-name': get_player_name(game.players[not game.get_player_id(request.headers['uid'])].uid),
-                    'opp-team': game.players[not game.get_player_id(request.headers['uid'])].team,
-                    'name': game.quiz_name,
-                    'quiz': game.question,  # quiz in the already specified format
-                    'game-ready': descriptor == 'game'  # unimportant
-                }
-            )
-        return jsonify({'nothing': True})
+            if game:
+                return jsonify(
+                    {
+                        'gid': game.game_id,  # game_id: a 24 byte string to identify each game
+                        'pid': game.get_player_id(request.headers['uid']),  # player_id: 0 or 1 identifies player in game
+                        'opp-name': get_player_name(game.players[not game.get_player_id(request.headers['uid'])].uid),
+                        'opp-team': game.players[not game.get_player_id(request.headers['uid'])].team,
+                        'name': game.quiz_name,
+                        'quiz': game.question,  # quiz in the already specified format
+                        'game-ready': descriptor == 'game'  # unimportant
+                    }
+                )
+
+        return jsonify({'nothing': True}, result)
 
 
 @api.resource('/quiz-answer')
@@ -141,7 +145,7 @@ class QuizAnswer(Resource):
     @request_requires(headers=['uid', 'gid', 'pid', 'result', 'outcome'])
     def post(self):
         """Answer the quiz."""
-        live_data.game_queue[request.headers['gid']].refresh()
+        live_data.game_queue.refresh(request.headers['gid'])
         live_data.game_queue.submit_answer(request.headers['gid'], int(request.headers['pid']),
                                            int(request.headers['outcome']))
         return jsonify({'quiz-answer': True})
@@ -153,7 +157,7 @@ class QuizState(Resource):
     @request_requires(headers=['uid', 'gid', 'pid'])
     def get(self):
         """Ask the server if the other player has answered yet, if yes show result."""
-        live_data.game_queue[request.headers['gid']].refresh()
+        live_data.game_queue.refresh(request.headers['gid'])
         if live_data.game_queue[request.headers['gid']].all_answered:
             result = live_data.game_queue[request.headers['gid']].get_result_for_player(int(request.headers['pid']))
             live_data.game_queue[request.headers['gid']].set_finished(int(request.headers['pid']))
@@ -265,7 +269,7 @@ class AlsoTest(Resource):
         return jsonify(groupCreation.finished)
 
 
-@api.resource('/robin')
+# @api.resource('/robin')
 @api.resource('/live-debug')
 class LiveDebug(Resource):
     def get(self):
