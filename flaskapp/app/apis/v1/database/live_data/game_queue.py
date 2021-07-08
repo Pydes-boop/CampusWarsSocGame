@@ -19,6 +19,9 @@ def create_game_id(length: int = 24) -> str:
 
 
 class GameQueue(TimedQueue):
+    life_time = 300
+    max_refresh = 350
+
     def __call__(self, gid: str) -> None:
         if gid in self:
             self.refresh(gid)
