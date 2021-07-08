@@ -17,7 +17,7 @@ MULTIPLIER_INCREASE: float = 0.005
 MULTIPLIER_UPDATE_RATE_SEC: int = 5
 
 
-class Multiplier(dict, Dict[str, 'Team']):
+class Multiplier(dict, Dict[str, Team]):
     scheduler: BackgroundScheduler
     queue: Any
 
@@ -40,6 +40,11 @@ class Multiplier(dict, Dict[str, 'Team']):
                 team = (teams + [''])[0]  # append empty string in case there is no occupier
                 self[room].team = team
                 self[room].multiplier = 1.0
+
+    def __getitem__(self, item: str):
+        try: return super(Multiplier, self).__getitem__(item)
+        except KeyError:
+            return Team('Nobody', 1.0)
 
 
 class RoomQueue(TimedQueue):
