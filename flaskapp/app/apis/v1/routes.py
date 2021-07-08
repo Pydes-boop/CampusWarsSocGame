@@ -48,7 +48,7 @@ class RoomFinder(Resource):
         occupier_team = occupier.team
         occupier_multiplier = occupier.multiplier
         team_occupancy = live_data.room_queue.get_each_rooms_occupancies()[room_name]
-        with suppress(KeyError): team_occupancy[occupier] *= occupier_multiplier
+        with suppress(KeyError): team_occupancy[occupier_team] *= occupier_multiplier
         return_room = {"message": "closest room to you:",
                        'occupancy': team_occupancy,
                        'occupier': occupier_team,
