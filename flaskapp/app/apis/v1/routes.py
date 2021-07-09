@@ -185,7 +185,7 @@ class Rally(Resource):
         return {'rally': False, 'reason': 'already rallying'}
 
     @check_timed_out_users(live_data.timedout_users)
-    @request_requires(headers=['uid', 'team'])
+    @request_requires(headers=['team'])
     def get(self):
         """Manage Rally request."""
         return {'rally': live_data.rally_timeout.get(request.headers['team'])}
@@ -193,6 +193,7 @@ class Rally(Resource):
 
 @api.resource('/lectures')
 class Lectures(Resource):
+    @request_requires(headers=['lectures', 'encodingformat', 'uid'])
     def post(self):
         lectures = json.loads(request.headers["lectures"])
         lecturesList = []
@@ -231,7 +232,7 @@ class Start(Resource):
 
             group_creation.start()
             return jsonify({'message': "Started group creation"})
-        return jsonify({'message':'You are not allowed to restart'})
+        return jsonify({'message': 'You are not allowed to restart'})
 
 
 @api.resource('/question')
@@ -261,6 +262,7 @@ class TimeTable(Resource):
 
 @api.resource('/marina')
 class Test(Resource):
+    @request_requires(headers=['roomId'])
     def post(self):
         return get_current_quizzes(request.headers["roomId"])
 
