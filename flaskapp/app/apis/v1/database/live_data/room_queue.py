@@ -36,6 +36,9 @@ class Multiplier(dict, Dict[str, Team]):
             teams = [key for key, value in teams.items() if value == max_occupancy]
             if self[room].team in teams:
                 self[room].multiplier += MULTIPLIER_INCREASE
+            elif not teams:
+                self[room].team = 'Nobody'
+                self[room].multiplier = 1.0
             else:
                 team = (teams + [''])[0]  # append empty string in case there is no occupier
                 self[room].team = team
