@@ -13,7 +13,6 @@ from apis.v1.database.live_data.quiz_queue import QuizQueue
 from apis.v1.database.live_data.game_queue import GameQueue
 from apis.v1.database.live_data.timedout_users import TimedOutUsers
 from apis.v1.database.live_data.rally_timeout import RallyTimeout
-from collections import OrderedDict
 from typing import Any, Dict
 
 
@@ -33,12 +32,12 @@ class LiveData:
 
     @property
     def json(self) -> Dict[str, Any]:
-        return OrderedDict(
-            room_queue=OrderedDict(self.room_queue.debug_items()),
-            quiz_queue=OrderedDict(self.quiz_queue.debug_items()),
-            game_queue=OrderedDict(self.game_queue.debug_items()),
-            timedout_users=OrderedDict(self.timedout_users.debug_items()),
-            rally_timeout=OrderedDict(self.timedout_users.debug_items())
+        return dict(
+            room_queue=dict(self.room_queue.debug_items()),
+            quiz_queue=dict(self.quiz_queue.debug_items()),
+            game_queue=dict(self.game_queue.debug_items()),
+            timedout_users=dict(self.timedout_users.debug_items()),
+            rally_timeout=dict(self.rally_timeout.debug_items())
         )
 
 
