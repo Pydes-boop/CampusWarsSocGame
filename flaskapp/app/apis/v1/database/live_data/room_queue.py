@@ -28,6 +28,7 @@ class Multiplier(dict, Dict[str, Team]):
         self.scheduler.add_job(self.check, 'interval', id='multiplier_check', seconds=MULTIPLIER_UPDATE_RATE_SEC)
         self.queue = queue
         self.max_occupancy = defaultdict(int)
+        self.occupancy = dict()
 
     def check(self) -> None:
         """Check for the current occupiers."""
