@@ -8,9 +8,10 @@ __version__ = '0.0.1'
 __all__ = ('RoomQueue',)
 
 from apscheduler.schedulers.background import BackgroundScheduler
-from collections import defaultdict
 from apis.v1.database.live_data.items import User, Team
 from apis.v1.database.live_data.timed_queue import TimedQueue
+from operator import itemgetter
+from collections import defaultdict
 from typing import Any, List, Dict
 
 MULTIPLIER_INCREASE: float = 0.0005
@@ -32,7 +33,12 @@ class Multiplier(dict, Dict[str, Team]):
 
     def check(self) -> None:
         """Check for the current occupiers."""
-        for room, teams in self.queue.get_each_rooms_occupancies().items():
+        occupancy = self.queue.get_each_rooms_occupancies().items()
+        rooms = map(itemgetter(0), occupancy)
+        for room in self:
+            if room not in rooms:
+                del self[room]
+        for room, teams in occupancy:
             if room not in self: self[room] = Team('', 0)
             self.max_occupancy[room] = max(teams.values())
             teams = [key for key, value in teams.items() if value == self.max_occupancy[room]]
