@@ -50,7 +50,7 @@ class Multiplier(dict, Dict[str, Team]):
 class RoomQueue(TimedQueue):
     multiplier: Multiplier
     live_data: 'LiveData'
-    life_time = 10
+    life_time = 300
     max_refresh = 25
 
     def __init__(self, live_data: 'LiveData'):

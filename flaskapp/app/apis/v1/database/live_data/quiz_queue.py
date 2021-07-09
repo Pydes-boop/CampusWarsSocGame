@@ -24,7 +24,7 @@ logger = getLogger(__name__)
 
 
 class QuizQueue(TimedQueue):
-    life_time = 10
+    life_time = 300
     max_refresh = 25
     live_data: 'LiveData'
 
