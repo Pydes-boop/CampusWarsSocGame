@@ -179,7 +179,7 @@ class QuizState(Resource):
             if live_data.game_queue[request.headers['gid']].is_finished:
                 with suppress(ValueError): del live_data.game_queue[request.headers['gid']]
             if result == 'LOST': live_data.timedout_users(request.headers['uid'])
-            return jsonify(result)
+            return jsonify({'quiz-state': True, 'result': result})
 
         return jsonify({'quiz-state': False, 'reason': 'not all players answered yet'})
 
