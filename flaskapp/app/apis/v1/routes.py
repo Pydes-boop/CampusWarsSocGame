@@ -137,7 +137,7 @@ class QuizAnswer(Resource):
     def post(self):
         """Answer the quiz."""
         if request.headers['gid'] not in live_data.game_queue:
-            return jsonify({'quiz-request': False, 'reason': 'inalid gid'})
+            return jsonify({'quiz-request': False, 'reason': 'invalid gid'})
         if not live_data.game_queue[request.headers['gid']].player_in_game:
             return jsonify({'quiz-request': False, 'reason': 'player not in this game'})
         # live_data.game_queue.refresh(request.headers['gid'])
@@ -153,18 +153,20 @@ class QuizState(Resource):
     def get(self):
         """Ask the server if the other player has answered yet, if yes show result."""
         if request.headers['gid'] not in live_data.game_queue:
-            return jsonify({'quiz-state': False, 'reason': 'inalid gid'})
+            return jsonify({'quiz-state': False, 'reason': 'invalid gid'})
         if not live_data.game_queue[request.headers['gid']].player_in_game:
             return jsonify({'quiz-state': False, 'reason': 'player not in this game'})
         if live_data.game_queue[request.headers['gid']].finished[int(request.headers['pid'])]:
             return jsonify({'quiz-state': False, 'reason': 'already answered'})
-        live_data.game_queue.refresh(request.headers['gid'])
+        # live_data.game_queue.refresh(request.headers['gid'])
         if live_data.game_queue[request.headers['gid']].all_answered:
             result = live_data.game_queue[request.headers['gid']].get_result_for_player(int(request.headers['pid']))
             live_data.game_queue[request.headers['gid']].set_finished(int(request.headers['pid']))
             if live_data.game_queue[request.headers['gid']].is_finished:
-                with suppress(ValueError): del live_data.game_queue[request.headers['gid']]
-            if result == 'LOST': live_data.timedout_users(request.headers['uid'])
+                with suppress(KeyError): del live_data.game_queue[request.headers['gid']]
+            if result == 'LOST':
+                live_data.timedout_users(request.headers['uid'])
+                with suppress(KeyError): del live_data.room_queue[request.headers['uid']]
             return jsonify({'quiz-state': True, 'result': result})
 
         return jsonify({'quiz-state': False, 'reason': 'not all players answered yet'})
