@@ -170,7 +170,7 @@ class QuizState(Resource):
             return jsonify({'quiz-state': False, 'reason': 'inalid gid'})
         if not live_data.game_queue[request.headers['gid']].player_in_game:
             return jsonify({'quiz-state': False, 'reason': 'player not in this game'})
-        if live_data.game_queue[request['gid']].results[request.headers['pid']] != -2:
+        if live_data.game_queue[request.headers['gid']].results[request.headers['pid']] != -2:
             return jsonify({'quiz-state': False, 'reason': 'already answered'})
         live_data.game_queue.refresh(request.headers['gid'])
         if live_data.game_queue[request.headers['gid']].all_answered:
