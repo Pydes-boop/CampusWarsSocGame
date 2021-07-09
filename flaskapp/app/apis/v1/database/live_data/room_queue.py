@@ -27,13 +27,14 @@ class Multiplier(dict, Dict[str, Team]):
         self.scheduler.start()
         self.scheduler.add_job(self.check, 'interval', id='multiplier_check', seconds=MULTIPLIER_UPDATE_RATE_SEC)
         self.queue = queue
+        self.max_occupancy = defaultdict(int)
 
     def check(self) -> None:
         """Check for the current occupiers."""
         for room, teams in self.queue.get_each_rooms_occupancies().items():
             if room not in self: self[room] = Team('', 0)
-            max_occupancy = max(teams.values())
-            teams = [key for key, value in teams.items() if value == max_occupancy]
+            self.max_occupancy[room] = max(teams.values())
+            teams = [key for key, value in teams.items() if value == self.max_occupancy[room]]
             if self[room].team in teams:
                 self[room].multiplier += MULTIPLIER_INCREASE
             elif not teams:
