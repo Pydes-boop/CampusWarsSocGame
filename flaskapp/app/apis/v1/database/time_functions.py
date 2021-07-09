@@ -42,7 +42,7 @@ def get_time_as_seconds(hour, minutes):
 
 
 def get_day_as_string(day):
-    return calendar.day_name[day]
+    return calendar.day_name[int(day)]
 
 
 def get_seconds_as_string(seconds):
