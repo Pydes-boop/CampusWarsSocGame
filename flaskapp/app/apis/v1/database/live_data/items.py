@@ -5,16 +5,24 @@ __author__ = 'Robin "r0w" Weiland'
 __date__ = '2021-07-07'
 __version__ = '0.0.1'
 
-__all__ = ('User', 'TimedOutUser', 'Team', 'Game', 'RallyItem',)
+__all__ = ('UID', 'User', 'Team', 'Game', 'RallyItem',)
 
 from dataclasses import dataclass
 from operator import attrgetter
-from typing import Any, Optional, List, Dict
+from typing import Any, Union, Optional, List, Dict
+
+
+@dataclass
+class UID:
+    uid: str
+
+    @property
+    def json(self) -> Dict[str, str]:
+        return dict(uid=self.uid)
 
 
 @dataclass(init=False)
-class User:
-    uid: str
+class User(UID):
     team: str
     room: str
 
@@ -23,17 +31,19 @@ class User:
         self.team = team
         self.room = room
 
-
-@dataclass
-class TimedOutUser:
-    uid: str
-    time: int
+    @property
+    def json(self) -> Dict[str, str]:
+        return dict(uid=self.uid, team=self.team, room=self.room)
 
 
 @dataclass
 class Team:
     team: str
     multiplier: float
+
+    @property
+    def json(self) -> Dict[str, Union[str, float]]:
+        return dict(team=self.team, multiplier=self.multiplier)
 
 
 @dataclass
@@ -83,8 +93,15 @@ class Game:
             return 'LOST'
 
     @property
-    def json(self) -> Dict[str, Any]:
-        return dict((key, value) for key, value in self.__dict__.items() if not callable(value))
+    def json(self) -> Dict[str, Union[str, List[int], List[User]]]:
+        return dict(
+            gid=self.game_id,
+            players={0: self.players[0].json, 1: self.players[1].json},
+            quiz_name=self.quiz_name,
+            quiz=self.question,
+            results=self.results,
+            finished=self.finished,
+        )
 
 
 @dataclass

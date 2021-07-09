@@ -8,7 +8,7 @@ __version__ = '0.0.1'
 __all__ = ('TimedOutUsers',)
 
 from apis.v1.database.live_data.timed_queue import TimedQueue
-from apis.v1.database.live_data.items import TimedOutUser
+from apis.v1.database.live_data.items import UID
 from apis.v1.database.time_functions import timestamp
 
 
@@ -18,8 +18,7 @@ class TimedOutUsers(TimedQueue):
 
     def __call__(self, uid: str) -> None:
         if uid not in self:
-            # added time for easier access
-            self[uid] = TimedOutUser(uid, timestamp())
+            self[uid] = UID(uid)
 
 
 if __name__ == '__main__': pass
