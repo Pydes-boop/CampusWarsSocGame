@@ -43,7 +43,7 @@ class LiveData:
                 multiplier=self.room_queue.multiplier,
                 room_queue_counter=self.room_queue.counter,
                 room_queue_values=list(self.room_queue.values()),
-                room_queue_occupancy=room_queue.get_each_rooms_occupancies()
+                room_queue_occupancy=self.room_queue.get_each_rooms_occupancies()
             )
         )
 
