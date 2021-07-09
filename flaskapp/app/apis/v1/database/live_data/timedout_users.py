@@ -9,7 +9,6 @@ __all__ = ('TimedOutUsers',)
 
 from apis.v1.database.live_data.timed_queue import TimedQueue
 from apis.v1.database.live_data.items import UID
-from apis.v1.database.time_functions import timestamp
 
 
 class TimedOutUsers(TimedQueue):
