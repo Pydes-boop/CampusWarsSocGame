@@ -117,6 +117,8 @@ class QuizRefresh(Resource):
         """Refresh quiz state and maybe or join a game."""
         # I know it is the same as above, but we might
         # have to something different here later
+        if request.headers['uid'] not in live_data.room_queue:
+            return jsonify({'quiz-request': False, 'reason': 'not in a room'})
         result = live_data.quiz_queue(request.headers['uid'],
                                       request.headers['team'],
                                       request.headers['room'],
@@ -145,7 +147,11 @@ class QuizAnswer(Resource):
     @request_requires(headers=['uid', 'gid', 'pid', 'result', 'outcome'])
     def post(self):
         """Answer the quiz."""
-        live_data.game_queue.refresh(request.headers['gid'])
+        if request.headers['gid'] not in live_data.game_queue:
+            return jsonify({'quiz-request': False, 'reason': 'inalid gid'})
+        if not live_data.game_queue[request.headers['gid']].is_player_in_game:
+            return jsonify({'quiz-request': False, 'reason': 'player not in this game'})
+        # live_data.game_queue.refresh(request.headers['gid'])
         live_data.game_queue.submit_answer(request.headers['gid'], int(request.headers['pid']),
                                            int(request.headers['outcome']))
         return jsonify({'quiz-answer': True})
@@ -157,6 +163,12 @@ class QuizState(Resource):
     @request_requires(headers=['uid', 'gid', 'pid'])
     def get(self):
         """Ask the server if the other player has answered yet, if yes show result."""
+        if request.headers['gid'] not in live_data.game_queue:
+            return jsonify({'quiz-state': False, 'reason': 'inalid gid'})
+        if not live_data.game_queue[request.headers['gid']].is_player_in_game:
+            return jsonify({'quiz-state': False, 'reason': 'player not in this game'})
+        if live_data.game_queue[request['gid']].results[request.headers['pid']] != -2:
+            return jsonify({'quiz-state': False, 'reason': 'already answered'})
         live_data.game_queue.refresh(request.headers['gid'])
         if live_data.game_queue[request.headers['gid']].all_answered:
             result = live_data.game_queue[request.headers['gid']].get_result_for_player(int(request.headers['pid']))
@@ -166,7 +178,7 @@ class QuizState(Resource):
             if result == 'LOST': live_data.timedout_users(request.headers['uid'])
             return jsonify(result)
 
-        return jsonify({'not yet answered': True})
+        return jsonify({'quiz-state': False, 'reason': 'not all players answered yet'})
 
 
 @api.resource('/rally')
@@ -175,9 +187,9 @@ class Rally(Resource):
     @request_requires(headers=['uid', 'team', 'room'])
     def post(self):
         """Manage Rally request."""
-        if live_data.rally_timeout.add(request.headers['team'],
-                                       request.headers['room'],
-                                       get_player_name(request.headers['uid'])):
+        if live_data.rally_timeout(request.headers['team'],
+                                   request.headers['room'],
+                                   get_player_name(request.headers['uid'])):
             return {'rally': True}
         return {'rally': False, 'reason': 'already rallying'}
 
@@ -186,7 +198,6 @@ class Rally(Resource):
     def get(self):
         """Manage Rally request."""
         return {'rally': live_data.rally_timeout.get(request.headers['team'])}
-
 
 
 @api.resource('/lectures')
