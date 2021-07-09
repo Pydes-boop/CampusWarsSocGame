@@ -263,7 +263,7 @@ class TimeTable(Resource):
 @api.resource('/marina')
 class Test(Resource):
     def post(self):
-        return get_current_quizzes(request.headers["room_id"])
+        return get_current_quizzes(request.headers["roomId"])
 
 
 @api.resource('/felix')
