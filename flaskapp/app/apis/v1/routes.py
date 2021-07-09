@@ -19,7 +19,7 @@ from operator import attrgetter
 from apis.v1.database import interface
 from apis.v1.database.interface import get_all_rooms, find_closest_room, add_lectures_to_user, \
     add_question_to_quiz, add_user, get_full_name_of_current_lecture_in_room, get_player_name, get_time_table_of_room, \
-    get_escaped_by_db, get_current_team_with_member_names, get_colour_of_team
+    get_escaped_by_db, get_current_team_with_member_names, get_colour_of_team, get_current_quizzes
 from contextlib import suppress
 from apis.v1.database.live_data import LiveData
 import ftfy
@@ -262,8 +262,8 @@ class TimeTable(Resource):
 
 @api.resource('/marina')
 class Test(Resource):
-    def get(self):
-        return jsonify(groupCreation.alternative_calculation())
+    def post(self):
+        return get_current_quizzes(request.headers["room_id"])
 
 
 @api.resource('/felix')
