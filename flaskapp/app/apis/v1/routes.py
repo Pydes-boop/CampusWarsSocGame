@@ -127,7 +127,7 @@ class QuizRefresh(Resource):
                     }
                 )
 
-        return jsonify({'nothing': True}, result)
+        return jsonify({'nothing': True})
 
 
 @api.resource('/quiz-answer')
