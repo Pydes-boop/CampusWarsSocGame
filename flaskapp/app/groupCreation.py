@@ -1,12 +1,15 @@
 import networkx as nx
 import pulp
+
 from apis.v1.utils.random_stuff import get_random_color, generate_team_name, used_names
 from dataclasses import dataclass
 from apis.v1.database import interface
+import variables
 from typing import Any
 from random import choice
 import metis
 threshold = 100
+finished = True
 
 @dataclass
 class Group:
@@ -52,6 +55,7 @@ def wedding_seating():
         if x[group].value() == 1.0:
             user_groups.append(Group(generate_team_name(), get_random_color(), group))
     # return user_groups
+    variables.finished = True
     return interface.add_new_teams(user_groups)
 
 
@@ -202,8 +206,8 @@ def metis_calulation():
     social_network = get_graph()
     social_network.graph['edge_weight_attr'] = 'weight'
     # for metis to use the weights, they have to be int
-    for edge in social_network.edges():
-        edge['weight'] = int(edge['weight'] * 10000)
+    for u, v, d in social_network.edges(data=True):
+        d['weight'] = int(d['weight'] * 10000)
     max_groups = get_max_groups(social_network, 5)
     (edgecuts, parts) = metis.part_graph(social_network, max_groups)
     teams = []
@@ -216,6 +220,7 @@ def metis_calulation():
     user_groups = []
     for team in teams:
         user_groups.append(Group(generate_team_name(), get_random_color(), team))
+    variables.finished = True
     return interface.add_new_teams(user_groups)
 
 
@@ -260,7 +265,8 @@ def greedy_random():
                 graph.remove_node(random_user)
             all_users.remove(random_user)
         j = (j + 1) % max_groups
-        user_groups = []
-        for team in teams:
-            user_groups.append(Group(generate_team_name(), get_random_color(), team))
-        interface.add_new_teams(user_groups)
+    user_groups = []
+    for team in teams:
+        user_groups.append(Group(generate_team_name(), get_random_color(), team))
+    variables.finished = True
+    interface.add_new_teams(user_groups)

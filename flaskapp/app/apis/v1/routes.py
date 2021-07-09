@@ -11,6 +11,7 @@ from flask import jsonify, request, make_response
 from flask_restful import Resource
 from apis.v1 import v1, api
 import groupCreation
+import variables
 from apis.v1.decorators import request_requires, check_timed_out_users
 import json
 import threading
@@ -18,7 +19,7 @@ from operator import attrgetter
 from apis.v1.database import interface
 from apis.v1.database.interface import get_all_rooms, find_closest_room, add_lectures_to_user, \
     add_question_to_quiz, add_user, get_full_name_of_current_lecture_in_room, get_player_name, get_time_table_of_room, \
-    get_escaped_by_db, get_current_team_with_member_names, get_colour_of_team
+    get_escaped_by_db, get_current_team_with_member_names, get_colour_of_team, get_current_quizzes
 from contextlib import suppress
 from apis.v1.database.live_data import LiveData
 import ftfy
@@ -55,6 +56,8 @@ class RoomFinder(Resource):
                        'room_name': room_name, 'lid': str(room["_id"]),
                        'multiplier': occupier_multiplier,
                        "currentLecture": get_full_name_of_current_lecture_in_room(str(room["_id"]))}
+        if return_room["currentLecture"] is None:
+            return_room["currentLecture"] = "currently no lecture"
         return jsonify(return_room)
 
     def get(self):
@@ -210,7 +213,7 @@ class Lectures(Resource):
                 ftfy.fix_text(
                     get_escaped_by_db(lec.encode(request.headers["encodingformat"]).decode('utf-8'))))
         if groupCreation.threshold < interface.get_number_of_players():
-            group_creation = threading.Thread(target=groupCreation.alternative_calculation)
+            group_creation = threading.Thread(target=groupCreation.metis_calulation)
             group_creation.start()
             groupCreation.threshold = (groupCreation.threshold * 1.6)
         return add_lectures_to_user(request.headers["uid"], lecturesList)
@@ -228,14 +231,15 @@ class Start(Resource):
     @request_requires(headers=['passphrase', 'variant'])
     def post(self):
         if request.headers['passphrase'] == "YOU ONLY CALL THIS TWICE A YEAR PLS":
+            variables.finished = False
             if request.headers['variant'] == "pulp":
                 group_creation = threading.Thread(target=groupCreation.wedding_seating)
-            elif request.headers['variant'] == "metis":
-                return jsonify(groupCreation.metis_calulation), 200
             elif request.headers['variant'] == "greedy":
                 group_creation = threading.Thread(target=groupCreation.greedy_random)
-            else:
+            elif request.headers['variant'] == "alternative":
                 group_creation = threading.Thread(target=groupCreation.alternative_calculation)
+            else:
+                group_creation = threading.Thread(target=groupCreation.metis_calulation)
 
             group_creation.start()
             return jsonify({'message': "Started group creation"})
@@ -269,14 +273,14 @@ class TimeTable(Resource):
 
 @api.resource('/marina')
 class Test(Resource):
-    def get(self):
-        return jsonify(groupCreation.alternative_calculation())
+    def post(self):
+        return get_current_quizzes(request.headers["roomId"])
 
 
 @api.resource('/felix')
 class AlsoTest(Resource):
     def get(self):
-        return jsonify(interface.get_all_teams())
+        return jsonify(variables.finished)
 
 
 # @api.resource('/robin')
