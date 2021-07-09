@@ -67,23 +67,25 @@ class Game:
     def all_answered(self) -> bool:
         return sum(self.results) >= 0
 
-    def answer(self, pid: int, answer: int):
+    def answer(self, pid: int, answer: int) -> None:
         self.results[pid] = answer
 
     def get_player_id(self, uid: str) -> int:
         return list(map(attrgetter('uid'), self.players)).index(uid)
 
     def get_result_for_player(self, pid: int) -> str:
+        # we might treat a 'both won' scenario differently that a 'both lost' one, but for now they are the same
+        if self.results[pid] == self.results[not pid]:
+            return 'TIE'
         if self.results[pid] and not self.results[not pid]:
             return 'WON'
-        if self.results[pid] and self.results[not pid]:
-            return 'TIE'
         else:
             return 'LOST'
 
     @property
-    def json(self):
+    def json(self) -> Dict[str, Any]:
         return dict((key, value) for key, value in self.__dict__.items() if not callable(value))
+
 
 @dataclass
 class RallyItem:
