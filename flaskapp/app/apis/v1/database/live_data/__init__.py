@@ -37,7 +37,8 @@ class LiveData:
             quiz_queue=dict(self.quiz_queue.debug_items()),
             game_queue=dict(self.game_queue.debug_items()),
             timedout_users=dict(self.timedout_users.debug_items()),
-            rally_timeout=dict(self.rally_timeout.debug_items())
+            rally_timeout=dict(self.rally_timeout.debug_items()),
+            misc=dict(multiplier_max_occupancy=self.room_queue.multiplier.max_occupancy)
         )
 
 
