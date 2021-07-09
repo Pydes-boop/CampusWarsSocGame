@@ -152,7 +152,7 @@ class QuizAnswer(Resource):
         """Answer the quiz."""
         if request.headers['gid'] not in live_data.game_queue:
             return jsonify({'quiz-request': False, 'reason': 'inalid gid'})
-        if not live_data.game_queue[request.headers['gid']].is_player_in_game:
+        if not live_data.game_queue[request.headers['gid']].player_in_game:
             return jsonify({'quiz-request': False, 'reason': 'player not in this game'})
         # live_data.game_queue.refresh(request.headers['gid'])
         live_data.game_queue.submit_answer(request.headers['gid'], int(request.headers['pid']),
@@ -168,7 +168,7 @@ class QuizState(Resource):
         """Ask the server if the other player has answered yet, if yes show result."""
         if request.headers['gid'] not in live_data.game_queue:
             return jsonify({'quiz-state': False, 'reason': 'inalid gid'})
-        if not live_data.game_queue[request.headers['gid']].is_player_in_game:
+        if not live_data.game_queue[request.headers['gid']].player_in_game:
             return jsonify({'quiz-state': False, 'reason': 'player not in this game'})
         if live_data.game_queue[request['gid']].results[request.headers['pid']] != -2:
             return jsonify({'quiz-state': False, 'reason': 'already answered'})
