@@ -28,8 +28,6 @@ class Multiplier(dict, Dict[str, Team]):
         self.scheduler.start()
         self.scheduler.add_job(self.check, 'interval', id='multiplier_check', seconds=MULTIPLIER_UPDATE_RATE_SEC)
         self.queue = queue
-        self.max_occupancy = defaultdict(int)
-        self.occupancy = dict()
 
     def check(self) -> None:
         """Check for the current occupiers."""
@@ -40,8 +38,8 @@ class Multiplier(dict, Dict[str, Team]):
                 del self[room]
         for room, teams in occupancy:
             if room not in self: self[room] = Team('', 0)
-            self.max_occupancy[room] = max(teams.values())
-            teams = [key for key, value in teams.items() if value == self.max_occupancy[room]]
+            max_occupancy = max(teams.values())
+            teams = [key for key, value in teams.items() if value == max_occupancy]
             if self[room].team in teams:
                 self[room].multiplier += MULTIPLIER_INCREASE
             elif not teams:
@@ -71,7 +69,6 @@ class RoomQueue(TimedQueue):
         super(RoomQueue, self).__init__()
         self.multiplier = Multiplier(self)
         self.live_data = live_data
-        self.counter = 0
 
     def __call__(self, uid: str, team: str, room: str) -> None:
         """Add new user or refresh existing one."""
@@ -94,10 +91,8 @@ class RoomQueue(TimedQueue):
 
     def get_each_rooms_occupancies(self) -> Dict[str, Dict[str, int]]:
         """Get a dict of all rooms and another dict with each time and their occupancy."""
-        self.counter = 0
         occupancy = defaultdict(lambda: defaultdict(int))
         for user in self.values():
-            self.counter += 1
             occupancy[user.room][user.team] += 1
         return occupancy
 
