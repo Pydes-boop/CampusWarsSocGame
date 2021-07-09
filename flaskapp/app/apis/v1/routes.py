@@ -84,20 +84,6 @@ class RoomFinder(Resource):
         return jsonify(result)
 
 
-@api.resource('/room-join')
-class RoomJoin(Resource):
-    def get(self):
-        """Just for debug purposes."""
-        return jsonify(live_data.room_queue)
-
-    @check_timed_out_users(live_data.timedout_users)
-    @request_requires(headers=['uid', 'team', 'room'])
-    def post(self):
-        """Users can announce that they are in a room."""
-        live_data.room_queue(uid=request.headers['uid'], team=request.headers['team'], room=request.headers['room'])
-        return jsonify({'joined': True})
-
-
 @api.resource('/quiz-request')
 class QuizRequest(Resource):
     @check_timed_out_users(live_data.timedout_users)
