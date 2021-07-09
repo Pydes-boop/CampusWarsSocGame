@@ -46,6 +46,9 @@ class Multiplier(dict, Dict[str, Team]):
         except KeyError:
             return Team('Nobody', 1.0)
 
+    def __del__(self) -> None:
+        self.scheduler.shutdown()
+
 
 class RoomQueue(TimedQueue):
     multiplier: Multiplier
