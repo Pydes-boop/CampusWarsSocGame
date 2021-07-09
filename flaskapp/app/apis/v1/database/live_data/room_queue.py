@@ -65,6 +65,7 @@ class RoomQueue(TimedQueue):
         super(RoomQueue, self).__init__()
         self.multiplier = Multiplier(self)
         self.live_data = live_data
+        self.counter = 0
 
     def __call__(self, uid: str, team: str, room: str) -> None:
         """Add new user or refresh existing one."""
@@ -87,8 +88,10 @@ class RoomQueue(TimedQueue):
 
     def get_each_rooms_occupancies(self) -> Dict[str, Dict[str, int]]:
         """Get a dict of all rooms and another dict with each time and their occupancy."""
+        self.counter = 0
         occupancy = defaultdict(lambda: defaultdict(int))
         for user in self.values():
+            self.counter += 1
             occupancy[user.room][user.team] += 1
         return occupancy
 
