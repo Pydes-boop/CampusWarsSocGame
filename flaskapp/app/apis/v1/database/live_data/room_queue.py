@@ -33,7 +33,8 @@ class Multiplier(dict, Dict[str, Team]):
         """Check for the current occupiers."""
         occupancy = self.queue.get_each_rooms_occupancies().items()
         rooms = map(itemgetter(0), occupancy)
-        for room in self:
+        rooms_to_delete = [room for room in self if room not in rooms]
+        for room in rooms_to_delete:
             if room not in rooms:
                 del self[room]
         for room, teams in occupancy:
