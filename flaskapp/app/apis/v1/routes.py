@@ -188,9 +188,7 @@ class Rally(Resource):
     @request_requires(headers=['team'])
     def get(self):
         """Manage Rally request."""
-        if request.headers['team'] in live_data.rally_timeout: rally = None
-        else: rally = live_data.rally_timeout.info(request.headers['team'])
-        return {'rally': rally}
+        return {'rally': live_data.rally_timeout.info(request.headers['team'])}
 
 
 @api.resource('/lectures')
