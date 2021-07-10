@@ -13,6 +13,7 @@ from apis.v1.database.live_data.quiz_queue import QuizQueue
 from apis.v1.database.live_data.game_queue import GameQueue
 from apis.v1.database.live_data.timedout_users import TimedOutUsers
 from apis.v1.database.live_data.rally_timeout import RallyTimeout
+from contextlib import suppress
 from typing import Any, Dict, List
 
 
@@ -28,6 +29,17 @@ class LiveData:
 
     def __call__(self, ex: List[str] = None) -> None:
         ex = ex or []
+        with suppress(AttributeError):
+            del self.room_queue
+        with suppress(AttributeError):
+            del self.game_queue
+        with suppress(AttributeError):
+            del self.quiz_queue
+        with suppress(AttributeError):
+            del self.timedout_users
+        with suppress(AttributeError):
+            del self.rally_timeout
+
         if 'room' not in ex: self.room_queue = RoomQueue(self)
         if 'game' not in ex: self.game_queue = GameQueue()
         if 'quiz' not in ex: self.quiz_queue = QuizQueue(self)
