@@ -25,11 +25,9 @@ class RallyTimeout(TimedQueue):
 
     def info(self, team: str) -> Optional[Dict[str, str]]:
         """Get data for frontend."""
-        try:
-            item = self[team]
-            return dict(name=item.initiator, room=item.room)
-        except ValueError:
-            return None
+        if team not in self: return None
+        item = self[team]
+        return dict(name=item.initiator, room=item.room)
 
 
 if __name__ == '__main__': pass
