@@ -62,8 +62,8 @@ class Multiplier(dict, Dict[str, Team]):
 class RoomQueue(TimedQueue):
     multiplier: Multiplier
     live_data: 'LiveData'
-    life_time = 10
-    max_refresh = 25
+    life_time = 60
+    max_refresh = 125
 
     def __init__(self, live_data: 'LiveData'):
         super(RoomQueue, self).__init__()
