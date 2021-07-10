@@ -109,7 +109,7 @@ public class ResultActivity extends AppCompatActivity
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                bCom.quizString("state", quizStateListener(), httpErrorListener(), head);
+                bCom.quiz("state", quizStateListener(), httpErrorListener(), head);
                 if(gotQuizState == false){
                     handler.postDelayed(this, 5000);
                 } else {
@@ -165,23 +165,25 @@ public class ResultActivity extends AppCompatActivity
         };
     }
 
-    private Response.Listener<String> quizStateListener()
+    private Response.Listener<JSONObject> quizStateListener()
     {
-        return new Response.Listener<String>() {
+        return new Response.Listener<JSONObject>() {
             @Override
-            public void onResponse(String response) {
-                if(response.contains("not yet answered")){
-
-                } else {
-                    gotQuizState = true;
-                    if(response.contains("WON")){
-                        state = WinState.WIN;
-                    } else if (response.contains("LOST")){
-                        state = WinState.LOSE;
-                    } else{
-                        state = WinState.TIE;
+            public void onResponse(JSONObject response) {
+                try {
+                    if(response.getString("quiz-state").contains("true")){
+                        gotQuizState = true;
+                        String result = response.getString("result");
+                        if(result.contains("WON")){
+                            state = WinState.WIN;
+                        } else if (result.contains("LOST")){
+                            state = WinState.LOSE;
+                        } else{
+                            state = WinState.TIE;
+                        }
                     }
-
+                } catch (JSONException e) {
+                    Log.d("JSONException in Quiz State", e.toString());
                 }
             }
         };
