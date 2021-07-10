@@ -273,7 +273,13 @@ class AlsoTest(Resource):
         return jsonify(variables.finished)
 
 
-# @api.resource('/robin')
+@api.resource('/robin')
+class ClearLiveData(Resource):
+    def post(self):
+        live_data()
+        return jsonify({'clear': True})
+
+
 @api.resource('/live-debug')
 class LiveDebug(Resource):
     def get(self):
