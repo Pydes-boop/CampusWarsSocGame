@@ -10,7 +10,6 @@ __all__ = ('RallyTimeout',)
 
 from apis.v1.database.live_data.timed_queue import TimedQueue
 from apis.v1.database.live_data.items import RallyItem
-from operator import attrgetter
 from typing import Optional, Dict
 
 
@@ -23,9 +22,6 @@ class RallyTimeout(TimedQueue):
         if team in self: return False
         self[team] = RallyItem(team, room, name)
         return True
-
-    # def __contains__(self, team: str) -> True:
-    #     return team in map(attrgetter('team'), self.values())
 
     def info(self, team: str) -> Optional[Dict[str, str]]:
         """Get data for frontend."""
