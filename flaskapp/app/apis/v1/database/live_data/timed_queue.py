@@ -36,6 +36,9 @@ class TimedQueue(dict, Dict[str, 'Item']):
         def eta_debug(self):
             return str(self.job.next_run_time)
 
+        def __hash__(self) -> int:
+            return hash(self.name)
+
     def __init__(self):
         super(TimedQueue, self).__init__()
         self.scheduler = BackgroundScheduler({'apscheduler.timezone': 'Europe/Vienna'})
