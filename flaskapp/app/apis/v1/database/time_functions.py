@@ -57,4 +57,4 @@ def get_current_term():
         letter = "S"
     else:
         letter = "W"
-    return letter + str(year)
+    return  str(year)+letter
