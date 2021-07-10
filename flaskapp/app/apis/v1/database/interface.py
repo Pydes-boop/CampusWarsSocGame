@@ -39,33 +39,51 @@ def get_all_rooms():
 def add_lecture(name, term, timetable=[]):
     if timetable is None:
         timetable = []
-    entry_exists = len(list(mongo.db.lecture.find({"name": name, "term": term}))) > 0
-    if not entry_exists:
+    entry = mongo.db.lecture.find_one({"name": name, "term": term})
+    if entry is None:
         item = {
             "name": name,
             "term": term,
             "timetable": timetable
         }
         return mongo.db.lecture.insert_one(item).acknowledged
-    # todo
+    for t in timetable:
+        if any(e["start"] == t["start"] and
+               e["end"] == t["end"] and
+               e["roomID"] == t["roomID"] and
+               e["day"] == t["day"] for e in entry["timetable"]):
+            continue
+        elif not any(e["start"] < t["end"] and
+                     e["end"] > t["start"] and
+                     e["day"] == t["day"] for e in entry["timetable"]):
+            if not mongo.db.lecture.update_one({"_id": entry["_id"]}, {"$push": {"timetable": t}}).matched_count > 0:
+                return False
+        else:
+            return False
+
     return True
 
 
 def add_user(firebase_id, name, lectures=[]):
     if lectures is None:
         lectures = []
-    entry_exists = len(list(mongo.db.lecture.find({"firebaseID": firebase_id}))) > 0
-    if not entry_exists:
+    entry = mongo.db.firebase_users.find_one({"firebaseID": firebase_id})
+    if entry is None:
         item = {
             "firebaseID": firebase_id,
             "name": name,
             "lectures": lectures
         }
         return mongo.db.firebase_users.insert_one(item).acknowledged
-    return True
+    else:
+        for lec in lectures:
+            if lec not in entry["lectures"]:
+                if not mongo.db.firebase_users.update_one({"_id": entry["_id"]},
+                                                          {"$push": {"lectures": lec}}).matched_count > 0:
+                    return False
+        return True
 
 
-# todo schöner machen mit exists
 def add_lectures_to_user(firebase_id, lectures):
     for i in range(len(lectures)):
         split_string = lectures[i].split(":")
@@ -99,19 +117,23 @@ def add_question_to_quiz(question, right_answer, wrong_answers, quiz_id):
 def get_current_quizzes(room_id):
     if isinstance(room_id, str):
         room_id = ObjectId(room_id)
+    lecture = get_current_lecture(room_id)
     room_info = mongo.db.room.find_one({"_id": room_id}, {"_id": 0})
-    current_time = get_current_time_and_day()
-    lecture = mongo.db.lecture.find_one({"term": get_current_term(),
-                                         "timetable": {"$elemMatch": {"start": {"$lt": current_time[0]},
-                                                                      "end": {"$gte": current_time[0]},
-                                                                      "roomID": room_id,
-                                                                      "day": current_time[1]}}}, {"_id": 1})
     if lecture is None:
         return list(mongo.db.quiz.find({"campusID": room_info["campusID"]}))
     result = list(mongo.db.quiz.find({"lectureID": lecture["_id"]}))
     if len(result) == 0:
         return list(mongo.db.quiz.find({"campusID": room_info["campusID"]}))
     return result
+
+
+def get_current_lecture(room_id):
+    current_time = get_current_time_and_day()
+    return mongo.db.lecture.find_one({"term": get_current_term(),
+                                      "timetable": {"$elemMatch": {"start": {"$lt": current_time["seconds"]},
+                                                                   "end": {"$gte": current_time["seconds"]},
+                                                                   "roomID": room_id,
+                                                                   "day": current_time["day"]}}})
 
 
 def add_quiz(name, created_by, lecture_id):
@@ -139,29 +161,25 @@ def add_campus_quiz(name, created_by, campus_id):
 
 
 def get_lectures_of_user(firebase_id):
-    return mongo.db.firebase_users.find_one({"firebaseID": firebase_id})["lectures"]
+    user = mongo.db.firebase_users.find_one({"firebaseID": firebase_id})
+    if user is not None:
+        return user["lectures"]
+    return None
 
 
 def get_users_of_lecture(lecture_id):
     if isinstance(lecture_id, str):
         lecture_id = ObjectId(lecture_id)
     items = []
-    for i in list(
-            mongo.db.firebase_users.find({"lectures": {"$elemMatch": {"$eq": lecture_id}}},
-                                         {"firebaseID": 1, "_id": 0})):
-        items.append(str(i["firebaseID"]))
-    return items
+    return list(map(lambda x: str(x["firebaseID"]), list(
+        mongo.db.firebase_users.find({"lectures": {"$elemMatch": {"$eq": lecture_id}}},
+                                     {"firebaseID": 1, "_id": 0}))))
 
 
 def get_full_name_of_current_lecture_in_room(room_id):
     if isinstance(room_id, str):
         room_id = ObjectId(room_id)
-    current_time = get_current_time_and_day()
-    lecture = mongo.db.lecture.find_one({"term": get_current_term(),
-                                         "timetable": {"$elemMatch": {"start": {"$lt": current_time[0]},
-                                                                      "end": {"$gte": current_time[0]},
-                                                                      "roomID": room_id,
-                                                                      "day": current_time[1]}}})
+    lecture = get_current_lecture(room_id)
 
     if lecture is None:
         return None
@@ -204,14 +222,14 @@ def add_team(team):
 
 
 def get_all_lecture_ids():
-    result = []
-    for i in mongo.db.lecture.find({}, {"_id": 1}):
-        result.append(str(i["_id"]))
-    return result
+    return list(map(lambda x: str(x["_id"]), list(mongo.db.lecture.find())))
 
 
 def get_player_name(firebase_id):
-    return mongo.db.firebase_users.find_one({"firebaseID": firebase_id}, {"name": 1})['name']
+    user = mongo.db.firebase_users.find_one({"firebaseID": firebase_id}, {"name": 1})
+    if user is None:
+        return None
+    return user['name']
 
 
 def get_current_team_with_member_names(firebase_id):
@@ -263,8 +281,8 @@ def get_all_lecture_names():
     return mongo.db.lecture.find({}, {"name": 1})
 
 
-def get_all_teams():
-    return str(list(mongo.db.teams.find()))
+# def get_all_teams():
+#  return str(list(mongo.db.teams.find()))
 
 
 if __name__ == '__main__':
