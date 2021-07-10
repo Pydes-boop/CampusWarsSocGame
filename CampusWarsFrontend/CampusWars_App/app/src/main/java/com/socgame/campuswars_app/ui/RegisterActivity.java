@@ -74,6 +74,11 @@ public class RegisterActivity extends AppCompatActivity {
 
         next.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
+                if(email.getText().toString().length() == 0 || password.getText().toString().length() == 0 || confirmPassword.getText().toString().length() == 0 || tumId.getText().toString().length() == 0){
+                    Toast.makeText(ctx, "Please enter values for all fields", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 if(password.getText().toString().equals(confirmPassword.getText().toString())){
                     //DONE: check info here
                     fCom.createAccount(email.getText().toString(), password.getText().toString(), new OnCompleteListener<AuthResult>(){
