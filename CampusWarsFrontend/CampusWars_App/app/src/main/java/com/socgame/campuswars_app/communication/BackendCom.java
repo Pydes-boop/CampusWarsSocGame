@@ -119,8 +119,8 @@ public class BackendCom {
         http.postRequestObject("v1/quiz-" + type, head.getHeaders(), listener, error);
     }
 
-    public void quizString(String type, Response.Listener<String> listener, Response.ErrorListener error, HttpHeader head){
-        http.getRequestStringParams("v1/quiz-" + type, head.getHeaders(), listener, error);
+    public void quizGet(String type, Response.Listener<JSONObject> listener, Response.ErrorListener error, HttpHeader head){
+        http.getRequestObject("v1/quiz-" + type, head.getHeaders(), listener, error);
     }
 
     public void quizAnswer(String type, Response.Listener<JSONObject> listener, Response.ErrorListener error, HttpHeader head){
