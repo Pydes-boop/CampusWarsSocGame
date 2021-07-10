@@ -199,16 +199,18 @@ public class TerritoryFragment extends Fragment  implements GpsObserver //implem
                     //THIS IS YOUR OWN RESPONSE
                 } else {
                     try {
-                        SharedPreferences settings = ctx.getSharedPreferences("userdata", 0);
-                        String myName = settings.getString("name", "empty");
-                        String name = response.getString("name");
-                        rallyResponse = response;
-                        if(myName.contains("name")){
-                            String room = response.getString("room");
-                            Toast.makeText(getActivity(), name + "needs your help in" + room, Toast.LENGTH_LONG).show();
+                        if(!response.getString("rally").contains("null")){
+                            SharedPreferences settings = ctx.getSharedPreferences("userdata", 0);
+                            String myName = settings.getString("name", "empty");
+                            String name = response.getString("name");
+                            rallyResponse = response;
+                            if(myName.contains("name")){
+                                String room = response.getString("room");
+                                Toast.makeText(getActivity(), name + "needs your help in" + room, Toast.LENGTH_LONG).show();
+                            }
                         }
                     } catch (Exception e) {
-                        Log.d("Error in Rally Get:", e.toString());
+                        Log.d("Error in Rally", e.toString());
                     }
                 }
             }
