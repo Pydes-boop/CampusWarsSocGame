@@ -244,14 +244,12 @@ def get_questions_of_quiz(quiz_id):
     return list(mongo.db.question.find({"quizID": quiz_id}, {"_id": 0, "quizID": 0}))
 
 
-def get_current_team(member_firebase_id):
-    item = mongo.db.teams.find_one(
-        {"members": {"$elemMatch": {"$eq": member_firebase_id}}, "term": get_current_term()})
-    if item is None:
-        return {"threshold": groupCreation.threshold, "current": get_number_of_players()}
-    item['_id'] = str(item['_id'])
-    return item
+def get_current_team(firebase_id):
+    return mongo.db.teams.find_one(
+        {"members": {"$elemMatch": {"$eq": firebase_id}}, "term": get_current_term()})
 
+    # todo Felix: i changed get_current_team, sonst funktioniert team finding nicht mehr...., pls DO NOT
+    # EDIT FUNCTIONS THAT WERE ALREADY WORKING; THEY ARE USED ALREADY
 
 def get_colour_of_team(team_name):
     result = mongo.db.teams.find_one({"name": team_name, "term": get_current_term()})
