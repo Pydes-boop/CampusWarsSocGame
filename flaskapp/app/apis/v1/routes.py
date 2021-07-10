@@ -272,7 +272,10 @@ class Test(Resource):
 @api.resource('/felix')
 class AlsoTest(Resource):
     def get(self):
-        return jsonify(variables.finished)
+        users_in_lecture = {}
+        for id in interface.get_all_lecture_ids():
+            users_in_lecture[id] = interface.get_users_of_lecture(id)
+        return jsonify({"lecture_ids": users_in_lecture})
 
 
 @api.resource('/robin')
