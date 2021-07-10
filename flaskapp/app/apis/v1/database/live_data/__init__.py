@@ -14,7 +14,7 @@ from apis.v1.database.live_data.game_queue import GameQueue
 from apis.v1.database.live_data.timedout_users import TimedOutUsers
 from apis.v1.database.live_data.rally_timeout import RallyTimeout
 from contextlib import suppress
-from typing import Any, Dict, List
+from typing import Any, Dict, Iterable
 
 
 class LiveData:
@@ -27,7 +27,7 @@ class LiveData:
     def __init__(self):
         self()
 
-    def __call__(self, ex: List[str] = None) -> None:
+    def __call__(self, ex: Iterable[str] = None) -> None:
         ex = ex or []
         with suppress(AttributeError):
             del self.room_queue
