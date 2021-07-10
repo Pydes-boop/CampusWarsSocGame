@@ -85,6 +85,7 @@ public class HttpSingleton {
         getRequestQueue().add(req);
     }
 
+    //Standart getRequest is for JSONARRAY
     public void getRequest(String route, Response.Listener<JSONArray> listener, Response.ErrorListener errlsn){
         /**
          * create get request of string: url + route
@@ -117,6 +118,7 @@ public class HttpSingleton {
         HttpSingleton.getInstance(ctx).addToRequestQueue(jsonArrayRequest);
     }
 
+    //Standart postRequest is for JSONARRAY
     public void postRequest(String route, HashMap<String, String> params, Response.Listener<JSONArray> listener, Response.ErrorListener errlsn){
         /**
          * create get request of string: url + route
