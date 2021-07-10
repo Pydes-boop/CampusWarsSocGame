@@ -213,7 +213,6 @@ public class MapsFragment extends Fragment implements GpsObserver {
                         JSONObject location = lectureHall.getJSONObject("location");
                         JSONObject occupier = lectureHall.getJSONObject("occupier");
 
-                        Log.d("ColorTest", lectureHall.toString());
                         //Getting Data
                         double lat = location.getDouble("latitude");
                         double lon = location.getDouble("longitude");
