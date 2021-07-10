@@ -15,6 +15,7 @@ from typing import Optional
 
 
 def create_game_id(length: int = 24) -> str:
+    """Create id to identify games."""
     return b64encode(urandom(length)).decode('utf-8')
 
 

@@ -13,7 +13,7 @@ from apis.v1.database.live_data.quiz_queue import QuizQueue
 from apis.v1.database.live_data.game_queue import GameQueue
 from apis.v1.database.live_data.timedout_users import TimedOutUsers
 from apis.v1.database.live_data.rally_timeout import RallyTimeout
-from operator import attrgetter
+from typing import Any, Dict
 
 
 class LiveData:
@@ -31,15 +31,18 @@ class LiveData:
         self.rally_timeout = RallyTimeout()
 
     @property
-    def json(self):
-        return [
-            # self.room_queue,
-            list(self.room_queue.debug_values()),
-            self.quiz_queue,
-            dict([(key, item.json) for key, item in self.game_queue.items()]),
-            self.timedout_users,
-            list(map(attrgetter('json'), self.rally_timeout))
-        ]
+    def json(self) -> Dict[str, Any]:
+        return dict(
+            room_queue=dict(self.room_queue.debug_items()),
+            quiz_queue=dict(self.quiz_queue.debug_items()),
+            game_queue=dict(self.game_queue.debug_items()),
+            timedout_users=dict(self.timedout_users.debug_items()),
+            rally_timeout=dict(self.rally_timeout.debug_items()),
+            # misc=dict(
+            #     multiplier=self.room_queue.multiplier,
+            #     room_queue_occupancy=self.room_queue.get_each_rooms_occupancies()
+            # )
+        )
 
 
 if __name__ == '__main__': pass

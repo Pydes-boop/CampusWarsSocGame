@@ -5,16 +5,24 @@ __author__ = 'Robin "r0w" Weiland'
 __date__ = '2021-07-07'
 __version__ = '0.0.1'
 
-__all__ = ('User', 'TimedOutUser', 'Team', 'Game', 'RallyItem',)
+__all__ = ('UID', 'User', 'Team', 'Game', 'RallyItem',)
 
 from dataclasses import dataclass
 from operator import attrgetter
-from typing import Any, Optional, List, Dict
+from typing import Any, Union, Optional, List, Dict
+
+
+@dataclass
+class UID:
+    uid: str
+
+    @property
+    def json(self) -> Dict[str, str]:
+        return dict(uid=self.uid)
 
 
 @dataclass(init=False)
-class User:
-    uid: str
+class User(UID):
     team: str
     room: str
 
@@ -23,17 +31,19 @@ class User:
         self.team = team
         self.room = room
 
-
-@dataclass
-class TimedOutUser:
-    uid: str
-    time: int
+    @property
+    def json(self) -> Dict[str, str]:
+        return dict(uid=self.uid, team=self.team, room=self.room)
 
 
 @dataclass
 class Team:
     team: str
     multiplier: float
+
+    @property
+    def json(self) -> Dict[str, Union[str, float]]:
+        return dict(team=self.team, multiplier=self.multiplier)
 
 
 @dataclass
@@ -67,23 +77,32 @@ class Game:
     def all_answered(self) -> bool:
         return sum(self.results) >= 0
 
-    def answer(self, pid: int, answer: int):
+    def answer(self, pid: int, answer: int) -> None:
         self.results[pid] = answer
 
     def get_player_id(self, uid: str) -> int:
         return list(map(attrgetter('uid'), self.players)).index(uid)
 
     def get_result_for_player(self, pid: int) -> str:
+        # we might treat a 'both won' scenario differently that a 'both lost' one, but for now they are the same
+        if self.results[pid] == self.results[not pid]:
+            return 'TIE'
         if self.results[pid] and not self.results[not pid]:
             return 'WON'
-        if self.results[pid] and self.results[not pid]:
-            return 'TIE'
         else:
             return 'LOST'
 
     @property
-    def json(self):
-        return dict((key, value) for key, value in self.__dict__.items() if not callable(value))
+    def json(self) -> Dict[str, Union[str, List[int], List[User]]]:
+        return dict(
+            gid=self.game_id,
+            players={0: self.players[0].json, 1: self.players[1].json},
+            quiz_name=self.quiz_name,
+            quiz=self.question,
+            results=self.results,
+            finished=self.finished,
+        )
+
 
 @dataclass
 class RallyItem:

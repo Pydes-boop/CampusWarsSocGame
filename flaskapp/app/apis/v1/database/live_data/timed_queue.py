@@ -91,12 +91,15 @@ class TimedQueue(dict, Dict[str, 'Item']):
 
     def debug_values(self):
         for item in self:
-            r = self[item].__dict__
-            r.update(dict(time=self.get(item).eta_debug))
-            yield r
+            info = self[item].json
+            info['time'] = self.get(item).eta_debug
+            yield info
 
     def items(self):
         return zip(self.keys(), self.values())
+
+    def debug_items(self):
+        return zip(self.keys(), self.debug_values())
 
 
 if __name__ == '__main__': pass
