@@ -12,7 +12,7 @@ __all__ = ("add_room", "add_lecture", "get_all_rooms", "find_closest_room", "add
 import groupCreation
 from apis.v1.database import mongo, db
 from datetime import datetime
-from apis.v1.database.time_functions import get_current_time_and_day, get_current_term, get_day_as_string, \
+from apis.v1.utils.time_functions import get_current_time_and_day, get_current_term, get_day_as_string, \
     get_seconds_as_string
 from bson.objectid import ObjectId
 
@@ -22,8 +22,6 @@ def find_closest_room(lon, lat, max_distance):
                                                           "$maxDistance": max_distance}}})
 
 
-# todo evtl occupier live im Überblick behalten weil wegen regelmäßiges update ähnlich der location vom user
-#  @Felix,Robin
 def add_room(room_name, longitude, latitude):
     item = {
         "location":
@@ -267,8 +265,6 @@ def get_all_lecture_names():
 
 def get_all_teams():
     return str(list(mongo.db.teams.find()))
-
-
 
 
 if __name__ == '__main__':

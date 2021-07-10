@@ -10,7 +10,7 @@ __all__ = ('QuizQueue',)
 from apis.v1.database.live_data.timed_queue import TimedQueue
 from apis.v1.database.live_data.game_queue import create_game_id
 from apis.v1.database.live_data.items import User, Game
-from apis.v1.database.time_functions import timestamp
+from apis.v1.utils.time_functions import timestamp
 from apis.v1.database.interface import get_current_quizzes, get_questions_of_quiz
 from contextlib import suppress
 from random import seed, choice, shuffle
