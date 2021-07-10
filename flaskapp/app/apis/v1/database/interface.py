@@ -246,7 +246,7 @@ def get_questions_of_quiz(quiz_id):
 
 def get_current_team(firebase_id):
     return mongo.db.teams.find_one(
-        {"members": {"$elemMatch": {"$eq": firebase_id}}, "term": get_current_term()})
+        {"members": {"$elemMatch": {"$eq": firebase_id}}, "term": get_current_term()},{"_id":0})
 
     # todo Felix: i changed get_current_team, sonst funktioniert team finding nicht mehr...., pls DO NOT
     # EDIT FUNCTIONS THAT WERE ALREADY WORKING; THEY ARE USED ALREADY
