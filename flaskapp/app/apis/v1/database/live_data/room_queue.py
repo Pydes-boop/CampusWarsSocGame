@@ -57,7 +57,7 @@ class Multiplier(dict, Dict[str, Team]):
             return Team('Nobody', 1.0)
 
     def __del__(self) -> None:
-        self.scheduler.shutdown()
+        self.scheduler.shutdown(wait=False)
 
 
 class RoomQueue(TimedQueue):

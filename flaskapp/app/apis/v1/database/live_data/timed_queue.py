@@ -45,7 +45,7 @@ class TimedQueue(dict, Dict[str, 'Item']):
         self.scheduler.start()
 
     def __del__(self) -> None:
-        self.scheduler.shutdown(wait=True)
+        self.scheduler.shutdown(wait=False)
 
     def __getitem__(self, item: str) -> Any:
         if item not in self: return None
