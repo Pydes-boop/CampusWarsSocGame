@@ -45,7 +45,7 @@ public class TerritoryFragment extends Fragment  implements GpsObserver //implem
     private String lectureId;
     private String lectureHall = "nothing";
     private LatLng lectureLoc = null;
-    private JSONObject rallyResponse = null;
+    private String rallyResponse = "null";
     private boolean currentTimeOut = false;
 
     public TerritoryFragment()
@@ -195,18 +195,25 @@ public class TerritoryFragment extends Fragment  implements GpsObserver //implem
         return new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
-                if(rallyResponse == response){
-                    //THIS IS YOUR OWN RESPONSE
+                //Need to compare as Strings because direct JSONObject compare doesnt work
+                if(rallyResponse.equals(response.toString())){
+                    //We just dont want the user to get the same rally several times
+                    //Log.d("Rally", "Rally already gotten");
                 } else {
                     try {
                         if(!response.getString("rally").contains("null")){
+                            Log.d("Rally", response.toString());
+                            JSONObject details = response.getJSONObject("rally");
                             SharedPreferences settings = ctx.getSharedPreferences("userdata", 0);
                             String myName = settings.getString("name", "empty");
-                            String name = response.getString("name");
-                            rallyResponse = response;
-                            if(myName.contains("name")){
-                                String room = response.getString("room");
-                                Toast.makeText(getActivity(), name + "needs your help in" + room, Toast.LENGTH_LONG).show();
+                            String name = details.getString("name");
+                            rallyResponse = response.toString();
+                            if(!myName.contains(name)){
+                                //Checking if user doesnt get their own rally
+                                String room = details.getString("room");
+                                Toast.makeText(getActivity(), name + " needs your help in " + room, Toast.LENGTH_LONG).show();
+                            } else{
+                                //Log.d("Rally", "This is my own rally");
                             }
                         }
                     } catch (Exception e) {
