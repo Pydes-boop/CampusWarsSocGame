@@ -29,22 +29,26 @@ class LiveData:
 
     def __call__(self, ex: Iterable[str] = None) -> None:
         ex = ex or []
-        with suppress(AttributeError):
-            del self.room_queue
-        with suppress(AttributeError):
-            del self.game_queue
-        with suppress(AttributeError):
-            del self.quiz_queue
-        with suppress(AttributeError):
-            del self.timedout_users
-        with suppress(AttributeError):
-            del self.rally_timeout
-
-        if 'room' not in ex: self.room_queue = RoomQueue(self)
-        if 'game' not in ex: self.game_queue = GameQueue()
-        if 'quiz' not in ex: self.quiz_queue = QuizQueue(self)
-        if 'timedout' not in ex: self.timedout_users = TimedOutUsers()
-        if 'rally' not in ex: self.rally_timeout = RallyTimeout()
+        if 'room' not in ex:
+            with suppress(AttributeError):
+                del self.room_queue
+            self.room_queue = RoomQueue(self)
+        if 'quiz' not in ex:
+            with suppress(AttributeError):
+                del self.quiz_queue
+            self.quiz_queue = QuizQueue(self)
+        if 'game' not in ex:
+            with suppress(AttributeError):
+                del self.game_queue
+            self.game_queue = GameQueue()
+        if 'timedout' not in ex:
+            with suppress(AttributeError):
+                del self.timedout_users
+            self.timedout_users = TimedOutUsers()
+        if 'rally' not in ex:
+            with suppress(AttributeError):
+                del self.rally_timeout
+            self.rally_timeout = RallyTimeout()
 
     @property
     def json(self) -> Dict[str, Any]:

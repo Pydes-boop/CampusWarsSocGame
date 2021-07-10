@@ -278,11 +278,11 @@ class AlsoTest(Resource):
 
 @api.resource('/robin')
 class ClearLiveData(Resource):
-    base_entries = {'room', 'game', 'quiz', 'timeout', 'rally'}
+    base_entries = {'room', 'quiz', 'game', 'timeout', 'rally'}
 
     # entries in the headers exclude items from getting reset
     def post(self):
-        live_data(ClearLiveData.base_entries.intersection(request.headers.keys()))
+        live_data(ClearLiveData.base_entries.intersection(request.headers))
         return jsonify({'clear': True})
 
 
