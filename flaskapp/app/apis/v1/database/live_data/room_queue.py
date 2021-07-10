@@ -72,7 +72,7 @@ class RoomQueue(TimedQueue):
 
     def __call__(self, uid: str, team: str, room: str) -> None:
         """Add new user or refresh existing one."""
-        if uid in self and room == self[uid].room == room:
+        if uid in self and room == self[uid].room:
             self.refresh(uid)
         else:
             self[uid] = User(uid, team, room)
