@@ -24,8 +24,8 @@ class RallyTimeout(TimedQueue):
         self[team] = RallyItem(team, room, name)
         return True
 
-    def __contains__(self, team: str) -> True:
-        return team in map(attrgetter('team'), self)
+    # def __contains__(self, team: str) -> True:
+    #     return team in map(attrgetter('team'), self.values())
 
     def info(self, team: str) -> Optional[Dict[str, str]]:
         """Get data for frontend."""
