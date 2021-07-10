@@ -21,22 +21,22 @@ def timestamp() -> int:
     return int(now().timestamp())
 
 
-def from_timestamp(timestamp: int) -> datetime:
-    return datetime.fromtimestamp(timestamp, tz=tz)
+def from_timestamp(timestamp_var: int) -> datetime:
+    return datetime.fromtimestamp(timestamp_var, tz=tz)
 
 
 def get_current_time_and_day():
-    now = datetime.now(tz)
-    midnight = now.replace(hour=0, minute=0, second=0, microsecond=0)
-    seconds = (now - midnight).seconds
-    result = (seconds, now.weekday())
+    now_var = datetime.now(tz)
+    midnight = now_var.replace(hour=0, minute=0, second=0, microsecond=0)
+    seconds = (now_var - midnight).seconds
+    result = {"seconds": seconds, "day": now_var.weekday()}
     return result
 
 
 def get_time_as_seconds(hour, minutes):
-    now = datetime.now()
-    time_needed = now.replace(hour=hour, minute=minutes, second=0)
-    midnight = now.replace(hour=0, minute=0, second=0, microsecond=0)
+    now_var = datetime.now()
+    time_needed = now_var.replace(hour=hour, minute=minutes, second=0)
+    midnight = now_var.replace(hour=0, minute=0, second=0, microsecond=0)
     seconds = (time_needed - midnight).seconds
     return seconds
 
