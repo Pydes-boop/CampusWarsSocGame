@@ -109,7 +109,7 @@ public class ResultActivity extends AppCompatActivity
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                bCom.quiz("state", quizStateListener(), httpErrorListener(), head);
+                bCom.quizGet("state", quizStateListener(), httpErrorListener(), head);
                 if(gotQuizState == false){
                     handler.postDelayed(this, 5000);
                 } else {
