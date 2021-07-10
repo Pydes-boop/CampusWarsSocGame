@@ -230,6 +230,13 @@ public class GpsListener implements LocationListener
         catch (Exception e) {}
     }
 
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras)
+    {
+        //Needs to be implemented since this deprecated method sometimes gets called anyway
+        //Doesnt need to do anything
+    }
+
     private boolean permission()
     {
         return     ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
