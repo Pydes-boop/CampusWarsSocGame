@@ -78,7 +78,7 @@ class TimedQueue(dict, Dict[str, 'Item']):
                                    'interval',
                                    args=(name,),
                                    id=f'{self.__class__.__name__}:{name}',
-                                   start_date=timestamp(),
+                                   start_date=now(),
                                    seconds=self.life_time),
             item
         )
