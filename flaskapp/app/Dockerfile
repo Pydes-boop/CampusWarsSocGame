@@ -17,7 +17,7 @@ ADD . /var/www/app
 ADD ./wsgi.py /var/www/app/wsgi.py
 
 RUN pip install --upgrade pip
-RUN pip install virtualenv wheel
+RUN pip install virtualenv
 ADD ./requirements.txt /var/www/requirements.txt
 RUN pip install -r requirements.txt
 
