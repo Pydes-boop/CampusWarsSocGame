@@ -12,7 +12,7 @@ from apscheduler.job import Job
 from operator import attrgetter
 from dataclasses import dataclass
 from contextlib import suppress
-from apis.v1.utils.time_functions import timestamp, from_timestamp
+from apis.v1.utils.time_functions import timestamp, from_timestamp, now()
 from typing import Any, Dict
 
 
