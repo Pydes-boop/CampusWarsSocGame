@@ -66,7 +66,6 @@ public class QuizActivity extends AppCompatActivity //implements View.OnClickLis
     //UI
     Button buttons[] = new Button[4];
 
-    //TODO Link to Server
 
     @Override
     protected void onCreate(Bundle savedInstanceState)

@@ -114,7 +114,7 @@ public class TerritoryFragment extends Fragment  implements GpsObserver //implem
         return view;
     }
 
-    public void setHallInfo(String name, String owner, String lecture, LatLng loc)//TODO: maybe add color?
+    public void setHallInfo(String name, String owner, String lecture, LatLng loc)
     {
         lectureLoc = loc;
 
