@@ -188,7 +188,7 @@ class Rally(Resource):
     @request_requires(headers=['team'])
     def get(self):
         """Manage Rally request."""
-        return {'rally': live_data.rally_timeout.get(request.headers['team'])}
+        return {'rally': live_data.rally_timeout.info(request.headers['team'])}
 
 
 @api.resource('/lectures')
@@ -270,10 +270,22 @@ class Test(Resource):
 @api.resource('/felix')
 class AlsoTest(Resource):
     def get(self):
-        return jsonify(variables.finished)
+        users_in_lecture = {}
+        for id in interface.get_all_lecture_ids():
+            users_in_lecture[id] = interface.get_users_of_lecture(id)
+        return jsonify({"lecture_ids": users_in_lecture})
 
 
-# @api.resource('/robin')
+@api.resource('/robin')
+class ClearLiveData(Resource):
+    base_entries = {'room', 'quiz', 'game', 'timeout', 'rally'}
+
+    # entries in the headers exclude items from getting reset
+    def post(self):
+        live_data(ClearLiveData.base_entries.intersection(request.headers))
+        return jsonify({'clear': True})
+
+
 @api.resource('/live-debug')
 class LiveDebug(Resource):
     def get(self):

@@ -10,7 +10,6 @@ __all__ = ('RallyTimeout',)
 
 from apis.v1.database.live_data.timed_queue import TimedQueue
 from apis.v1.database.live_data.items import RallyItem
-from operator import attrgetter
 from typing import Optional, Dict
 
 
@@ -24,16 +23,11 @@ class RallyTimeout(TimedQueue):
         self[team] = RallyItem(team, room, name)
         return True
 
-    def __contains__(self, team: str) -> True:
-        return team in map(attrgetter('team'), self)
-
     def info(self, team: str) -> Optional[Dict[str, str]]:
         """Get data for frontend."""
-        try:
-            item = self[team]
-            return dict(name=item.initiator, room=item.room)
-        except ValueError:
-            return None
+        if team not in self: return None
+        item = self[team]
+        return dict(name=item.initiator, room=item.room)
 
 
 if __name__ == '__main__': pass

@@ -33,7 +33,8 @@ class Multiplier(dict, Dict[str, Team]):
         """Check for the current occupiers."""
         occupancy = self.queue.get_each_rooms_occupancies().items()
         rooms = map(itemgetter(0), occupancy)
-        for room in self:
+        rooms_to_delete = [room for room in self if room not in rooms]
+        for room in rooms_to_delete:
             if room not in rooms:
                 del self[room]
         for room, teams in occupancy:
@@ -56,14 +57,14 @@ class Multiplier(dict, Dict[str, Team]):
             return Team('Nobody', 1.0)
 
     def __del__(self) -> None:
-        self.scheduler.shutdown()
+        self.scheduler.shutdown(wait=False)
 
 
 class RoomQueue(TimedQueue):
     multiplier: Multiplier
     live_data: 'LiveData'
-    life_time = 10
-    max_refresh = 25
+    life_time = 180
+    max_refresh = 400
 
     def __init__(self, live_data: 'LiveData'):
         super(RoomQueue, self).__init__()
@@ -72,7 +73,7 @@ class RoomQueue(TimedQueue):
 
     def __call__(self, uid: str, team: str, room: str) -> None:
         """Add new user or refresh existing one."""
-        if uid in self and room == self[uid].room == room:
+        if uid in self and room == self[uid].room:
             self.refresh(uid)
         else:
             self[uid] = User(uid, team, room)

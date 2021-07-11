@@ -13,7 +13,8 @@ from apis.v1.database.live_data.quiz_queue import QuizQueue
 from apis.v1.database.live_data.game_queue import GameQueue
 from apis.v1.database.live_data.timedout_users import TimedOutUsers
 from apis.v1.database.live_data.rally_timeout import RallyTimeout
-from typing import Any, Dict
+from contextlib import suppress
+from typing import Any, Dict, Iterable
 
 
 class LiveData:
@@ -24,11 +25,30 @@ class LiveData:
     rally_timeout: RallyTimeout
 
     def __init__(self):
-        self.room_queue = RoomQueue(self)
-        self.game_queue = GameQueue()
-        self.quiz_queue = QuizQueue(self)
-        self.timedout_users = TimedOutUsers()
-        self.rally_timeout = RallyTimeout()
+        self()
+
+    def __call__(self, ex: Iterable[str] = None) -> None:
+        ex = ex or []
+        if 'room' not in ex:
+            with suppress(AttributeError):
+                del self.room_queue
+            self.room_queue = RoomQueue(self)
+        if 'quiz' not in ex:
+            with suppress(AttributeError):
+                del self.quiz_queue
+            self.quiz_queue = QuizQueue(self)
+        if 'game' not in ex:
+            with suppress(AttributeError):
+                del self.game_queue
+            self.game_queue = GameQueue()
+        if 'timedout' not in ex:
+            with suppress(AttributeError):
+                del self.timedout_users
+            self.timedout_users = TimedOutUsers()
+        if 'rally' not in ex:
+            with suppress(AttributeError):
+                del self.rally_timeout
+            self.rally_timeout = RallyTimeout()
 
     @property
     def json(self) -> Dict[str, Any]:
