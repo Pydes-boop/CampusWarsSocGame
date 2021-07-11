@@ -12,6 +12,7 @@ from apis.v1.database.live_data.items import User, Team
 from apis.v1.database.live_data.timed_queue import TimedQueue
 from operator import itemgetter
 from collections import defaultdict
+from contextlib import suppress
 from typing import Any, List, Dict
 
 MULTIPLIER_INCREASE: float = 0.0005
@@ -75,6 +76,9 @@ class RoomQueue(TimedQueue):
         """Add new user or refresh existing one."""
         if uid in self and room == self[uid].room:
             self.refresh(uid)
+        elif uid in self and room != self[uid].room:
+            with suppress(KeyError): del self[uid]
+            self[uid] = User(uid, team, room)
         else:
             self[uid] = User(uid, team, room)
 
