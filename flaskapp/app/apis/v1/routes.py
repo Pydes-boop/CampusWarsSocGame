@@ -1,6 +1,8 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-
+"""
+This file contains the routes callable for our frontend
+"""
 __date__ = "2021-05-13"
 __version__ = "0.0.1"
 
