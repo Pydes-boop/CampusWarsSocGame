@@ -276,6 +276,7 @@ def metis_calulation():
     """
     social_network = get_graph()
     social_network.graph["edge_weight_attr"] = "weight"
+    variables.graph_done = True # remove me
     # for metis to use the weights, they have to be int
     for u, v, d in social_network.edges(data=True):
         d["weight"] = int(d["weight"] * 10000)
@@ -289,6 +290,8 @@ def metis_calulation():
         teams[parts[j]].append(node)
         j = j + 1
     user_groups = []
+    variables.team_creation = True # remove me
+    variables.teams = teams # remove me
     for team in teams:
         user_groups.append(Group(generate_team_name(), get_random_color(), team))
     variables.finished = True

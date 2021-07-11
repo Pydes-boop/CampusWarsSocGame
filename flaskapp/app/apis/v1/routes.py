@@ -415,6 +415,12 @@ class LiveDebug(Resource):
     def get(self):
         return jsonify(live_data.json)
 
+@api.resource("/algo-debug")
+class AlgoDebug(Resource):
+    """debug route for live data; shows current live data"""
+
+    def get(self):
+        return jsonify({"finished": variables.finished, })
 
 @api.resource("/echo")
 class Echo(Resource):
