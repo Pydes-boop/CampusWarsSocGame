@@ -1,11 +1,16 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-__author__ = 'Robin "r0w" Weiland'
-__date__ = '2021-07-07'
-__version__ = '0.0.1'
+__date__ = "2021-07-07"
+__version__ = "0.0.1"
 
-__all__ = ('UID', 'User', 'Team', 'Game', 'RallyItem',)
+__all__ = (
+    "UID",
+    "User",
+    "Team",
+    "Game",
+    "RallyItem",
+)
 
 from dataclasses import dataclass
 from operator import attrgetter
@@ -14,6 +19,8 @@ from typing import Any, Union, Optional, List, Dict
 
 @dataclass
 class UID:
+    """The uid of a player. Used in TimedoutQueue."""
+
     uid: str
 
     @property
@@ -23,6 +30,8 @@ class UID:
 
 @dataclass(init=False)
 class User(UID):
+    """Represents a user. Used in Room- and QuizQueue."""
+
     team: str
     room: str
 
@@ -38,6 +47,8 @@ class User(UID):
 
 @dataclass
 class Team:
+    """Team representation used in the Multiplier."""
+
     team: str
     multiplier: float
 
@@ -48,14 +59,22 @@ class Team:
 
 @dataclass
 class Game:
+    """Game representation as used in GameQueue."""
+
     game_id: str
     players: List[User]
-    results: List[int]
-    finished: List[bool]
+    results: List[int]  # the result a user submitted, -2: nothing submitted, 0: False, 1: True
+    finished: List[bool]  # whether a user submitted the results of a game
     quiz_name: Optional[str]
-    question: Optional[Dict[str, Any]]
+    question: Optional[Dict[str, Union[str, List[str]]]]
 
-    def __init__(self, game_id: str, players: List[User], quiz_name: str, question: Dict[str, Any]):
+    def __init__(
+        self,
+        game_id: str,
+        players: List[User],
+        quiz_name: str,
+        question: Dict[str, Union[str, List[str]]],
+    ):
         self.game_id = game_id
         self.players = players
         self.results = [-2, -2]
@@ -63,8 +82,8 @@ class Game:
         self.quiz_name = quiz_name
         self.question = question
 
-    def player_in_game(self, uid: str) -> bool:
-        return uid in map(attrgetter('uid'), self.players)
+    def is_player_in_game(self, uid: str) -> bool:
+        return uid in map(attrgetter("uid"), self.players)
 
     @property
     def is_finished(self) -> bool:
@@ -81,16 +100,16 @@ class Game:
         self.results[pid] = answer
 
     def get_player_id(self, uid: str) -> int:
-        return list(map(attrgetter('uid'), self.players)).index(uid)
+        return list(map(attrgetter("uid"), self.players)).index(uid)
 
     def get_result_for_player(self, pid: int) -> str:
         # we might treat a 'both won' scenario differently that a 'both lost' one, but for now they are the same
         if self.results[pid] == self.results[not pid]:
-            return 'TIE'
+            return "TIE"
         if self.results[pid] and not self.results[not pid]:
-            return 'WON'
+            return "WON"
         else:
-            return 'LOST'
+            return "LOST"
 
     @property
     def json(self) -> Dict[str, Union[str, List[int], List[User]]]:
@@ -106,6 +125,8 @@ class Game:
 
 @dataclass
 class RallyItem:
+    """Stores data for the Rally Queue"""
+
     team: str
     room: str
     initiator: str
@@ -115,4 +136,5 @@ class RallyItem:
         return dict(team=self.team, room=self.room, initiator=self.initiator)
 
 
-if __name__ == '__main__': pass
+if __name__ == "__main__":
+    pass
