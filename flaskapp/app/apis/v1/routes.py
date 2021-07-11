@@ -1,10 +1,10 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-"""
-This file contains the routes callable for our frontend
-"""
+
 __date__ = "2021-05-13"
 __version__ = "0.0.1"
+
+"""Url routes for the server."""
 
 __all__ = ("v1",)
 
@@ -29,7 +29,6 @@ from apis.v1.database.interface import (
     get_escaped_by_db,
     get_current_team_with_member_names,
     get_colour_of_team,
-    get_current_quizzes,
 )
 from contextlib import suppress
 from apis.v1.database.live_data import LiveData

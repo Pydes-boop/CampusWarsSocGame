@@ -1,6 +1,8 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+"""Collection of items that are stored in TimedQueue dictionaries."""
+
 __date__ = "2021-07-07"
 __version__ = "0.0.1"
 

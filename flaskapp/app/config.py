@@ -1,6 +1,8 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-"""various config settings"""
+
+"""Flask configuration for either development or production. Set in app.py"""
+
 __date__ = "2021-05-13"
 __version__ = "0.0.1"
 
