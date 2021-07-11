@@ -160,7 +160,7 @@ def alternative_calculation():
     for group in current_partition:
         teams.append(Group(generate_team_name(), get_random_color(), group))
     variables.finished=True
-    return interface.add_new_teams(teams)
+    return result
 
 
 def find_next_swap(graph, current_partition, min_size, max_size):
