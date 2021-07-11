@@ -14,6 +14,7 @@ import variables
 from typing import Any
 from random import choice
 import metis
+
 threshold = 100
 finished = True
 
@@ -24,6 +25,7 @@ class Group:
     A team or group has 3 distinct values when we create them: the name, the color to be displayed and a list of the
     members
     """
+
     name: str
     color: str
     members: Any
@@ -46,21 +48,29 @@ def wedding_seating():
     # create list of all possible tables
     possible_groups = []
     for i in range(min_group_size, max_group_size + 1):
-        possible_groups.extend([tuple(c) for c in pulp.combination(social_network.nodes, i)])
+        possible_groups.extend(
+            [tuple(c) for c in pulp.combination(social_network.nodes, i)]
+        )
 
     # create a binary variable to state that a table setting is used
-    x = pulp.LpVariable.dicts('table', possible_groups,
-                              lowBound=0,
-                              upBound=1,
-                              cat=pulp.LpInteger)
+    x = pulp.LpVariable.dicts(
+        "table", possible_groups, lowBound=0, upBound=1, cat=pulp.LpInteger
+    )
     seating_model = pulp.LpProblem("Wedding-Seating-Model", pulp.LpMinimize)
-    seating_model += sum([happiness(group, social_network) * x[group] for group in possible_groups])
+    seating_model += sum(
+        [happiness(group, social_network) * x[group] for group in possible_groups]
+    )
 
     # specify the maximum number of groups
-    seating_model += sum([x[group] for group in possible_groups]) <= max_groups, "Maximum_number_of_tables"
+    seating_model += (
+        sum([x[group] for group in possible_groups]) <= max_groups,
+        "Maximum_number_of_tables",
+    )
     for user in social_network.nodes:
-        seating_model += sum([x[group] for group in possible_groups
-                              if user in group]) == 1, "Must_seat_%s" % user
+        seating_model += (
+            sum([x[group] for group in possible_groups if user in group]) == 1,
+            "Must_seat_%s" % user,
+        )
     seating_model.solve()
     user_groups = []
     for group in possible_groups:
@@ -82,7 +92,7 @@ def happiness(group, social_network):
     for i in range(0, len(group) - 1):
         for j in range(i + 1, len(group)):
             if social_network.has_edge(group[i], group[j]):
-                return_value += social_network[group[i]][group[j]]['weight']
+                return_value += social_network[group[i]][group[j]]["weight"]
     return return_value
 
 
@@ -95,8 +105,10 @@ def alternative_calculation():
     social_network = get_graph()
     min_group_size = 4
     max_group_size = 6
-    current_partition = [list(social_network.nodes)[x:x + min_group_size] for x in
-                         range(0, social_network.number_of_nodes(), min_group_size)]
+    current_partition = [
+        list(social_network.nodes)[x : x + min_group_size]
+        for x in range(0, social_network.number_of_nodes(), min_group_size)
+    ]
     if len(current_partition[len(current_partition) - 1]) != min_group_size:
         last_entries = current_partition[len(current_partition) - 1]
         current_partition.pop()
@@ -106,10 +118,16 @@ def alternative_calculation():
     copied_list = []
     for i in current_partition:
         copied_list.append(i[:])
-    result = {"before": {"name": "before", "list": copied_list}, "swapList": [], "swaps": []}
+    result = {
+        "before": {"name": "before", "list": copied_list},
+        "swapList": [],
+        "swaps": [],
+    }
 
     while should_swap_again:
-        next_swap = find_next_swap(social_network, current_partition, min_group_size, max_group_size)
+        next_swap = find_next_swap(
+            social_network, current_partition, min_group_size, max_group_size
+        )
         result["swaps"].append(next_swap["sum"])
         result["swapList"].append(next_swap)
         if next_swap["sum"] == 0:
@@ -119,10 +137,14 @@ def alternative_calculation():
         if next_swap["sum"] < biggest_change * 0.01:
             should_swap_again = False
         if not next_swap["player1"] is None:
-            player = current_partition[next_swap["partition1"]].pop(next_swap["player1"])
+            player = current_partition[next_swap["partition1"]].pop(
+                next_swap["player1"]
+            )
             current_partition[next_swap["partition2"]].append(player)
         if not next_swap["player2"] is None:
-            player = current_partition[next_swap["partition2"]].pop(next_swap["player2"])
+            player = current_partition[next_swap["partition2"]].pop(
+                next_swap["player2"]
+            )
             current_partition[next_swap["partition1"]].append(player)
 
     result["after"] = current_partition
@@ -156,7 +178,9 @@ def find_next_swap(graph, current_partition, min_size, max_size):
                     new_p2.append(pl1)
                     new_sum = happiness(new_p, graph) + happiness(new_p2, graph)
                     if new_sum - old_sum > best_result["sum"]:
-                        best_result = get_best_result_as_dict(new_sum - old_sum, k, None, i, j)
+                        best_result = get_best_result_as_dict(
+                            new_sum - old_sum, k, None, i, j
+                        )
             if i <= j:
                 for k in range(0, len(p)):
                     for m in range(0, len(p2)):
@@ -170,17 +194,21 @@ def find_next_swap(graph, current_partition, min_size, max_size):
                         new_p2.append(pl1)
                         new_sum = happiness(new_p, graph) + happiness(new_p2, graph)
                         if new_sum - old_sum > best_result["sum"]:
-                            best_result = get_best_result_as_dict(new_sum - old_sum, k, m, i, j)
+                            best_result = get_best_result_as_dict(
+                                new_sum - old_sum, k, m, i, j
+                            )
 
     return best_result
 
 
 def get_best_result_as_dict(sum, pl1, pl2, part1, part2):
-    return {"sum": sum,
-            "player1": pl1,
-            "player2": pl2,
-            "partition1": part1,
-            "partition2": part2}
+    return {
+        "sum": sum,
+        "player1": pl1,
+        "player2": pl2,
+        "partition1": part1,
+        "partition2": part2,
+    }
 
 
 def get_graph():
@@ -202,16 +230,22 @@ def get_graph():
         for i in range(0, len(users) - 1):
             for j in range(i + 1, len(users)):
                 if social_network.has_edge(users[i], users[j]):
-                    social_network[users[i]][users[j]]['weight'] += (1 / len(users))
-                    social_network[users[i]][users[j]]['counter'] += 1
+                    social_network[users[i]][users[j]]["weight"] += 1 / len(users)
+                    social_network[users[i]][users[j]]["counter"] += 1
                 else:
-                    social_network.add_edge(users[i], users[j], weight=(1 / len(users)), counter=1)
+                    social_network.add_edge(
+                        users[i], users[j], weight=(1 / len(users)), counter=1
+                    )
     loners = nx.isolates(social_network)
     for user in list(loners):
-        social_network.add_edge(user, choice(list(social_network.nodes())), weight=0.0001, counter=1)
-        social_network.add_edge(user, choice(list(social_network.nodes())), weight=0.0001, counter=1)
+        social_network.add_edge(
+            user, choice(list(social_network.nodes())), weight=0.0001, counter=1
+        )
+        social_network.add_edge(
+            user, choice(list(social_network.nodes())), weight=0.0001, counter=1
+        )
     for u, v, d in social_network.edges(data=True):
-        d['weight'] = d['weight'] / d['counter']
+        d["weight"] = d["weight"] / d["counter"]
     return social_network
 
 
@@ -235,10 +269,10 @@ def metis_calulation():
     :return: boolean, (None or team that could not be added)
     """
     social_network = get_graph()
-    social_network.graph['edge_weight_attr'] = 'weight'
+    social_network.graph["edge_weight_attr"] = "weight"
     # for metis to use the weights, they have to be int
     for u, v, d in social_network.edges(data=True):
-        d['weight'] = int(d['weight'] * 10000)
+        d["weight"] = int(d["weight"] * 10000)
     max_groups = get_max_groups(social_network, 5)
     (edgecuts, parts) = metis.part_graph(social_network, max_groups)
     teams = []
@@ -280,7 +314,11 @@ def greedy_random():
     while len(all_users) > 0:
         edges = graphs[j].edges(teams[j][0])
         if len(edges) >= 1:
-            friends = sorted(graphs[j].edges(teams[j][0], data=True), key=lambda x: x[2]['weight'], reverse=True)
+            friends = sorted(
+                graphs[j].edges(teams[j][0], data=True),
+                key=lambda x: x[2]["weight"],
+                reverse=True,
+            )
             best_friend = friends[0][1]
             teams[j].append(best_friend)
             for graph in graphs:
