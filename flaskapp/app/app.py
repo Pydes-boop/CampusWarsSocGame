@@ -11,6 +11,7 @@ from config import ProductionConfig
 from flask import Flask, jsonify, request, abort
 from apis.v1.routes import v1
 from apis.v1 import mongo
+import variables
 
 
 def check_ua(ua, candidates) -> bool:
@@ -35,7 +36,7 @@ def create_app():
     app = Flask(__name__)
     app.config.from_object(ProductionConfig)
     app.register_blueprint(v1, url_prefix="/v1")
-
+    variables.finished = True
     app.config["MONGO_URI"] = (
         f"mongodb://"
         f"{environ['MONGODB_USERNAME']}:{environ['MONGODB_PASSWORD']}"
@@ -47,8 +48,8 @@ def create_app():
     def ua_check():
         """Actual check if the User-Agent is know to us."""
         if (not request.url_rule
-            or "live-debug" not in request.url_rule.rule
-            and not check_ua(
+                or "live-debug" not in request.url_rule.rule
+                and not check_ua(
                     request.headers.get("User-Agent", "NONE"),
                     ["CampusWarsFrontend", "Postman", "Android"]
                 )

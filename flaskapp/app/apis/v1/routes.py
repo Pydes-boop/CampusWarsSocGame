@@ -172,7 +172,11 @@ class QuizRefresh(Resource):
     @request_requires(headers=["uid", "team", "room", "lid"])
     def post(self):
         """
-        Refresh quiz state and maybe or join a game."""
+        Refresh quiz state and maybe or join a game.
+        First, do the same thing as with quiz-request, but then also check if it was possible to match you with
+        an opponent
+        if yes, the game information will be returned
+        """
         # I know it is the same as above, but we might
         # have to something different here later
         if request.headers["uid"] not in live_data.room_queue:
