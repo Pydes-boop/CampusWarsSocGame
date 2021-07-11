@@ -343,9 +343,7 @@ class Start(Resource):
             elif request.headers["variant"] == "greedy":
                 group_creation = threading.Thread(target=groupCreation.greedy_random)
             elif request.headers["variant"] == "alternative":
-                group_creation = threading.Thread(
-                    target=groupCreation.alternative_calculation
-                )
+                group_creation = threading.Thread(target=groupCreation.alternative_calculation)
             else:
                 group_creation = threading.Thread(target=groupCreation.metis_calulation)
 
