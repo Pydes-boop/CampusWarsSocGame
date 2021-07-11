@@ -395,7 +395,7 @@ class Test(Resource):
     """Test route for marina, ignore for grading"""
 
     def get(self):
-        return groupCreation.alternative_calculation()[0]
+        return variables.finished
 
 
 @api.resource("/robin")
