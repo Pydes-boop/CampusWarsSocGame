@@ -78,7 +78,7 @@ public class LoadingActivity extends AppCompatActivity
                         Intent myIntent = new Intent(LoadingActivity.this, MainScreenActivity.class);
                         startActivityForResult(myIntent, 0);
 
-                        //Test code TODO: get a login for this test account
+                        //Test code, Now you can login as test user: testing@test.com testingthis
                         /*
                         SharedPreferences settigs = ctx.getSharedPreferences("userdata", 0);
                         SharedPreferences.Editor editor = settings.edit();

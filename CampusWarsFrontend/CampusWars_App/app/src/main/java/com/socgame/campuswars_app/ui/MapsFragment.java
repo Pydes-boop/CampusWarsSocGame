@@ -56,7 +56,7 @@ public class MapsFragment extends Fragment implements GpsObserver {
      */
     private LatLng position = new LatLng(48.2650, 11.6716);//Using campus as default/fallback position;
     private GoogleMap map;
-    private Marker localPos;//TODO: maybe google maps has an integrated way to do that?
+    private Marker localPos;
     BackendCom bCom;
 
     private List<Marker> lectureHalls = new LinkedList<Marker>();
@@ -119,13 +119,14 @@ public class MapsFragment extends Fragment implements GpsObserver {
      * @param lecture current lecture title, alternatively any sub-headline
      * @return reference of the Marker. Call Marker.remove() to delete lecture hall
      */
-    public Marker addLectureHall(LatLng pos, String color, String name, String lecture) {
-        //TODO: maybe safe locally for further analysis?
+    public Marker addLectureHall(LatLng pos, String color, String name, String lecture)
+    {
 
         MarkerOptions options = customMarker(pos, name, lecture, color, R.drawable.ic_tower_solid, 2);//defaultMarker(pos, name, lecture, color);
-
         Marker marker = map.addMarker(options);
-        lectureHalls.add(marker);
+
+        lectureHalls.add(marker);//safe reference to marker, so i can delete it later
+
         return marker;
     }
 
@@ -166,7 +167,8 @@ public class MapsFragment extends Fragment implements GpsObserver {
         Log.d("GPS", this + " location updated to " + loc.latitude + ", " + loc.longitude);
 
 
-        //TODO: find a better way to call this periodically
+        //NOTE: Ideally this should be called at a constant frequency, instead of on GPS change.
+        // While this does lead to problems in the emulator, on the target device, it works perfectly
         updateLectureHalls();
 
         updatePositionMarker();
@@ -255,17 +257,18 @@ public class MapsFragment extends Fragment implements GpsObserver {
         }
     }
 
-    //TODO: find a better place to calls this
+    //NOTE: Ideally this should be called at a constant frequency, instead of on GPS change.
+    // While this does lead to problems in the emulator, on the target device, it works perfectly
     private void updateLectureHalls()
     {
         //clearing halls now in callback
         bCom.roomDetectionGet(roomfinderGetListener(), httpErrorListener());
     }
 
+    //NOTE: Does not check for garbage input data (bad parsing from http call)
     private MarkerOptions customMarker(LatLng pos, String title, String desc, String color, int drawable, float scale)
     {
         //Load icon
-        //TODO: check for garbage input drawable
         BitmapDrawable bitmapDrawable = (BitmapDrawable) getResources().getDrawable(drawable).mutate();
         Bitmap bitmap = bitmapDrawable.getBitmap();
 
