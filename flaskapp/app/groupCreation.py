@@ -286,6 +286,7 @@ def metis_calulation():
     :rtype: tuple
     """
     social_network = get_graph()
+    variables.graph_created = True # remove me
     social_network.graph["edge_weight_attr"] = "weight"
     # for metis to use the weights, they have to be int
     for u, v, d in social_network.edges(data=True):
@@ -303,6 +304,7 @@ def metis_calulation():
     for team in teams:
         user_groups.append(Group(generate_team_name(), get_random_color(), team))
     variables.finished = True
+    variables.groups_created = True # remove me
     return interface.add_new_teams(user_groups)
 
 
