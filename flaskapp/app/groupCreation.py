@@ -141,7 +141,7 @@ def alternative_calculation():
             if not next_swap["player2"] is None:
                 player = current_partition[next_swap["partition2"]].pop(next_swap["player2"])
                 current_partition[next_swap["partition1"]].append(player)
-        if total_happiness(current_partition) > total_happiness(best_partition):
+        if total_happiness(current_partition, social_network) > total_happiness(best_partition, social_network):
             best_partition = current_partition[:]
         if min_group_amount >= len(current_partition):
             break
