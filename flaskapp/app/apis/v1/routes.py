@@ -416,6 +416,12 @@ class LiveDebug(Resource):
     def get(self):
         return jsonify(live_data.json)
 
+@api.resource("/group-debug") # remove me
+class LiveDebug(Resource):
+    """debug route for group creation variables"""
+
+    def get(self):
+        return {"finished": variables.finished, "graph": variables.graph_created, "groups": variables.groups_created}
 
 @api.resource("/echo")
 class Echo(Resource):
