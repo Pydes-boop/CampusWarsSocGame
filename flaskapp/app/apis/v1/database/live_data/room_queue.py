@@ -1,10 +1,10 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-__date__ = '2021-07-07'
-__version__ = '0.0.1'
+__date__ = "2021-07-07"
+__version__ = "0.0.1"
 
-__all__ = ('RoomQueue',)
+__all__ = ("RoomQueue",)
 
 from apscheduler.schedulers.background import BackgroundScheduler
 from apis.v1.database.live_data.items import User, Team
@@ -19,14 +19,24 @@ MULTIPLIER_UPDATE_RATE_SEC: int = 3
 
 
 class Multiplier(dict, Dict[str, Team]):
+    """\
+        Stores each rooms occupier and their current multiplier.
+        Also increases these multipliers regularly if a team stays occupier.
+    """
+
     scheduler: BackgroundScheduler
     queue: Any
 
     def __init__(self, queue: Any):
         super(Multiplier, self).__init__()
-        self.scheduler = BackgroundScheduler({'apscheduler.timezone': 'Europe/Vienna'})
+        self.scheduler = BackgroundScheduler({"apscheduler.timezone": "Europe/Vienna"})
         self.scheduler.start()
-        self.scheduler.add_job(self.check, 'interval', id='multiplier_check', seconds=MULTIPLIER_UPDATE_RATE_SEC)
+        self.scheduler.add_job(
+            self.check,
+            "interval",
+            id="multiplier_check",
+            seconds=MULTIPLIER_UPDATE_RATE_SEC,
+        )
         self.queue = queue
 
     def check(self) -> None:
@@ -38,35 +48,39 @@ class Multiplier(dict, Dict[str, Team]):
             if room not in rooms:
                 del self[room]
         for room, teams in occupancy:
-            if room not in self: self[room] = Team('', 0)
+            if room not in self:
+                self[room] = Team("", 0)
             max_occupancy = max(teams.values())
             teams = [key for key, value in teams.items() if value == max_occupancy]
             if self[room].team in teams:
                 self[room].multiplier += MULTIPLIER_INCREASE
             elif not teams:
-                self[room].team = 'Nobody'
+                self[room].team = "Nobody"
                 self[room].multiplier = 1.0
             else:
-                team = (teams + [''])[0]  # append empty string in case there is no occupier
+                team = (teams + [""])[0]  # append empty string in case there is no occupier
                 self[room].team = team
                 self[room].multiplier = 1.0
 
     def __getitem__(self, item: str):
-        try: return super(Multiplier, self).__getitem__(item)
+        try:
+            return super(Multiplier, self).__getitem__(item)
         except KeyError:
-            return Team('Nobody', 1.0)
+            return Team("Nobody", 1.0)
 
     def __del__(self) -> None:
         self.scheduler.shutdown(wait=False)
 
 
 class RoomQueue(TimedQueue):
+    """Store all users that are currently in rooms."""
+
     multiplier: Multiplier
-    live_data: 'LiveData'
+    live_data: "LiveData"
     life_time = 180
     max_refresh = 400
 
-    def __init__(self, live_data: 'LiveData'):
+    def __init__(self, live_data: "LiveData"):
         super(RoomQueue, self).__init__()
         self.multiplier = Multiplier(self)
         self.live_data = live_data
@@ -76,13 +90,14 @@ class RoomQueue(TimedQueue):
         if uid in self and room == self[uid].room:
             self.refresh(uid)
         elif uid in self and room != self[uid].room:
-            with suppress(KeyError): del self[uid]
+            with suppress(KeyError):
+                del self[uid]
             self[uid] = User(uid, team, room)
         else:
             self[uid] = User(uid, team, room)
 
     def __delitem__(self, key):
-        del self.live_data.quiz_queue[key]
+        del self.live_data.quiz_queue[key]  # delete users also from the quizqueue once they leave
         super().__delitem__(key)
 
     def get_users_in_room(self, room: str) -> List[User]:
@@ -105,4 +120,5 @@ class RoomQueue(TimedQueue):
         return self.multiplier
 
 
-if __name__ == '__main__': pass
+if __name__ == "__main__":
+    pass

@@ -1,4 +1,8 @@
-__all__ = ('now', 'timestamp', 'from_timestamp',)
+__all__ = (
+    "now",
+    "timestamp",
+    "from_timestamp",
+)
 
 from time import time
 from datetime import datetime, timezone
@@ -10,7 +14,7 @@ from time import strftime
 START_SUMMER_TERM = 4
 END_SUMMER_TERM = 9
 
-tz = pytz.timezone('Europe/Vienna')
+tz = pytz.timezone("Europe/Vienna")
 
 
 def now() -> datetime:
