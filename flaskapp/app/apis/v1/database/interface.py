@@ -4,6 +4,7 @@
 In this file, we define functions necessary so we can communicate effectively with our database.
 As recommended by the mongodb documentation (https://docs.mongodb.com/), we use lowercase with camelCase for the db,
 while we use all lowercases with _ spaces for python
+
 """
 
 __all__ = ("add_room", "add_lecture", "get_all_rooms", "find_closest_room", "add_lectures_to_user",
@@ -26,7 +27,7 @@ def find_closest_room(lon, lat, max_distance):
     Parameters:
         lon (float): longitude of the position
         lat (float): latitude of the position
-        max_distance(float): the maximum distance that may be between a room and the position for it to be considered
+        max_distance (float): the maximum distance that may be between a room and the position for it to be considered
 
     Returns:
         (dict): A dictionary with the room information if a room was found, None otherwise
@@ -42,7 +43,18 @@ def find_closest_room(lon, lat, max_distance):
                                                           "$maxDistance": max_distance}}})
 
 
-def add_room(room_name, longitude, latitude):
+def add_room(room_name, longitude, latitude, campus_id=None):
+    """
+        Adds a room to the database
+
+        Parameters:
+            room_name(str): the roomName of the room that should be added
+            longitude (float): the longitude of the position of the room
+            latitude (float): the latitude of the position of the room
+
+        Returns:
+            (bool): True, if successfully added, False otherwise
+    """
     item = {
         "location":
             {"type": "Point",
@@ -53,27 +65,53 @@ def add_room(room_name, longitude, latitude):
 
 
 def get_all_rooms():
+    """
+        Returns all rooms that are stored in the database.
+
+        Returns:
+            (list of dicts): the list with all rooms stored in the database.
+
+         Description of the keys and their values of the returned dicts:
+            _id: The generated _id of the room
+            location: the location of the room, format: {"type": "Point", "coordinates": [longitude,latitude]}
+            roomName: the name of the room
+            campusID: The id of the campus that room belongs to
+    """
     return list(mongo.db.room.find())
 
 
 def add_lecture(name, term, timetable=[]):
+    """
+        adds a new lecture to the database. If the lecture already exists in the database, only the new entries of the
+        timetable are added instead.
+
+        Parameters:
+            name (str): Name of the lecture
+            term (str): The term in which the lecture is held
+            timetable (list of dicts): The time schedule for the lecture
+
+        Returns:
+            (boo): True, if the lecture was successfully added to the database or all the new entries of the timetable
+            were successfully added, False otherwise
+
+    """
     if timetable is None:
         timetable = []
     entry = mongo.db.lecture.find_one({"name": name, "term": term})
-    if entry is None:
+    if entry is None:  # Entry does not already exist in db, create new one
         item = {
             "name": name,
             "term": term,
             "timetable": timetable
         }
         return mongo.db.lecture.insert_one(item).acknowledged
-    for t in timetable:
+    for t in timetable:  # add entries of timetable that do not already exist in the db
         if any(e["start"] == t["start"] and
                e["end"] == t["end"] and
                e["roomID"] == t["roomID"] and
                e["day"] == t["day"] for e in entry["timetable"]):
             continue
-        elif not any(e["start"] < t["end"] and
+        elif not any(e["start"] < t["end"] and  # test if there is no overlapping with previously added entries
                      e["end"] > t["start"] and
                      e["day"] == t["day"] for e in entry["timetable"]):
             if not mongo.db.lecture.update_one({"_id": entry["_id"]}, {"$push": {"timetable": t}}).matched_count > 0:
@@ -85,6 +123,19 @@ def add_lecture(name, term, timetable=[]):
 
 
 def add_user(firebase_id, name, lectures=[]):
+    """
+        adds a new user to the database. If the user already exists, only the new lectures will be added to the users'
+        lectures list
+
+        Parameters:
+            firebase_id(str): the Firebase ID of the user
+            name(str): The user name
+            lectures(list of ObjectId): the list of lectures the user attended/attends
+
+        Returns:
+            (bool): True, if successfully added the new user / the lectures, False otherwise
+
+    """
     if lectures is None:
         lectures = []
     entry = mongo.db.firebase_users.find_one({"firebaseID": firebase_id})
@@ -105,6 +156,20 @@ def add_user(firebase_id, name, lectures=[]):
 
 
 def add_lectures_to_user(firebase_id, lectures):
+    """
+    adds the lectures given to the list of lectures attended by the user. The list, however, is a list of strings and
+    is not in the right format for our database
+    Given format: <lecture name>:<term>
+    Wanted format: two strings: 1. <lecture name>, 2. <term>
+
+    Parameters:
+        firebase_id (str): the firebase ID of the user that the lectures belong to
+        lectures (list of str): The list of the lectures the user attended
+
+    Returns:
+        (bool): True, if all the insertions were successful, False otherwise
+
+    """
     for i in range(len(lectures)):
         split_string = lectures[i].split(":")
         name = split_string[0]
@@ -123,6 +188,17 @@ def add_lectures_to_user(firebase_id, lectures):
 
 
 def add_question_to_quiz(question, right_answer, wrong_answers, quiz_id):
+    """
+    Adds a question to a quiz into the database.
+
+    Parameters:
+        question(str): The question text of the question
+        right_answer(str): The right answer
+        wrong_answers(list of str): The wrong answers
+        quiz_id: The ID of the quiz the question belongs to
+
+    Returns: True, if insertion was successful, False otherwise
+    """
     if isinstance(quiz_id, str):
         quiz_id = ObjectId(quiz_id)
     item = {
@@ -135,6 +211,9 @@ def add_question_to_quiz(question, right_answer, wrong_answers, quiz_id):
 
 
 def get_current_quizzes(room_id):
+    """
+    
+    """
     if isinstance(room_id, str):
         room_id = ObjectId(room_id)
     lecture = get_current_lecture(room_id)
