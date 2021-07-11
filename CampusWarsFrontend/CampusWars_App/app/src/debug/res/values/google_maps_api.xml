@@ -1,7 +1,5 @@
 <resources>
     <!--
-    TODO: Before you run your application, you need a Google Maps API key.
-
     To get one, follow this link, follow the directions and press "Create" at the end:
 
     https://console.developers.google.com/flows/enableapi?apiid=maps_android_backend&keyType=CLIENT_SIDE_ANDROID&r=D9:CF:AB:1C:44:FE:48:22:50:38:AE:43:33:86:5D:8C:2D:E5:AB:36%3Bcom.socgame.campuswars_app
