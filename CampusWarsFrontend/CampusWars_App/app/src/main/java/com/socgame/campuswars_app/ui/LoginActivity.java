@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.android.volley.Header;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -22,6 +23,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.socgame.campuswars_app.R;
 import com.socgame.campuswars_app.communication.BackendCom;
 import com.socgame.campuswars_app.communication.FirebaseCom;
+import com.socgame.campuswars_app.communication.HttpHeader;
 import com.socgame.campuswars_app.communication.HttpSingleton;
 
 import org.json.JSONArray;
@@ -47,6 +49,7 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
         ctx = this.getApplicationContext();
         FirebaseCom fCom = FirebaseCom.getInstance(ctx);
+        BackendCom bCom = BackendCom.getInstance(ctx);
 
         EditText email = (EditText) findViewById(R.id.editTextTextEmailAddress);
         EditText password = (EditText) findViewById(R.id.editTextTextPassword);
@@ -71,6 +74,10 @@ public class LoginActivity extends AppCompatActivity {
                                 SharedPreferences.Editor editor = settings.edit();
                                 editor.putBoolean("loggedIn", true);
                                 editor.apply();
+
+                                //Getting current team data
+                                HttpHeader header = new HttpHeader(ctx);
+                                bCom.group(myGroupGet(), httpErrorListener(), header);
 
                                 Intent myIntent = new Intent(view.getContext(), MainScreenActivity.class);
                                 startActivityForResult(myIntent, 0);
@@ -103,7 +110,7 @@ public class LoginActivity extends AppCompatActivity {
                     SharedPreferences settings = ctx.getSharedPreferences("userdata", 0);
                     SharedPreferences.Editor editor = settings.edit();
                     String teamName = response.getString("name");
-                    editor.putBoolean("team", true);
+                    editor.putString("team", teamName);
                     editor.apply();
                 } catch (JSONException e) {
                     Log.d("My Group:", e.toString());
