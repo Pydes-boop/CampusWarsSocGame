@@ -467,8 +467,20 @@ def get_player_name(firebase_id):
 
 
 def get_current_team_with_member_names(firebase_id):
-    """
-    
+    """gets all the info about a team & the names of the members of the team that user with the given
+    Firebase ID is in
+
+    :param firebase_id: the Firebase ID of the user
+    :type firebase_id: str
+
+    :return: A dictionary with all the information about the team
+    :rtype: dict
+
+     Description of the keys and their values of the returned dict:
+        :key name: the name of the team
+        :key term: the term the team was active in
+        :key colour: the colour of the team
+        :key members: the list of member names of the team
     """
     my_team = get_current_team(firebase_id)
     if my_team is None:
@@ -478,15 +490,50 @@ def get_current_team_with_member_names(firebase_id):
 
 
 def get_questions_of_quiz(quiz_id):
+    """gets the questions to a given quiz
+    :param quiz_id: The ID of the quiz that we want the questions of
+    :type quiz_id: ObjectId
+
+    :return: the list of questions (as dicts) of the quiz
+    :rtype: list
+
+     Description of the keys and their values of the returned dicts:
+        :key question: The question text of a question
+        :key rightAnswer: the correct answer
+        :key wrongAnswers: a list of wrong answers
+
+    """
     return list(mongo.db.question.find({"quizID": quiz_id}, {"_id": 0, "quizID": 0}))
 
 
 def get_current_team(firebase_id):
+    """gets all the info about a team that user with the given Firebase ID is in
+
+        :param firebase_id: the Firebase ID of the user
+        :type firebase_id: str
+
+        :return: A dictionary with all the information about the team
+        :rtype: dict
+
+         Description of the keys and their values of the returned dict:
+            :key name: the name of the team
+            :key term: the term the team was active in
+            :key colour: the colour of the team
+            :key members: the list of  Firebase IDs of the team members
+        """
     return mongo.db.teams.find_one(
         {"members": {"$elemMatch": {"$eq": firebase_id}}, "term": get_current_term()}, {"_id": 0})
 
 
 def get_colour_of_team(team_name):
+    """gets the colour of a given team, the team has to be active this term
+
+    :param team_name: the name of the team (is unique per term)
+    :type team_name: str
+
+    :return: the team's colour
+    :rtype: str
+    """
     result = mongo.db.teams.find_one({"name": team_name, "term": get_current_term()})
     if result is None:
         return "#212121"
@@ -494,6 +541,22 @@ def get_colour_of_team(team_name):
 
 
 def get_escaped_by_db(text):
+    """This is a function that purely exists because we had a lot of problems with the encoding format of the TUM API.
+    Essentially, what happened is that no matter how we encoded/decoded the infos received by the TUM API prior to
+    saving the values into the database, Umlaute would be shown incorrectly in the database, since there seems to be
+    some encoding / decoding going on between python & mongodb. Therefore, the only way to correctly display our
+    Umlaute, we need to use this function: We put a given text with Umlaute into the database (where an error with the
+    encoding/decoding happens) and immediately read the entry from the database to see what went wrong with the
+    decoding/encoding. Then we simply need to fix that (later, not in this function) in order for it to work.
+    (For some odd reason, without writing the string into the database before fixing first, it will not work)
+
+    :param text: The text received from TUM API
+    :type text: str
+
+    :return: The text that has been corrupted by mongodb
+    :rtype: str
+
+    """
     mongo.db.text.insert_one({"text": text})
     returned_text = mongo.db.text.find_one()["text"]
     mongo.db.text.delete_many({})
@@ -501,16 +564,42 @@ def get_escaped_by_db(text):
 
 
 def get_quiz_info(quiz_id):
+    """get the quiz info of a quiz with Quiz ID quiz_id
+
+    :param quiz_id: the ID of the quiz we want to know the info of
+    :type quiz_id: ObjectId or str
+
+    :return: the info of the quiz stored in a dict
+    :rtype: dict
+
+    Description of the keys and their values of the returned dict:
+        :key _id: The generated id of the quiz
+        :key createdBy: The person that created the quiz
+        :key creationDate: The creation date of the quiz
+        :key name: The name of the quiz
+        :key campusID: The ID of the campus the quiz belongs to, optional
+        :key lectureID: the ID of the lecture the quiz belongs to, optional
+    """
     if isinstance(quiz_id, str):
         quiz_id = ObjectId(quiz_id)
     return mongo.db.quiz.find_one({"_id": quiz_id})
 
 
 def get_number_of_players():
+    """gets the number of players that play our game
+
+    :return: the number of players our game has
+    :rtype: int
+    """
     return len(list(mongo.db.firebase_users.find()))
 
 
 def get_all_lecture_names():
+    """gets all the lectures (but only the names & id)
+
+    :return: the lecture name & id as a dict
+    :rtype: dict
+    """
     return mongo.db.lecture.find({}, {"name": 1})
 
 
