@@ -122,7 +122,7 @@ def alternative_calculation():
             current_partition[i].append(last_entries[i])
     min_group_amount = math.ceil(interface.get_number_of_players() / float(MAX_GROUP_SIZE))
     best_partition = current_partition
-    while True:
+    while min_group_amount <= len(current_partition):
         biggest_change = -1
         should_swap_again = True
         while should_swap_again:
@@ -143,12 +143,8 @@ def alternative_calculation():
                 current_partition[next_swap["partition1"]].append(player)
         if total_happiness(current_partition, social_network) > total_happiness(best_partition, social_network):
             best_partition = current_partition[:]
-        if min_group_amount >= len(current_partition):
-            break
-
         last_entries = current_partition.pop()
-        while len(last_entries) > 0:
-            entry = last_entries.pop()
+        for entry in last_entries:
             for g in current_partition:
                 if len(g) < MAX_GROUP_SIZE:
                     g.append(entry)
