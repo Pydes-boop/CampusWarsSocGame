@@ -183,7 +183,7 @@
             android:layout_weight="0.2" >
         </Space>
 
-
+        <!--
         <Button
             android:id="@+id/raidButton"
             android:layout_width="150sp"
@@ -197,12 +197,12 @@
             android:elevation="15sp"
             android:text="Rally Team"
             android:textColor="@color/textInverted" />
-
+        -->
 
         <Space
             android:layout_width="1dp"
             android:layout_height="0dp"
-            android:layout_weight="0.2" >
+            android:layout_weight="0.1" >
         </Space>
 
 
