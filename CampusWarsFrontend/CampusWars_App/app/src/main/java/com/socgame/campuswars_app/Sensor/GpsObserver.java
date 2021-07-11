@@ -1,6 +1,7 @@
 package com.socgame.campuswars_app.Sensor;
 
 import android.app.Activity;
+import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
 
@@ -20,7 +21,8 @@ public interface GpsObserver
 
         if(instance != null)
             instance.register(this);
-        //else TODO: Log erronious state
+        else
+            Log.e("GPS", "Tried to register " + this +" to null singleton GPS-Lister");
     }
 
     public default void unregister(Activity activity)
@@ -29,6 +31,7 @@ public interface GpsObserver
 
         if(instance != null)
             instance.unregister(this);
-        //else TODO: Log erronious state
+        else
+            Log.e("GPS", "Tried to register " + this +" to null singleton GPS-Lister");
     }
 }

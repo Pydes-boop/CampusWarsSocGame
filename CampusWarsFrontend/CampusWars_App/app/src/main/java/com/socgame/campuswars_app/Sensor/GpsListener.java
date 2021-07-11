@@ -91,7 +91,8 @@ public class GpsListener implements LocationListener
     }
 
     //USE THIS TO ACCESS THE CLASS
-    public static GpsListener getInstance(Activity activity)//TODO: I REALLY HATE HAVING TO GIVE AN ACTIVITY HERE! I WANT TO BE ABLE TO GET GPS FROM NORMAL JAVA
+    //NOTE: I REALLY HATE HAVING TO GIVE AN ACTIVITY HERE! I WANT TO BE ABLE TO GET GPS FROM NORMAL JAVA
+    public static GpsListener getInstance(Activity activity)
     {
         if(instance == null)
             instance = new GpsListener(activity);
@@ -172,8 +173,8 @@ public class GpsListener implements LocationListener
     @Override
     public void onLocationChanged(@NonNull Location location)
     {
-        //TODO: DO CHECKS
-        //TODO: smooth factoring in accuracy
+        //Important checks done at setup
+        //NOTE: smoothing factoring in accuracy would be nice
         LatLng loc = locToLatLng(location);
         this.location = loc;
 
