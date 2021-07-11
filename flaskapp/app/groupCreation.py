@@ -14,8 +14,12 @@ import variables
 from typing import Any
 from random import choice
 import metis
+
 threshold = 100
 finished = True
+MIN_GROUP_SIZE = 4
+MAX_GROUP_SIZE = 6
+MIN_GROUP_SIZE_NO_MAX = 5
 
 
 @dataclass
@@ -36,16 +40,18 @@ def wedding_seating():
     gets the lectures and users from the db,
     and saves the new groups with a random name and color to the db
     This function takes a very long time to run so we no longer use it in our productive code.
-    :return: boolean, (None or team that could not be added)
+
+    :return: tuple (bool, Team): the bool says whether the insertion of the new teams into the db was successful and
+    if not, the second entry of the tuple said which was the team where the insertion failed
+    :rtype: tuple
     """
     social_network = get_graph()
-    min_group_size = 4
-    max_groups = get_max_groups(social_network, min_group_size)
-    max_group_size = 6
+
+    max_groups = get_max_groups(social_network, MIN_GROUP_SIZE)
 
     # create list of all possible tables
     possible_groups = []
-    for i in range(min_group_size, max_group_size + 1):
+    for i in range(MIN_GROUP_SIZE, MAX_GROUP_SIZE + 1):
         possible_groups.extend([tuple(c) for c in pulp.combination(social_network.nodes, i)])
 
     # create a binary variable to state that a table setting is used
@@ -66,14 +72,14 @@ def wedding_seating():
     for group in possible_groups:
         if x[group].value() == 1.0:
             user_groups.append(Group(generate_team_name(), get_random_color(), group))
-    # return user_groups
+
     variables.finished = True
     return interface.add_new_teams(user_groups)
 
 
 def happiness(group, social_network):
     """
-    find the happiness or sum of edge weights a group of people have in between themself
+    find the happiness or sum of edge weights a group of people have in between themselves
     :param social_network: complete nx graph with edges, nodes and weight on edges
     :param group: list of node names to check
     :return: sum of all weights between the group
@@ -88,58 +94,87 @@ def happiness(group, social_network):
 
 def alternative_calculation():
     """
-
-    :return: boolean, (None or team that could not be added)
+    initial alternative calculation, since wedding_seating is way too inefficient.
+    the players are divided into all possible amount of groups based on the min / max group size
+    Then, players will swap into groups as long as a swap is found that would increase the average happiness of
+    groups.
+    :return: tuple (bool, Team): the bool says whether the insertion of the new teams into the db was successful and
+    if not, the second entry of the tuple said which was the team where the insertion failed
+    :rtype: tuple
     """
-    biggest_change = -1
+
     social_network = get_graph()
-    min_group_size = 4
-    max_group_size = 6
-    current_partition = [list(social_network.nodes)[x:x + min_group_size] for x in
-                         range(0, social_network.number_of_nodes(), min_group_size)]
-    if len(current_partition[len(current_partition) - 1]) != min_group_size:
-        last_entries = current_partition[len(current_partition) - 1]
-        current_partition.pop()
+    current_partition = [list(social_network.nodes)[x:x + MIN_GROUP_SIZE] for x in
+                         range(0, social_network.number_of_nodes(), MIN_GROUP_SIZE)]
+    if len(current_partition[len(current_partition) - 1]) != MIN_GROUP_SIZE:
+        last_entries = current_partition.pop()
         for i in range(0, len(last_entries)):
             current_partition[i].append(last_entries[i])
-    should_swap_again = True
-    copied_list = []
-    for i in current_partition:
-        copied_list.append(i[:])
-    result = {"before": {"name": "before", "list": copied_list}, "swapList": [], "swaps": []}
+    min_group_amount = ceil(interface.get_number_of_players() / float(MAX_GROUP_SIZE))
+    best_partition = current_partition
+    while True:
+        biggest_change = -1
+        should_swap_again = True
+        while should_swap_again:
+            next_swap = find_next_swap(social_network, current_partition, MIN_GROUP_SIZE, MAX_GROUP_SIZE)
 
-    while should_swap_again:
-        next_swap = find_next_swap(social_network, current_partition, min_group_size, max_group_size)
-        result["swaps"].append(next_swap["sum"])
-        result["swapList"].append(next_swap)
-        if next_swap["sum"] == 0:
+            if next_swap["sum"] == 0:
+                break
+            if biggest_change < next_swap["sum"]:
+                biggest_change = next_swap["sum"]
+            if next_swap["sum"] < biggest_change * 0.01:  # only super small changes are not worth it since they would
+                # decrease performance significantly
+                should_swap_again = False
+            if not next_swap["player1"] is None:
+                player = current_partition[next_swap["partition1"]].pop(next_swap["player1"])
+                current_partition[next_swap["partition2"]].append(player)
+            if not next_swap["player2"] is None:
+                player = current_partition[next_swap["partition2"]].pop(next_swap["player2"])
+                current_partition[next_swap["partition1"]].append(player)
+        if total_happiness(current_partition) > total_happiness(best_partition):
+            best_partition = current_partition[:]
+        if min_group_amount >= len(current_partition):
             break
-        if biggest_change < next_swap["sum"]:
-            biggest_change = next_swap["sum"]
-        if next_swap["sum"] < biggest_change * 0.01:
-            should_swap_again = False
-        if not next_swap["player1"] is None:
-            player = current_partition[next_swap["partition1"]].pop(next_swap["player1"])
-            current_partition[next_swap["partition2"]].append(player)
-        if not next_swap["player2"] is None:
-            player = current_partition[next_swap["partition2"]].pop(next_swap["player2"])
-            current_partition[next_swap["partition1"]].append(player)
 
-    result["after"] = current_partition
+        last_entries = current_partition.pop()
+        while len(last_entries) > 0:
+            entry = last_entries.pop()
+            for g in current_partition:
+                if len(g) < MAX_GROUP_SIZE:
+                    g.append(entry)
+                    break
+
     teams = []
     for group in current_partition:
         teams.append(Group(generate_team_name(), get_random_color(), group))
     return interface.add_new_teams(teams)
 
 
+def total_happiness(partition, graph):
+    """ returns the sum of all happiness of all groups in the partition
+    :param partition: the partition of the players into groups
+    :param graph: our social network graph
+
+    :return: sum of the happiness of the groups
+    """
+    result = 0
+    for p in partition:
+        result += happiness(p, graph)
+    return result
+
+
 def find_next_swap(graph, current_partition, min_size, max_size):
     """
-
-    :param graph:
-    :param current_partition:
-    :param min_size:
-    :param max_size:
-    :return:
+    finds the next swap based on a current partition
+    next swap: the swapping of a player into another team or two players of different teams swapping their places
+               only if a swap would result in the increase of the average happiness of the teams, it is considered
+               the highest increase will be chosen as the next swap
+    :param graph: the graph that describes who has a relationship (and how string is it) to whom
+    :param current_partition: how the players are currently partitioned into groups
+    :param min_size: the min_size of members that a group can't go under
+    :param max_size: the max_size of members that a group can't go over
+    :return: the next swap that should be performed, described as a dict
+    :rtype: dict
     """
     best_result = get_best_result_as_dict(0, None, None, None, None)
     for i, p in enumerate(current_partition):
@@ -147,26 +182,25 @@ def find_next_swap(graph, current_partition, min_size, max_size):
             if i == j:
                 continue
             old_sum = happiness(p, graph) + happiness(p2, graph)
-            if len(p) > min_size and len(p2) < max_size:
+            if len(p) > min_size and len(p2) < max_size:  # can a swap where only one player switches teams take place?
                 for k in range(0, len(p)):
-                    pl1 = p[k]
+
                     new_p = p[:]
-                    new_p.pop(k)
+                    pl1 = new_p.pop(k)
                     new_p2 = p2[:]
                     new_p2.append(pl1)
                     new_sum = happiness(new_p, graph) + happiness(new_p2, graph)
                     if new_sum - old_sum > best_result["sum"]:
                         best_result = get_best_result_as_dict(new_sum - old_sum, k, None, i, j)
-            if i <= j:
+            if i <= j:  # swaps in both directions need to be checked only once, it is therefore sufficient to do it
+                # only if i< j
                 for k in range(0, len(p)):
                     for m in range(0, len(p2)):
-                        pl1 = p[k]
-                        pl2 = p2[m]
                         new_p = p[:]
-                        new_p.pop(k)
-                        new_p.append(pl2)
+                        pl1 = new_p.pop(k)
                         new_p2 = p2[:]
-                        new_p2.pop(m)
+                        pl2 = new_p2.pop(m)
+                        new_p.append(pl2)
                         new_p2.append(pl1)
                         new_sum = happiness(new_p, graph) + happiness(new_p2, graph)
                         if new_sum - old_sum > best_result["sum"]:
@@ -176,6 +210,7 @@ def find_next_swap(graph, current_partition, min_size, max_size):
 
 
 def get_best_result_as_dict(sum, pl1, pl2, part1, part2):
+    """returns a dict with the values given"""
     return {"sum": sum,
             "player1": pl1,
             "player2": pl2,
@@ -187,7 +222,7 @@ def get_graph():
     """
     creates a nx graph with users as nodes and edges, when 2 students attended the same lecture. The edge weights are
     higher the more lectures the two users share and the less users in total attended the lecture
-    :return: nx.Graph
+    :return: nx.Graph described above
     """
     used_names.clear()
     lectures = {}
@@ -208,8 +243,10 @@ def get_graph():
                     social_network.add_edge(users[i], users[j], weight=(1 / len(users)), counter=1)
     loners = nx.isolates(social_network)
     for user in list(loners):
-        social_network.add_edge(user, choice(list(social_network.nodes())), weight=0.0001, counter=1)
-        social_network.add_edge(user, choice(list(social_network.nodes())), weight=0.0001, counter=1)
+        other_nodes = list(social_network.nodes())
+        other_nodes.remove(user)
+        social_network.add_edge(user, choice(other_nodes), weight=0.0001, counter=1)
+        social_network.add_edge(user, choice(other_nodes), weight=0.0001, counter=1)
     for u, v, d in social_network.edges(data=True):
         d['weight'] = d['weight'] / d['counter']
     return social_network
@@ -217,10 +254,11 @@ def get_graph():
 
 def get_max_groups(social_network, min_group_size=4):
     """
-    This function calcualtes how many teams we have to create
+    This function calculates how many teams we have to create
     :param social_network: nx.Graph of our users
     :param min_group_size: minimum amount of players in every group
-    :return: int
+    :return: the number of max groups
+    :rtype: int
     """
     if len(social_network.nodes) % min_group_size > 0:
         max_groups = int((len(social_network.nodes) / min_group_size) + 1)
@@ -232,14 +270,16 @@ def get_max_groups(social_network, min_group_size=4):
 def metis_calulation():
     """
     uses the c library metis for efficient partitioning based on weighted graph
-    :return: boolean, (None or team that could not be added)
+    :return: tuple (bool, Team): the bool says whether the insertion of the new teams into the db was successful and
+    if not, the second entry of the tuple said which was the team where the insertion failed
+    :rtype: tuple
     """
     social_network = get_graph()
     social_network.graph['edge_weight_attr'] = 'weight'
     # for metis to use the weights, they have to be int
     for u, v, d in social_network.edges(data=True):
         d['weight'] = int(d['weight'] * 10000)
-    max_groups = get_max_groups(social_network, 5)
+    max_groups = get_max_groups(social_network, MIN_GROUP_SIZE_NO_MAX)
     (edgecuts, parts) = metis.part_graph(social_network, max_groups)
     teams = []
     for i in range(0, max_groups):
@@ -260,10 +300,12 @@ def greedy_random():
     Selects amount of teams random users and adds the strongest connected not yet matched users to their group, if
     None are available, selects a random one. This is an alternative algorithm, that is not as good as the other,
     but with over 10000 users the runtime is a lot better, so we keep it as a backup.
-    :return: boolean, (None or team that could not be added)
+    :return: tuple (bool, Team): the bool says whether the insertion of the new teams into the db was successful and
+    if not, the second entry of the tuple said which was the team where the insertion failed
+    :rtype: tuple
     """
     social_network = get_graph()
-    max_groups = get_max_groups(social_network, 5)
+    max_groups = get_max_groups(social_network, MIN_GROUP_SIZE_NO_MAX)
     all_users = list(social_network.nodes)
     teams = []
     graphs = []

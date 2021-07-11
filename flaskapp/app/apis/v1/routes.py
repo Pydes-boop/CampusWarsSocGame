@@ -31,6 +31,7 @@ ROOMFINDER_DISTANCE: int = 50
 
 @v1.app_errorhandler(404)
 def error_404(_):
+    """404 error handling, write response"""
     return make_response(jsonify({'exception': 'Not found!', 'code': 404}), 404)
 
 
@@ -40,7 +41,27 @@ class RoomFinder(Resource):
     @request_requires(headers=['uid', 'team', 'latitude', 'longitude'])
     def post(self):
         """
-        Shows us your position so we can add you to a lecture hall
+        This function has to be called regularly by a player that is currently actively playing; When calling this
+        function, the player is queued in the queue of the room closest to them.
+
+        If they don't call the function in a certain interval, they will be removed from the queue
+        The request requires:
+            :key uid: the Firebase ID of the user
+            :key team: the team name of the team that the user is in
+            :key latitude: the current latitude of the player's current position
+            :key longitude: the current longitude of the player's current position
+
+        If the player is close enough to a room / lecture hall, the player will get information about that room returned
+        :return: room information
+        :rtype: dict
+
+        The returned dict contains following information:
+            :key occupancy: the occupancy status of the room
+            :key occupier: the current occupier of the room
+            :key room_name: the name of the room
+            :key lid: the lecture hall/ room ID of the room
+            :key multiplier: the current multiplier factor applied to the room
+            :currentLecture: the name of the current lecture held in the room
         """
         lat, lon, = map(float, [request.headers['longitude'], request.headers['latitude']])
         room = find_closest_room(lat, lon, ROOMFINDER_DISTANCE)
@@ -52,11 +73,13 @@ class RoomFinder(Resource):
         occupier_team = occupier.team
         occupier_multiplier = occupier.multiplier
         team_occupancy = live_data.room_queue.get_each_rooms_occupancies()[room_name]
-        with suppress(KeyError): team_occupancy[occupier_team] *= occupier_multiplier
+        with suppress(KeyError):
+            team_occupancy[occupier_team] *= occupier_multiplier
         return_room = {"message": "closest room to you:",
                        'occupancy': team_occupancy,
                        'occupier': occupier_team,
-                       'room_name': room_name, 'lid': str(room["_id"]),
+                       'room_name': room_name,
+                       'lid': str(room["_id"]),
                        'multiplier': occupier_multiplier,
                        "currentLecture": get_full_name_of_current_lecture_in_room(str(room["_id"]))}
         if return_room["currentLecture"] is None:
@@ -65,7 +88,13 @@ class RoomFinder(Resource):
 
     def get(self):
         """
-        Get a list of all lecture halls with information about current states
+        Get a list of all lecture halls/rooms with information about current states
+        information received per room:
+            :key _id: the generated id of the room from the database
+            :key currentLecture: the lecture currently held in the room
+            :key occupier: the team & colour of the team that currently occupies the room
+            :key roomName: the name of the room
+            :key timetable: the schedule of the room, sorted by time
         """
         result = []
         for room in get_all_rooms():
@@ -95,7 +124,13 @@ class QuizRequest(Resource):
     @check_timed_out_users(live_data.timedout_users)
     @request_requires(headers=['uid', 'team', 'room'])
     def post(self):
-        """Tell us that you would like a quiz."""
+        """When this function is called, it indicates that the player with Firebase ID uid wants to participate in
+        a quiz
+        header param description:
+            :key uid: the Firebase ID of the user
+            :key team: the team name of the user
+            :key room: the current room that the user is in
+        """
         if request.headers['uid'] not in live_data.room_queue:
             return jsonify({'quiz-request': False, 'reason': 'not in a room'})
         live_data.quiz_queue(request.headers['uid'],
@@ -125,7 +160,7 @@ class QuizRefresh(Resource):
                 return jsonify(
                     {
                         'gid': game.game_id,  # game_id: a 24 byte string to identify each game
-                        'pid': game.get_player_id(request.headers['uid']),  # player_id: 0 or 1 identifies player in game
+                        'pid': game.get_player_id(request.headers['uid']), # player_id: 0 or 1 identifies player in game
                         'opp-name': get_player_name(game.players[not game.get_player_id(request.headers['uid'])].uid),
                         'opp-team': game.players[not game.get_player_id(request.headers['uid'])].team,
                         'name': game.quiz_name,
@@ -295,13 +330,14 @@ class TimeTable(Resource):
 
 @api.resource('/marina')
 class Test(Resource):
-    @request_requires(headers=['roomId'])
+    """Test route for marina, ignore for grading"""
     def post(self):
-        return get_current_team_with_member_names()
+        return groupCreation.alternative_calculation()[0]
 
 
 @api.resource('/robin')
 class ClearLiveData(Resource):
+    """test route for robin, ignore for grading"""
     base_entries = {'room', 'quiz', 'game', 'timeout', 'rally'}
 
     # entries in the headers exclude items from getting reset
@@ -312,6 +348,8 @@ class ClearLiveData(Resource):
 
 @api.resource('/live-debug')
 class LiveDebug(Resource):
+    """debug route for live data; shows current live data"""
+
     def get(self):
         return jsonify(live_data.json)
 
@@ -319,6 +357,7 @@ class LiveDebug(Resource):
 @api.resource('/echo')
 class Echo(Resource):
     def get(self):
+        """echo for frontend so they can check whether our server is alive"""
         return 'Hallo Echo!', 200
 
 
