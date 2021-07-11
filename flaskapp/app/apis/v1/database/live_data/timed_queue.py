@@ -12,7 +12,7 @@ from apscheduler.job import Job
 from operator import attrgetter
 from dataclasses import dataclass
 from contextlib import suppress
-from apis.v1.utils.time_functions import timestamp, from_timestamp
+from apis.v1.utils.time_functions import timestamp, from_timestamp, now
 from typing import Any, Dict
 
 
@@ -36,13 +36,16 @@ class TimedQueue(dict, Dict[str, 'Item']):
         def eta_debug(self):
             return str(self.job.next_run_time)
 
+        def __hash__(self) -> int:
+            return hash(self.name)
+
     def __init__(self):
         super(TimedQueue, self).__init__()
         self.scheduler = BackgroundScheduler({'apscheduler.timezone': 'Europe/Vienna'})
         self.scheduler.start()
 
     def __del__(self) -> None:
-        self.scheduler.shutdown()
+        self.scheduler.shutdown(wait=False)
 
     def __getitem__(self, item: str) -> Any:
         if item not in self: return None
@@ -63,8 +66,16 @@ class TimedQueue(dict, Dict[str, 'Item']):
     def refresh(self, item: str) -> bool:
         """Attempt to refresh the lifetime of an object."""
         item = self.get(item)
-        if item.eta + self.life_time > timestamp() + self.max_refresh: return False
-        item.job.reschedule('interval', start_date=from_timestamp(item.eta), seconds=self.life_time)
+        # if item.eta + self.life_time > timestamp() + self.max_refresh: return False
+        # we used to modify the existing job but since this wouldn't work, we create a new one now
+        item.job.remove()
+        item.job = self.scheduler.add_job(self.__delitem__,
+                                          'interval',
+                                          args=(item,),
+                                          id=f'{self.__class__.__name__}:{item}',
+                                          start_date=from_timestamp(item.eta),
+                                          seconds=self.life_time)
+        # item.job = item.job.reschedule('interval', start_date=from_timestamp(item.eta), seconds=self.life_time)
         return True
 
     def eta(self, item: str) -> int:
@@ -78,6 +89,7 @@ class TimedQueue(dict, Dict[str, 'Item']):
                                    'interval',
                                    args=(name,),
                                    id=f'{self.__class__.__name__}:{name}',
+                                   start_date=now(),
                                    seconds=self.life_time),
             item
         )
