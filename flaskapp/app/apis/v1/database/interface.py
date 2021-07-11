@@ -485,9 +485,6 @@ def get_current_team(firebase_id):
     return mongo.db.teams.find_one(
         {"members": {"$elemMatch": {"$eq": firebase_id}}, "term": get_current_term()}, {"_id": 0})
 
-    # todo Felix: i changed get_current_team, sonst funktioniert team finding nicht mehr...., pls DO NOT
-    # EDIT FUNCTIONS THAT WERE ALREADY WORKING; THEY ARE USED ALREADY
-
 
 def get_colour_of_team(team_name):
     result = mongo.db.teams.find_one({"name": team_name, "term": get_current_term()})
