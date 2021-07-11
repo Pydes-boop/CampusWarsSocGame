@@ -39,6 +39,9 @@ class RoomFinder(Resource):
     @check_timed_out_users(live_data.timedout_users)
     @request_requires(headers=['uid', 'team', 'latitude', 'longitude'])
     def post(self):
+        """
+        Shows us your position so we can add you to a lecture hall
+        """
         lat, lon, = map(float, [request.headers['longitude'], request.headers['latitude']])
         room = find_closest_room(lat, lon, ROOMFINDER_DISTANCE)
         if room is None:
@@ -61,6 +64,9 @@ class RoomFinder(Resource):
         return jsonify(return_room)
 
     def get(self):
+        """
+        Get a list of all lecture halls with information about current states
+        """
         result = []
         for room in get_all_rooms():
             occupier = live_data.room_queue.get_each_rooms_occupiers()[room['roomName']].team
@@ -103,7 +109,8 @@ class QuizRefresh(Resource):
     @check_timed_out_users(live_data.timedout_users)
     @request_requires(headers=['uid', 'team', 'room', 'lid'])
     def post(self):
-        """Refresh quiz state and maybe or join a game."""
+        """
+        Refresh quiz state and maybe or join a game."""
         # I know it is the same as above, but we might
         # have to something different here later
         if request.headers['uid'] not in live_data.room_queue:
@@ -135,7 +142,9 @@ class QuizAnswer(Resource):
     @check_timed_out_users(live_data.timedout_users)
     @request_requires(headers=['uid', 'gid', 'pid', 'result', 'outcome'])
     def post(self):
-        """Answer the quiz."""
+        """
+        Answer the quiz
+        """
         if request.headers['gid'] not in live_data.game_queue:
             return jsonify({'quiz-request': False, 'reason': 'invalid gid'})
         if not live_data.game_queue[request.headers['gid']].player_in_game:
@@ -151,7 +160,9 @@ class QuizState(Resource):
     @check_timed_out_users(live_data.timedout_users)
     @request_requires(headers=['uid', 'gid', 'pid'])
     def get(self):
-        """Ask the server if the other player has answered yet, if yes show result."""
+        """
+        Ask the server if the other player has answered yet, if yes show result
+        """
         if request.headers['gid'] not in live_data.game_queue:
             return jsonify({'quiz-state': False, 'reason': 'invalid gid'})
         if not live_data.game_queue[request.headers['gid']].player_in_game:
@@ -177,7 +188,9 @@ class Rally(Resource):
     @check_timed_out_users(live_data.timedout_users)
     @request_requires(headers=['uid', 'team', 'room'])
     def post(self):
-        """Manage Rally request."""
+        """
+        Manage Rally request
+        """
         if live_data.rally_timeout(request.headers['team'],
                                    request.headers['room'],
                                    get_player_name(request.headers['uid'])):
@@ -187,7 +200,9 @@ class Rally(Resource):
     @check_timed_out_users(live_data.timedout_users)
     @request_requires(headers=['team'])
     def get(self):
-        """Manage Rally request."""
+        """
+        Manage Rally request
+        """
         return {'rally': live_data.rally_timeout.info(request.headers['team'])}
 
 
@@ -195,23 +210,29 @@ class Rally(Resource):
 class Lectures(Resource):
     @request_requires(headers=['lectures', 'encodingformat', 'uid'])
     def post(self):
+        """
+        Tell the server what lectures you visited in your time at TUM
+        """
         lectures = json.loads(request.headers["lectures"])
-        lecturesList = []
+        lectures_list = []
         for lec in lectures:
-            lecturesList.append(
+            lectures_list.append(
                 ftfy.fix_text(
                     get_escaped_by_db(lec.encode(request.headers["encodingformat"]).decode('utf-8'))))
         if groupCreation.threshold < interface.get_number_of_players():
             group_creation = threading.Thread(target=groupCreation.metis_calulation)
             group_creation.start()
             groupCreation.threshold = (groupCreation.threshold * 1.6)
-        return add_lectures_to_user(request.headers["uid"], lecturesList)
+        return add_lectures_to_user(request.headers["uid"], lectures_list)
 
 
 @api.resource('/mygroup')
 class MyGroup(Resource):
     @request_requires(headers=['uid'])
     def get(self):
+        """
+        Tells you your team name/color and other members
+        """
         return jsonify(get_current_team_with_member_names(request.headers['uid']))
 
 
@@ -219,6 +240,9 @@ class MyGroup(Resource):
 class Start(Resource):
     @request_requires(headers=['passphrase', 'variant'])
     def post(self):
+        """
+        Triggers the matching algorithm
+        """
         if request.headers['passphrase'] == "YOU ONLY CALL THIS TWICE A YEAR PLS":
             variables.finished = False
             if request.headers['variant'] == "pulp":
@@ -239,6 +263,9 @@ class Start(Resource):
 class Question(Resource):
     @request_requires(headers=['question', 'right_answer', 'wrong_answers', 'quiz_id'])
     def post(self):
+        """
+        Add a question to the database
+        """
         status = add_question_to_quiz(request.headers['question'], request.headers['right_answer'],
                                       request.headers['wrong_answers'], request.headers['quiz_id'])
         return jsonify({'success': status})
@@ -248,6 +275,9 @@ class Question(Resource):
 class Register(Resource):
     @request_requires(headers=['uid', 'name'])
     def post(self):
+        """
+        Register with name and user id
+        """
         status = add_user(request.headers["uid"], request.headers["name"])
 
         return jsonify({'success': status})
@@ -257,6 +287,9 @@ class Register(Resource):
 class TimeTable(Resource):
     @request_requires(headers=['room_id'])
     def post(self):
+        """
+        Tells the current schedule of lectures for the room
+        """
         return get_time_table_of_room(request.headers['room_id'])
 
 
@@ -265,15 +298,6 @@ class Test(Resource):
     @request_requires(headers=['roomId'])
     def post(self):
         return get_current_team_with_member_names()
-
-
-@api.resource('/felix')
-class AlsoTest(Resource):
-    def get(self):
-        users_in_lecture = {}
-        for id in interface.get_all_lecture_ids():
-            users_in_lecture[id] = interface.get_users_of_lecture(id)
-        return jsonify({"lecture_ids": users_in_lecture})
 
 
 @api.resource('/robin')

@@ -1,3 +1,9 @@
+"""
+This file contains the functions to separate our users into teams. They all are based on a graph with users as nodes
+but use different python packages or algorithms for this. We included the old functions, that we no longer use.
+The main functions take the data directly from the database
+"""
+
 import networkx as nx
 import pulp
 
@@ -11,8 +17,13 @@ import metis
 threshold = 100
 finished = True
 
+
 @dataclass
 class Group:
+    """
+    A team or group has 3 distinct values when we create them: the name, the color to be displayed and a list of the
+    members
+    """
     name: str
     color: str
     members: Any
@@ -24,7 +35,8 @@ def wedding_seating():
     (see https://coin-or.github.io/pulp/CaseStudies/a_set_partitioning_problem.html)
     gets the lectures and users from the db,
     and saves the new groups with a random name and color to the db
-    :return:
+    This function takes a very long time to run so we no longer use it in our productive code.
+    :return: boolean, (None or team that could not be added)
     """
     social_network = get_graph()
     min_group_size = 4
@@ -61,8 +73,8 @@ def wedding_seating():
 
 def happiness(group, social_network):
     """
-    find the happiness a group of people have inbetween themself
-    :param social_network: nx graph with edges, nodes and weight on edges
+    find the happiness or sum of edge weights a group of people have in between themself
+    :param social_network: complete nx graph with edges, nodes and weight on edges
     :param group: list of node names to check
     :return: sum of all weights between the group
     """
@@ -75,6 +87,10 @@ def happiness(group, social_network):
 
 
 def alternative_calculation():
+    """
+
+    :return: boolean, (None or team that could not be added)
+    """
     biggest_change = -1
     social_network = get_graph()
     min_group_size = 4
@@ -117,6 +133,14 @@ def alternative_calculation():
 
 
 def find_next_swap(graph, current_partition, min_size, max_size):
+    """
+
+    :param graph:
+    :param current_partition:
+    :param min_size:
+    :param max_size:
+    :return:
+    """
     best_result = get_best_result_as_dict(0, None, None, None, None)
     for i, p in enumerate(current_partition):
         for j, p2 in enumerate(current_partition):
@@ -161,8 +185,9 @@ def get_best_result_as_dict(sum, pl1, pl2, part1, part2):
 
 def get_graph():
     """
-    creates a nx graph with overlapping lectures/user in lecture as edge weights and students/users as nodes
-    :return:
+    creates a nx graph with users as nodes and edges, when 2 students attended the same lecture. The edge weights are
+    higher the more lectures the two users share and the less users in total attended the lecture
+    :return: nx.Graph
     """
     used_names.clear()
     lectures = {}
@@ -191,6 +216,12 @@ def get_graph():
 
 
 def get_max_groups(social_network, min_group_size=4):
+    """
+    This function calcualtes how many teams we have to create
+    :param social_network: nx.Graph of our users
+    :param min_group_size: minimum amount of players in every group
+    :return: int
+    """
     if len(social_network.nodes) % min_group_size > 0:
         max_groups = int((len(social_network.nodes) / min_group_size) + 1)
     else:
@@ -201,7 +232,7 @@ def get_max_groups(social_network, min_group_size=4):
 def metis_calulation():
     """
     uses the c library metis for efficient partitioning based on weighted graph
-    :return:
+    :return: boolean, (None or team that could not be added)
     """
     social_network = get_graph()
     social_network.graph['edge_weight_attr'] = 'weight'
@@ -227,8 +258,9 @@ def metis_calulation():
 def greedy_random():
     """
     Selects amount of teams random users and adds the strongest connected not yet matched users to their group, if
-    None are available, selects a random one
-    :return:
+    None are available, selects a random one. This is an alternative algorithm, that is not as good as the other,
+    but with over 10000 users the runtime is a lot better, so we keep it as a backup.
+    :return: boolean, (None or team that could not be added)
     """
     social_network = get_graph()
     max_groups = get_max_groups(social_network, 5)
@@ -244,10 +276,6 @@ def greedy_random():
     for i in range(0, max_groups):
         for j in range(1, max_groups):
             graphs[i].remove_node(teams[j % max_groups][0])
-    # Draw the graph according to node positions
-    # pos = nx.spring_layout(social_network)
-    # nx.draw(social_network, pos, with_labels=True)
-    # plt.show()
     j = 0
     while len(all_users) > 0:
         edges = graphs[j].edges(teams[j][0])
