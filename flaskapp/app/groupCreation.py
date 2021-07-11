@@ -6,7 +6,7 @@ The main functions take the data directly from the database
 
 import networkx as nx
 import pulp
-
+import math
 from apis.v1.utils.random_stuff import get_random_color, generate_team_name, used_names
 from dataclasses import dataclass
 from apis.v1.database import interface
