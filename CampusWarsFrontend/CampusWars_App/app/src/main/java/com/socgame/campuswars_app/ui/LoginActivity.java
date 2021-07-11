@@ -39,7 +39,6 @@ public class LoginActivity extends AppCompatActivity {
         Context ctx = this.getApplicationContext();
         FirebaseCom fCom = FirebaseCom.getInstance(ctx);
 
-        //FIXME: Eventuell muss hier die id gefixt werden für login
         EditText email = (EditText) findViewById(R.id.editTextTextEmailAddress);
         EditText password = (EditText) findViewById(R.id.editTextTextPassword);
         Button login = (Button) findViewById(R.id.loginButton);

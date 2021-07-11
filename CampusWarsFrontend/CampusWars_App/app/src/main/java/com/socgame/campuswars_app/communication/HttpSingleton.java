@@ -31,10 +31,12 @@ public class HttpSingleton {
      *
      * we have 2 Urls we need and use, CampusOnline and our Server
      *
-     * we have methods for standart Get and Post Requests to our Backend in which we get JSON back
+     * we have methods for standart Get and Post Requests to our Backend in which we get JSONArrays back
      *
      * we also have a more general getRequestString Method which can receive a String for further processing
      * we have 2 versions of this, one with a boolean which is set true if we want to call tum, which provides Data in XML format
+     *
+     * afterwards we also had to add different other HttpRequest Methods for JSONObjects with GET and POST and Headers, we had to have so many classes because of volley weirdness
      *
      * written by Daniel
      */
