@@ -15,13 +15,13 @@ from datetime import datetime
 from math import sqrt, pow
 from petname import generate
 
-from typing import Union, Tuple, Set
+from typing import Union, Tuple, List
 
 seed(datetime.now().timestamp())
 
 WEIGHT: float = 0.9
 BASE_COLOR: Union[Tuple[int, int, int]] = (0, 0, 0)
-used_names: Set[str] = set()
+used_names: List[str] = list()
 
 
 # base color can be a string but it NEEDS to be in the long form! So NO `#aaa` but `#aaaaaa`!
@@ -46,13 +46,12 @@ def get_random_color(
     )
 
 
-def generate_team_name(new_used_names: bool = False) -> str:
+def generate_team_name() -> str:
     """Generate a random team name."""
-    if new_used_names: used_names.clear()
-    name = generate(2, " ")
-    while name not in used_names:
-        name = generate(2, " ")
-    used_names.add(name)
+    name = generate(2, ' ')
+    while name in used_names:
+        name = generate(2, ' ')
+    used_names.append(name)
     return name
 
 
