@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-
+"""various config settings"""
 __date__ = "2021-05-13"
 __version__ = "0.0.1"
 

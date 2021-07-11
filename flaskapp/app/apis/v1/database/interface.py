@@ -79,6 +79,8 @@ def add_room(room_name, longitude, latitude, campus_id=None):
     :type longitude: float
     :param latitude: the latitude of the position of the room
     :type latitude: float
+    :param campus_id: the campus the room belongs to, default None
+    :type campus_id: ObjectId
 
     :return: True, if successfully added, False otherwise
     :rtype: bool
@@ -86,6 +88,7 @@ def add_room(room_name, longitude, latitude, campus_id=None):
     item = {
         "location": {"type": "Point", "coordinates": [longitude, latitude]},
         "roomName": room_name,
+        "campusID": campus_id
     }
     return mongo.db.room.insert_one(item).acknowledged
 
