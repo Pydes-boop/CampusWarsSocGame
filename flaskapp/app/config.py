@@ -1,27 +1,30 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-__author__ = "Robin 'r0w' Weiland"
 __date__ = "2021-05-13"
 __version__ = "0.0.1"
 
-__all__ = ('DevelopmentConfig', 'ProductionConfig',)
+__all__ = (
+    "DevelopmentConfig",
+    "ProductionConfig",
+)
 
 from dotenv import dotenv_values
 from pathlib import Path
 
-SECRETS_PATH: Path = Path('.secrets')
+SECRETS_PATH: Path = Path(".secrets")
 
 
 class Config:
     if not SECRETS_PATH.exists():
         raise FileNotFoundError(
-            f'The file "{SECRETS_PATH}" is missing! It is not in the repository, request it!') from None
+            f'The file "{SECRETS_PATH}" is missing! It is not in the repository, request it!'
+        ) from None
     secrets = dotenv_values(SECRETS_PATH)
     DEBUG: bool = False
     TESTING: bool = False
     CSRF_ENABLED: bool = True
-    SECRET_KEY: str = secrets['SECRET_KEY']
+    SECRET_KEY: str = secrets["SECRET_KEY"]
 
 
 class ProductionConfig(Config):
@@ -30,9 +33,9 @@ class ProductionConfig(Config):
 
 class DevelopmentConfig(Config):
     DEBUG = True
-    ENV: str = 'development'
+    ENV: str = "development"
     DEVELOPMENT: bool = True
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     pass

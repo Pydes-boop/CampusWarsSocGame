@@ -2,19 +2,23 @@
 This file contains various functions related to time that are needed for our project
 """
 
-__all__ = ('now', 'timestamp', 'from_timestamp',)
-
-from time import time
-from datetime import datetime, timezone
+from datetime import datetime
 import pytz
 import calendar
 from time import gmtime
 from time import strftime
 
+__all__ = (
+    "now",
+    "timestamp",
+    "from_timestamp",
+)
+
+
 START_SUMMER_TERM = 4
 END_SUMMER_TERM = 9
 
-tz = pytz.timezone('Europe/Vienna')
+tz = pytz.timezone("Europe/Vienna")
 
 
 def now() -> datetime:

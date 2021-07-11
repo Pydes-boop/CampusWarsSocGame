@@ -7,15 +7,32 @@ while we use all lowercases with _ spaces for python
 
 """
 
-__all__ = ("add_room", "add_lecture", "get_all_rooms", "find_closest_room", "add_lectures_to_user",
-           "add_question_to_quiz", "add_user", "get_users_of_lecture", "get_full_name_of_current_lecture_in_room",
-           "get_current_team", "get_player_name", "get_current_quizzes", "get_questions_of_quiz", "get_colour_of_team")
+__all__ = (
+    "add_room",
+    "add_lecture",
+    "get_all_rooms",
+    "find_closest_room",
+    "add_lectures_to_user",
+    "add_question_to_quiz",
+    "add_user",
+    "get_users_of_lecture",
+    "get_full_name_of_current_lecture_in_room",
+    "get_current_team",
+    "get_player_name",
+    "get_current_quizzes",
+    "get_questions_of_quiz",
+    "get_colour_of_team",
+)
 
 import groupCreation
 from apis.v1.database import mongo, db
 from datetime import datetime
-from apis.v1.utils.time_functions import get_current_time_and_day, get_current_term, get_day_as_string, \
-    get_seconds_as_string
+from apis.v1.utils.time_functions import (
+    get_current_time_and_day,
+    get_current_term,
+    get_day_as_string,
+    get_seconds_as_string,
+)
 from bson.objectid import ObjectId
 
 
@@ -41,8 +58,16 @@ def find_closest_room(lon, lat, max_distance):
         campusID: The id of the campus that room belongs to
 
     """
-    return mongo.db.room.find_one({"location": {"$near": {"$geometry": {"type": "Point", "coordinates": [lon, lat]},
-                                                          "$maxDistance": max_distance}}})
+    return mongo.db.room.find_one(
+        {
+            "location": {
+                "$near": {
+                    "$geometry": {"type": "Point", "coordinates": [lon, lat]},
+                    "$maxDistance": max_distance,
+                }
+            }
+        }
+    )
 
 
 def add_room(room_name, longitude, latitude, campus_id=None):
@@ -59,9 +84,7 @@ def add_room(room_name, longitude, latitude, campus_id=None):
     :rtype: bool
     """
     item = {
-        "location":
-            {"type": "Point",
-             "coordinates": [longitude, latitude]},
+        "location": {"type": "Point", "coordinates": [longitude, latitude]},
         "roomName": room_name,
     }
     return mongo.db.room.insert_one(item).acknowledged
@@ -102,22 +125,32 @@ def add_lecture(name, term, timetable=[]):
         timetable = []
     entry = mongo.db.lecture.find_one({"name": name, "term": term})
     if entry is None:  # Entry does not already exist in db, create new one
-        item = {
-            "name": name,
-            "term": term,
-            "timetable": timetable
-        }
+        item = {"name": name, "term": term, "timetable": timetable}
         return mongo.db.lecture.insert_one(item).acknowledged
     for t in timetable:  # add entries of timetable that do not already exist in the db
-        if any(e["start"] == t["start"] and
-               e["end"] == t["end"] and
-               e["roomID"] == t["roomID"] and
-               e["day"] == t["day"] for e in entry["timetable"]):
+        if any(
+            e["start"] == t["start"]
+            and e["end"] == t["end"]
+            and e["roomID"] == t["roomID"]
+            and e["day"] == t["day"]
+            for e in entry["timetable"]
+        ):
             continue
-        elif not any(e["start"] < t["end"] and  # test if there is no overlapping with previously added entries
-                     e["end"] > t["start"] and
-                     e["day"] == t["day"] for e in entry["timetable"]):
-            if not mongo.db.lecture.update_one({"_id": entry["_id"]}, {"$push": {"timetable": t}}).matched_count > 0:
+        elif not any(
+            e["start"] < t["end"]
+            and e[  # test if there is no overlapping with previously added entries
+                "end"
+            ]
+            > t["start"]
+            and e["day"] == t["day"]
+            for e in entry["timetable"]
+        ):
+            if (
+                not mongo.db.lecture.update_one(
+                    {"_id": entry["_id"]}, {"$push": {"timetable": t}}
+                ).matched_count
+                > 0
+            ):
                 return False
         else:
             return False
@@ -153,8 +186,12 @@ def add_user(firebase_id, name, lectures=[]):
     else:
         for lec in lectures:
             if lec not in entry["lectures"]:
-                if not mongo.db.firebase_users.update_one({"_id": entry["_id"]},
-                                                          {"$push": {"lectures": lec}}).matched_count > 0:
+                if (
+                    not mongo.db.firebase_users.update_one(
+                        {"_id": entry["_id"]}, {"$push": {"lectures": lec}}
+                    ).matched_count
+                    > 0
+                ):
                     return False
         return True
 
@@ -184,9 +221,15 @@ def add_lectures_to_user(firebase_id, lectures):
         term = split_string[j][1:]
         if not add_lecture(name, term):
             return False
-        lecture_id = mongo.db.lecture.find_one({"name": name, "term": term}, {"_id": 1})["_id"]
-        if not mongo.db.firebase_users.update_one({"firebaseID": firebase_id},
-                                                  {"$push": {"lectures": lecture_id}}).matched_count > 0:
+        lecture_id = mongo.db.lecture.find_one(
+            {"name": name, "term": term}, {"_id": 1}
+        )["_id"]
+        if (
+            not mongo.db.firebase_users.update_one(
+                {"firebaseID": firebase_id}, {"$push": {"lectures": lecture_id}}
+            ).matched_count
+            > 0
+        ):
             return False
     return True
 
@@ -212,9 +255,9 @@ def add_question_to_quiz(question, right_answer, wrong_answers, quiz_id):
         "question": question,
         "rightAnswer": right_answer,
         "wrongAnswers": wrong_answers,
-        "quizID": quiz_id
+        "quizID": quiz_id,
     }
-    return mongo.db.question.insert_one(item)['acknowledged']
+    return mongo.db.question.insert_one(item)["acknowledged"]
 
 
 def get_current_quizzes(room_id):
@@ -263,11 +306,19 @@ def get_current_lecture(room_id):
 
     """
     current_time = get_current_time_and_day()
-    return mongo.db.lecture.find_one({"term": get_current_term(),
-                                      "timetable": {"$elemMatch": {"start": {"$lt": current_time["seconds"]},
-                                                                   "end": {"$gte": current_time["seconds"]},
-                                                                   "roomID": room_id,
-                                                                   "day": current_time["day"]}}})
+    return mongo.db.lecture.find_one(
+        {
+            "term": get_current_term(),
+            "timetable": {
+                "$elemMatch": {
+                    "start": {"$lt": current_time["seconds"]},
+                    "end": {"$gte": current_time["seconds"]},
+                    "roomID": room_id,
+                    "day": current_time["day"],
+                }
+            },
+        }
+    )
 
 
 def add_quiz(name, created_by, lecture_id):
@@ -392,16 +443,27 @@ def get_time_table_of_room(room_id):
     """
     if isinstance(room_id, str):
         room_id = ObjectId(room_id)
-    lectures = list(mongo.db.lecture.find({"term": get_current_term(),
-                                           "timetable": {"$elemMatch": {"roomID": room_id}}}))
+    lectures = list(
+        mongo.db.lecture.find(
+            {
+                "term": get_current_term(),
+                "timetable": {"$elemMatch": {"roomID": room_id}},
+            }
+        )
+    )
     items = []
     for lec in lectures:
-        for e in lec['timetable']:
-            if e['roomID'] == room_id:
+        for e in lec["timetable"]:
+            if e["roomID"] == room_id:
                 items.append(
-                    {"name": lec["name"] + ": " + lec["term"], "day_as_int": e["day"],
-                     "day": get_day_as_string(e["day"]),
-                     "start": get_seconds_as_string(e["start"]), "end": get_seconds_as_string(e["end"])})
+                    {
+                        "name": lec["name"] + ": " + lec["term"],
+                        "day_as_int": e["day"],
+                        "day": get_day_as_string(e["day"]),
+                        "start": get_seconds_as_string(e["start"]),
+                        "end": get_seconds_as_string(e["end"]),
+                    }
+                )
     items = sorted(items, key=lambda x: (x["day_as_int"], x["start"]))
     return items
 
@@ -463,7 +525,7 @@ def get_player_name(firebase_id):
     user = mongo.db.firebase_users.find_one({"firebaseID": firebase_id}, {"name": 1})
     if user is None:
         return None
-    return user['name']
+    return user["name"]
 
 
 def get_current_team_with_member_names(firebase_id):
@@ -522,7 +584,9 @@ def get_current_team(firebase_id):
             :key members: the list of  Firebase IDs of the team members
         """
     return mongo.db.teams.find_one(
-        {"members": {"$elemMatch": {"$eq": firebase_id}}, "term": get_current_term()}, {"_id": 0})
+        {"members": {"$elemMatch": {"$eq": firebase_id}}, "term": get_current_term()},
+        {"_id": 0},
+    )
 
 
 def get_colour_of_team(team_name):

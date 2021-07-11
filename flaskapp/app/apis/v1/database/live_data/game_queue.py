@@ -1,11 +1,13 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-__author__ = 'Robin "r0w" Weiland'
-__date__ = '2021-07-07'
-__version__ = '0.0.1'
+__date__ = "2021-07-07"
+__version__ = "0.0.1"
 
-__all__ = ('GameQueue', 'create_game_id',)
+__all__ = (
+    "GameQueue",
+    "create_game_id",
+)
 
 from apis.v1.database.live_data.timed_queue import TimedQueue
 from apis.v1.database.live_data.items import Game
@@ -16,10 +18,12 @@ from typing import Optional
 
 def create_game_id(length: int = 24) -> str:
     """Create id to identify games."""
-    return b64encode(urandom(length)).decode('utf-8')
+    return b64encode(urandom(length)).decode("utf-8")
 
 
 class GameQueue(TimedQueue):
+    """Stores active games with data such as player info or questions"""
+
     life_time = 300
     max_refresh = 350
 
@@ -27,9 +31,9 @@ class GameQueue(TimedQueue):
         if gid in self:
             self.refresh(gid)
 
-    def is_player_in_game(self, uid: str) -> Optional[Game]:
+    def is_player_in_game(self, uid: str) -> Optional[Game]:  # get game if true
         for game in self.values():
-            if game.player_in_game(uid):
+            if game.is_player_in_game(uid):
                 return game
         return None
 
@@ -40,4 +44,5 @@ class GameQueue(TimedQueue):
         del self[gid]
 
 
-if __name__ == '__main__': pass
+if __name__ == "__main__":
+    pass
