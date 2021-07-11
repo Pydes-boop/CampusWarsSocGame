@@ -114,30 +114,23 @@ def alternative_calculation():
     min_group_size = 4
     max_group_size = 6
     current_partition = [
-        list(social_network.nodes)[x : x + min_group_size]
+        list(social_network.nodes)[x: x + min_group_size]
         for x in range(0, social_network.number_of_nodes(), min_group_size)
     ]
     if len(current_partition[len(current_partition) - 1]) != min_group_size:
-        last_entries = current_partition[len(current_partition) - 1]
-        current_partition.pop()
+        last_entries = current_partition.pop()
         for i in range(0, len(last_entries)):
             current_partition[i].append(last_entries[i])
     should_swap_again = True
     copied_list = []
     for i in current_partition:
         copied_list.append(i[:])
-    result = {
-        "before": {"name": "before", "list": copied_list},
-        "swapList": [],
-        "swaps": [],
-    }
 
     while should_swap_again:
         next_swap = find_next_swap(
             social_network, current_partition, min_group_size, max_group_size
         )
-        result["swaps"].append(next_swap["sum"])
-        result["swapList"].append(next_swap)
+
         if next_swap["sum"] == 0:
             break
         if biggest_change < next_swap["sum"]:
@@ -155,12 +148,11 @@ def alternative_calculation():
             )
             current_partition[next_swap["partition1"]].append(player)
 
-    result["after"] = current_partition
     teams = []
     for group in current_partition:
         teams.append(Group(generate_team_name(), get_random_color(), group))
-    variables.finished=True
-    return result
+    variables.finished = True
+    return interface.add_new_teams(teams)
 
 
 def find_next_swap(graph, current_partition, min_size, max_size):
@@ -184,9 +176,8 @@ def find_next_swap(graph, current_partition, min_size, max_size):
             old_sum = happiness(p, graph) + happiness(p2, graph)
             if len(p) > min_size and len(p2) < max_size:
                 for k in range(0, len(p)):
-                    pl1 = p[k]
                     new_p = p[:]
-                    new_p.pop(k)
+                    pl1 = new_p.pop(k)
                     new_p2 = p2[:]
                     new_p2.append(pl1)
                     new_sum = happiness(new_p, graph) + happiness(new_p2, graph)
@@ -197,13 +188,11 @@ def find_next_swap(graph, current_partition, min_size, max_size):
             if i <= j:
                 for k in range(0, len(p)):
                     for m in range(0, len(p2)):
-                        pl1 = p[k]
-                        pl2 = p2[m]
                         new_p = p[:]
-                        new_p.pop(k)
-                        new_p.append(pl2)
                         new_p2 = p2[:]
-                        new_p2.pop(m)
+                        pl2 = new_p2.pop(m)
+                        pl1 = new_p.pop(k)
+                        new_p.append(pl2)
                         new_p2.append(pl1)
                         new_sum = happiness(new_p, graph) + happiness(new_p2, graph)
                         if new_sum - old_sum > best_result["sum"]:
