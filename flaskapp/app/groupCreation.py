@@ -18,7 +18,9 @@ import metis
 threshold = 100
 finished = True
 
-
+MIN_GROUP_SIZE = 4
+MAX_GROUP_SIZE = 6
+MIN_GROUP_SIZE_NO_MAX = 5
 @dataclass
 class Group:
     """
@@ -44,13 +46,12 @@ def wedding_seating():
     :rtype: tuple
     """
     social_network = get_graph()
-    min_group_size = 4
-    max_groups = get_max_groups(social_network, min_group_size)
-    max_group_size = 6
+
+    max_groups = get_max_groups(social_network, MIN_GROUP_SIZE)
 
     # create list of all possible tables
     possible_groups = []
-    for i in range(min_group_size, max_group_size + 1):
+    for i in range(MIN_GROUP_SIZE, MAX_GROUP_SIZE + 1):
         possible_groups.extend(
             [tuple(c) for c in pulp.combination(social_network.nodes, i)]
         )
@@ -111,13 +112,12 @@ def alternative_calculation():
     """
     biggest_change = -1
     social_network = get_graph()
-    min_group_size = 4
-    max_group_size = 6
+
     current_partition = [
-        list(social_network.nodes)[x: x + min_group_size]
-        for x in range(0, social_network.number_of_nodes(), min_group_size)
+        list(social_network.nodes)[x: x + MIN_GROUP_SIZE]
+        for x in range(0, social_network.number_of_nodes(), MIN_GROUP_SIZE)
     ]
-    if len(current_partition[len(current_partition) - 1]) != min_group_size:
+    if len(current_partition[len(current_partition) - 1]) != MIN_GROUP_SIZE:
         last_entries = current_partition.pop()
         for i in range(0, len(last_entries)):
             current_partition[i].append(last_entries[i])
@@ -128,7 +128,7 @@ def alternative_calculation():
 
     while should_swap_again:
         next_swap = find_next_swap(
-            social_network, current_partition, min_group_size, max_group_size
+            social_network, current_partition, MIN_GROUP_SIZE, MAX_GROUP_SIZE
         )
 
         if next_swap["sum"] == 0:
@@ -241,11 +241,13 @@ def get_graph():
                     )
     loners = nx.isolates(social_network)
     for user in list(loners):
+        other_nodes = list(social_network.nodes())[:]
+        other_nodes.remove(user)
         social_network.add_edge(
-            user, choice(list(social_network.nodes())), weight=0.0001, counter=1
+            user, choice(other_nodes), weight=0.0001, counter=1
         )
         social_network.add_edge(
-            user, choice(list(social_network.nodes())), weight=0.0001, counter=1
+            user, choice(other_nodes), weight=0.0001, counter=1
         )
     for u, v, d in social_network.edges(data=True):
         d["weight"] = d["weight"] / d["counter"]
@@ -279,7 +281,7 @@ def metis_calulation():
     # for metis to use the weights, they have to be int
     for u, v, d in social_network.edges(data=True):
         d["weight"] = int(d["weight"] * 10000)
-    max_groups = get_max_groups(social_network, 5)
+    max_groups = get_max_groups(social_network, MIN_GROUP_SIZE_NO_MAX)
     (edgecuts, parts) = metis.part_graph(social_network, max_groups)
     teams = []
     for i in range(0, max_groups):
@@ -305,7 +307,7 @@ def greedy_random():
     :rtype: tuple
     """
     social_network = get_graph()
-    max_groups = get_max_groups(social_network, 5)
+    max_groups = get_max_groups(social_network, MIN_GROUP_SIZE_NO_MAX)
     all_users = list(social_network.nodes)
     teams = []
     graphs = []
