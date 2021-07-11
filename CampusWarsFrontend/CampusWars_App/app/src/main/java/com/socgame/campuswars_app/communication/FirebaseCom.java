@@ -72,7 +72,8 @@ public class FirebaseCom{
             editor.apply();
 
             //Getting Id Token For User and writing it into fixed Storage
-            //Had to remove this because it could change if the user switches devices and i cant stop it :/
+            //Had to remove this because it could change if the user switches devices and i cant stop that
+            //We need a fixed firebaseId for our database
             /*
             user.getIdToken(false).addOnSuccessListener(result -> {
                 String idToken = result.getToken();
@@ -86,7 +87,7 @@ public class FirebaseCom{
             this.email = settings.getString("email", "empty");
             this.name = settings.getString("name", "empty");
 
-            // Potential TODO, we dont need Email Confirmation right now
+            // we dont currently confirm users email
             // Check if user's email is verified
             // boolean emailVerified = user.isEmailVerified();
         }

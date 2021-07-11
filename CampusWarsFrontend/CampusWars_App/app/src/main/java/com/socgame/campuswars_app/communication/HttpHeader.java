@@ -16,7 +16,7 @@ import fr.arnaudguyon.xmltojsonlib.XmlToJson;
 public class HttpHeader {
 
     /**
-     * This Class provides automatic processing/creation for HttpHeaders POST
+     * This Class provides automatic creation for HTTPHeaders
      *
      * addUID, adds name and UID to every call for identification, gets added to probably all HttpPosts
      *
@@ -25,6 +25,12 @@ public class HttpHeader {
      * buildPersonalLecturesHeader, creates a Header for sending our Backend all our Personal Lectures:
      * creates an Array filled with lectures uniquely identifiable by their Name + Semester
      * we sadly couldnt use the Tum Lecture Ids like "IN0011" because some lecturers dont provide them
+     *
+     * buildQuizHeader gives all the data to request a quiz for backend
+     *
+     * buildQuizAnswerHeader makes a header so the backend can identify which game we are currently in
+     *
+     * buildRallyHeader just adds the Room, as our name is and UID is always send with the Headers
      *
      * written by Daniel
      */
@@ -42,8 +48,6 @@ public class HttpHeader {
         return header;
     }
 
-    //TODO FIX CALLS BECAUSE NO ONE EVER PROPERLY JUST GAVE ME AN EXAMPLE
-
     private void addUId(){
         SharedPreferences settings = ctx.getSharedPreferences("userdata", 0);
         String UID = settings.getString("UID", "empty");
@@ -60,7 +64,10 @@ public class HttpHeader {
     }
 
     public void buildPersonalLecturesHeader(JSONObject pLectures) throws JSONException {
+        //Some weird encoding issues happening here, our fix is to manually care for encoding weirdness in the backend
         header.put("encodingformat", "iso-8859-1");
+
+        //We are manually building an Array as a String for the headers here
         String lectures = "[";
         JSONArray arr = pLectures.getJSONObject("rowset").getJSONArray("row");
 

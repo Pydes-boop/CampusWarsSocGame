@@ -63,25 +63,11 @@ public class TeamFragment extends Fragment
 
         ListView listView = view.findViewById(R.id.memberList);
 
-        //Getting Button before Http Call so we can overwrite button color to team color
-        Button rally = (Button) view.findViewById(R.id.raidButton);
-
         //Getting our Information from Backend and setting it in our GetResponseListener
-        ctx = this.getContext();
         BackendCom bCom = BackendCom.getInstance(ctx);
         HttpHeader header = new HttpHeader(ctx);
-        bCom.group(myGroupGet(rally), httpErrorListener(), header);
+        bCom.group(myGroupGet(), httpErrorListener(), header);
         bCom.roomDetectionGet(roomfinderGetListener(), httpErrorListener());
-
-
-        rally.setOnClickListener(new View.OnClickListener()
-        {
-            public void onClick(View view)
-            {
-                //TODO: sent notification backend/firebase
-                Toast.makeText(getActivity(), "You sent for your troops", Toast.LENGTH_LONG).show();
-            }
-        });
 
         return view;
     }
@@ -114,7 +100,7 @@ public class TeamFragment extends Fragment
         memberText.setText(memberCount + " Members");
     }
 
-    private Response.Listener<JSONObject> myGroupGet(Button button)
+    private Response.Listener<JSONObject> myGroupGet()
     {
         return new Response.Listener<JSONObject>() {
             @Override
