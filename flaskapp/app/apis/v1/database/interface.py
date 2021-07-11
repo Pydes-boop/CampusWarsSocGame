@@ -603,9 +603,5 @@ def get_all_lecture_names():
     return mongo.db.lecture.find({}, {"name": 1})
 
 
-# def get_all_teams():
-#  return str(list(mongo.db.teams.find()))
-
-
 if __name__ == '__main__':
     pass
