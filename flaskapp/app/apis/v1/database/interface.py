@@ -20,17 +20,19 @@ from bson.objectid import ObjectId
 
 
 def find_closest_room(lon, lat, max_distance):
-    """
-    Finds the room closest to the given longitude & latitude. If there is no room close than max_distance, None is
+    """ Finds the room closest to the given longitude & latitude. If there is no room close than max_distance, None is
     returned.
 
-    Parameters:
-        lon (float): longitude of the position
-        lat (float): latitude of the position
-        max_distance (float): the maximum distance that may be between a room and the position for it to be considered
+    :param lon: longitude of the position
+    :type lon: float
+    :param lat: latitude of the position
+    :type lat: float
+    :param max_distance: the maximum distance that may be between a room and the position for it to be considered
+    :type max_distance: float
 
-    Returns:
-        (dict): A dictionary with the room information if a room was found, None otherwise
+    :return: A dictionary with the room information if a room was found, None otherwise
+    :rtype: dict
+
 
     Description of the keys and their values of the returned dict:
         _id: The generated _id of the room
@@ -44,16 +46,17 @@ def find_closest_room(lon, lat, max_distance):
 
 
 def add_room(room_name, longitude, latitude, campus_id=None):
-    """
-        Adds a room to the database
+    """Adds a room to the database
 
-        Parameters:
-            room_name(str): the roomName of the room that should be added
-            longitude (float): the longitude of the position of the room
-            latitude (float): the latitude of the position of the room
+    :param room_name: the name of the room that should be added
+    :type room_name: str
+    :param longitude: the longitude of the position of the room
+    :type longitude: float
+    :param latitude: the latitude of the position of the room
+    :type latitude: float
 
-        Returns:
-            (bool): True, if successfully added, False otherwise
+    :return: True, if successfully added, False otherwise
+    :rtype: bool
     """
     item = {
         "location":
@@ -65,34 +68,34 @@ def add_room(room_name, longitude, latitude, campus_id=None):
 
 
 def get_all_rooms():
-    """
-        Returns all rooms that are stored in the database.
+    """Returns all rooms that are stored in the database.
+    :return: the list with all rooms stored in the database. The rooms are stored as dicts
+    :rtype: list
 
-        Returns:
-            (list of dicts): the list with all rooms stored in the database.
-
-         Description of the keys and their values of the returned dicts:
-            _id: The generated _id of the room
-            location: the location of the room, format: {"type": "Point", "coordinates": [longitude,latitude]}
-            roomName: the name of the room
-            campusID: The id of the campus that room belongs to
+    Description of the keys and their values of the returned dicts:
+        :key _id: The generated _id of the room
+        :key location: the location of the room, format: {"type": "Point", "coordinates": [longitude,latitude]}
+        :key roomName: the name of the room
+        :key campusID: The id of the campus that room belongs to
     """
     return list(mongo.db.room.find())
 
 
 def add_lecture(name, term, timetable=[]):
-    """
-        adds a new lecture to the database. If the lecture already exists in the database, only the new entries of the
+    """adds a new lecture to the database. If the lecture already exists in the database, only the new entries of the
         timetable are added instead.
 
-        Parameters:
-            name (str): Name of the lecture
-            term (str): The term in which the lecture is held
-            timetable (list of dicts): The time schedule for the lecture
+    :param name: Name of the lecture
+    :type name: str
+    :param term: The term in which the lecture is/was held
+    :type term: str
+    :param timetable: The time schedule for the lecture, defaults to []
+    :type timetable: list
 
-        Returns:
-            (boo): True, if the lecture was successfully added to the database or all the new entries of the timetable
+    :return: True, if the lecture was successfully added to the database or all the new entries of the timetable
             were successfully added, False otherwise
+    :rtype: bool
+
 
     """
     if timetable is None:
@@ -123,17 +126,18 @@ def add_lecture(name, term, timetable=[]):
 
 
 def add_user(firebase_id, name, lectures=[]):
-    """
-        adds a new user to the database. If the user already exists, only the new lectures will be added to the users'
+    """adds a new user to the database. If the user already exists, only the new lectures will be added to the users'
         lectures list
 
-        Parameters:
-            firebase_id(str): the Firebase ID of the user
-            name(str): The user name
-            lectures(list of ObjectId): the list of lectures the user attended/attends
+    :param firebase_id: the Firebase ID of the user
+    :type firebase_id: str
+    :param name: the user name
+    :type name: str
+    :param lectures: the list of lectures the user attended/attends (type of lectures: ObjectId), defaults to []
+    :type lectures: list
 
-        Returns:
-            (bool): True, if successfully added the new user / the lectures, False otherwise
+    :return: True, if successfully added the new user / the lectures, False otherwise
+    :rtype: bool
 
     """
     if lectures is None:
@@ -156,18 +160,18 @@ def add_user(firebase_id, name, lectures=[]):
 
 
 def add_lectures_to_user(firebase_id, lectures):
-    """
-    adds the lectures given to the list of lectures attended by the user. The list, however, is a list of strings and
+    """adds the lectures given to the list of lectures attended by the user. The list, however, is a list of strings and
     is not in the right format for our database
     Given format: <lecture name>:<term>
     Wanted format: two strings: 1. <lecture name>, 2. <term>
 
-    Parameters:
-        firebase_id (str): the firebase ID of the user that the lectures belong to
-        lectures (list of str): The list of the lectures the user attended
+    :param firebase_id: the firebase ID of the user that the lectures belong to
+    :type firebase_id: str
+    :param lectures: the list of the lectures the user attended / attends
+    :type lectures: list
 
-    Returns:
-        (bool): True, if all the insertions were successful, False otherwise
+    :return: True, if all the insertions were successful, False otherwise
+    :rtype:bool
 
     """
     for i in range(len(lectures)):
@@ -188,16 +192,19 @@ def add_lectures_to_user(firebase_id, lectures):
 
 
 def add_question_to_quiz(question, right_answer, wrong_answers, quiz_id):
-    """
-    Adds a question to a quiz into the database.
+    """Adds a question to a quiz into the database.
 
-    Parameters:
-        question(str): The question text of the question
-        right_answer(str): The right answer
-        wrong_answers(list of str): The wrong answers
-        quiz_id: The ID of the quiz the question belongs to
+    :param question: The question text of the question
+    :type question: str
+    :param right_answer: The correct answer to the question
+    :type right_answer: str
+    :param wrong_answers: the wrong answers the player could also choose
+    :type wrong_answers: str
+    :param quiz_id: The ID of the quiz the question belongs to
+    :type quiz_id: ObjectId
 
-    Returns: True, if insertion was successful, False otherwise
+    :return: True, if insertion was successful, False otherwise
+    :rtype: bool
     """
     if isinstance(quiz_id, str):
         quiz_id = ObjectId(quiz_id)
@@ -211,8 +218,22 @@ def add_question_to_quiz(question, right_answer, wrong_answers, quiz_id):
 
 
 def get_current_quizzes(room_id):
-    """
-    
+    """Gets all the quizzes of the lecture that is currently held in the room of with room ID = room_id. If no lecture
+    or quizzes were found, it returns general campus quizzes instead
+
+    :param room_id: The room ID of the room that you need the current quizzes of
+    :type room_id: ObjectId or str
+
+    :return: A list of all the quizzes (stored as dicts) that belong to the current lecture / campus
+    :rtype: list
+
+    Description of the keys and their values of the returned dicts:
+        :key _id: The generated id of the quiz
+        :key createdBy: The person that created the quiz
+        :key creationDate: The creation date of the quiz
+        :key name: The name of the quiz
+        :key campusID: The ID of the campus the quiz belongs to, optional
+        :key lectureID: the ID of the lecture the quiz belongs to, optional
     """
     if isinstance(room_id, str):
         room_id = ObjectId(room_id)
@@ -227,6 +248,20 @@ def get_current_quizzes(room_id):
 
 
 def get_current_lecture(room_id):
+    """Gets the current lecture of the room that has ID room_Id
+
+    :param room_id: The ID of the room that you want the current lecture of
+
+    :return: The current lecture that is held in the room
+    :rtype: dict
+
+    Description of the keys and their values of the returned dict:
+        :key _id: the automatically generated id of the lecture
+        :key name: The name of the lecture
+        :key term: the term the lecture is/was held
+        :key timetable: The schedule of the lecture
+
+    """
     current_time = get_current_time_and_day()
     return mongo.db.lecture.find_one({"term": get_current_term(),
                                       "timetable": {"$elemMatch": {"start": {"$lt": current_time["seconds"]},
@@ -236,6 +271,19 @@ def get_current_lecture(room_id):
 
 
 def add_quiz(name, created_by, lecture_id):
+    """adds a new quiz to the database
+
+    :param name: The name of the quiz
+    :type name: str
+    :param created_by: the author of the quiz
+    :type created_by: str
+    :param lecture_id: the ID of the lecture that the quiz belongs to
+    :type lecture_id: ObjectId or str
+
+    :return: True, if insertion was successful, False otherwise
+    :rtype: bool
+
+    """
     if isinstance(lecture_id, str):
         lecture_id = ObjectId(lecture_id)
     item = {
@@ -248,6 +296,20 @@ def add_quiz(name, created_by, lecture_id):
 
 
 def add_campus_quiz(name, created_by, campus_id):
+    """adds a 'campus' quiz to the database; a campus quiz is a quiz that shows up in a room / lecture hall
+    (of a campus) were there is no current lecture / no quizzes to the current lecture
+
+    :param name: The name of the quiz
+    :type name: str
+    :param created_by: the author of the quiz
+    :type created_by: str
+    :param campus_id: the ID of the campus that the quiz belongs to
+    :type campus_id: ObjectId or str
+
+    :return: True, if insertion was successful, False otherwise
+    :rtype: bool
+
+    """
     if isinstance(campus_id, str):
         campus_id = ObjectId(campus_id)
     item = {
@@ -260,6 +322,15 @@ def add_campus_quiz(name, created_by, campus_id):
 
 
 def get_lectures_of_user(firebase_id):
+    """gets all the lectures that a user ever attended
+
+    :param firebase_id: The Firebase ID of the user
+    :type firebase_id: str
+
+    :return: A list of all the lectures that the user ever attended, returns None if user could not be found
+    :rtype: list
+
+    """
     user = mongo.db.firebase_users.find_one({"firebaseID": firebase_id})
     if user is not None:
         return user["lectures"]
@@ -267,15 +338,31 @@ def get_lectures_of_user(firebase_id):
 
 
 def get_users_of_lecture(lecture_id):
+    """returns all the user that attended a given lecture
+
+    :param lecture_id: the ID of the lecture that we want to know th users of
+    :type lecture_id: ObjectId or str
+
+    :return: the list of the Firebase IDs of all the users that have attended the lecture
+    :rtype: list
+
+    """
     if isinstance(lecture_id, str):
         lecture_id = ObjectId(lecture_id)
-    items = []
     return list(map(lambda x: str(x["firebaseID"]), list(
         mongo.db.firebase_users.find({"lectures": {"$elemMatch": {"$eq": lecture_id}}},
                                      {"firebaseID": 1, "_id": 0}))))
 
 
 def get_full_name_of_current_lecture_in_room(room_id):
+    """gets the full name (name + term) of the current lecture held in a room
+
+    :param room_id: the ID of the room that we want to know the name of the current lecture of
+    :type room_id: ObjectId or str
+
+    :return: The full name of the current lecture held, if no lecture found, it will return None
+    :rtype: str
+    """
     if isinstance(room_id, str):
         room_id = ObjectId(room_id)
     lecture = get_current_lecture(room_id)
@@ -286,6 +373,23 @@ def get_full_name_of_current_lecture_in_room(room_id):
 
 
 def get_time_table_of_room(room_id):
+    """get the timetable of the room
+
+    :param room_id: the ID of the room you want to know the current lecture of
+    :type room_id: ObjectId or str
+
+    :return: the list of all the lectures, with weekday & time held, as dicts, sorted by the time of being held
+             ascending order)
+    :rtype: list
+
+    Description of the keys and their values of the returned dict:
+        :key name: Full name of the lecture
+        :key day_as_int: the weekday as an integer: 0 = Monday, 1 = Tuesday, ...
+        :key day: the weekday as a string, e.g. 'Monday'
+        :start: the start time of the lecture as a string, e.g. '16:00'
+        :end: the end time of the lecture as a string, e.g. '18:15'
+
+    """
     if isinstance(room_id, str):
         room_id = ObjectId(room_id)
     lectures = list(mongo.db.lecture.find({"term": get_current_term(),
@@ -303,6 +407,16 @@ def get_time_table_of_room(room_id):
 
 
 def add_new_teams(team_list):
+    """adds the new current teams for this term to the database; since some teams could have already been created, they
+    will be deleted in the database first
+
+    :param team_list: list of teams that should be added
+    :type team_list: list
+
+    :returns: A tuple: (True, None) if there have been no errors with the insertion, (False, Team) if there has been an
+    issue with inserting Team
+    :rtype: tuple
+    """
     mongo.db.teams.delete_many({"term": get_current_term()})
     for team in team_list:
         if not add_team(team):
@@ -311,6 +425,14 @@ def add_new_teams(team_list):
 
 
 def add_team(team):
+    """adds a new team to the database
+    :param team: the team to be inserted
+    :type team: Group
+
+    :return: True, if insertion was successful, False otherwise
+    :rtype: bool
+
+    """
     item = {
         "name": team.name,
         "colour": team.color,
@@ -321,10 +443,23 @@ def add_team(team):
 
 
 def get_all_lecture_ids():
+    """gets the lecture IDs of all lectures
+
+    :return: a list of the lecture IDs as strings
+    :rtype: list
+    """
     return list(map(lambda x: str(x["_id"]), list(mongo.db.lecture.find())))
 
 
 def get_player_name(firebase_id):
+    """gets the player name of the user with the given Firebase ID
+
+    :param firebase_id: the Firebase ID of the user
+    :type firebase_id: str
+
+    :return: the name of the player, returns None if user could not be found database
+    :rtype: str
+    """
     user = mongo.db.firebase_users.find_one({"firebaseID": firebase_id}, {"name": 1})
     if user is None:
         return None
@@ -332,6 +467,9 @@ def get_player_name(firebase_id):
 
 
 def get_current_team_with_member_names(firebase_id):
+    """
+    
+    """
     my_team = get_current_team(firebase_id)
     if my_team is None:
         return None
