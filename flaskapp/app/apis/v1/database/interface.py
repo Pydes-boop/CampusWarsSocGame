@@ -1,9 +1,10 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-
-__author__ = "Robin 'r0w' Weiland"
-__date__ = "2021-06-09"
-__version__ = "0.0.1"
+"""
+In this file, we define functions necessary so we can communicate effectively with our database.
+As recommended by the mongodb documentation (https://docs.mongodb.com/), we use lowercase with camelCase for the db,
+while we use all lowercases with _ spaces for python
+"""
 
 __all__ = ("add_room", "add_lecture", "get_all_rooms", "find_closest_room", "add_lectures_to_user",
            "add_question_to_quiz", "add_user", "get_users_of_lecture", "get_full_name_of_current_lecture_in_room",
@@ -18,6 +19,25 @@ from bson.objectid import ObjectId
 
 
 def find_closest_room(lon, lat, max_distance):
+    """
+    Finds the room closest to the given longitude & latitude. If there is no room close than max_distance, None is
+    returned.
+
+    Parameters:
+        lon (float): longitude of the position
+        lat (float): latitude of the position
+        max_distance(float): the maximum distance that may be between a room and the position for it to be considered
+
+    Returns:
+        (dict): A dictionary with the room information if a room was found, None otherwise
+
+    Description of the keys and their values of the returned dict:
+        _id: The generated _id of the room
+        location: the location of the room, format: {"type": "Point", "coordinates": [longitude,latitude]}
+        roomName: the name of the room
+        campusID: The id of the campus that room belongs to
+
+    """
     return mongo.db.room.find_one({"location": {"$near": {"$geometry": {"type": "Point", "coordinates": [lon, lat]},
                                                           "$maxDistance": max_distance}}})
 
@@ -246,10 +266,11 @@ def get_questions_of_quiz(quiz_id):
 
 def get_current_team(firebase_id):
     return mongo.db.teams.find_one(
-        {"members": {"$elemMatch": {"$eq": firebase_id}}, "term": get_current_term()},{"_id":0})
+        {"members": {"$elemMatch": {"$eq": firebase_id}}, "term": get_current_term()}, {"_id": 0})
 
     # todo Felix: i changed get_current_team, sonst funktioniert team finding nicht mehr...., pls DO NOT
     # EDIT FUNCTIONS THAT WERE ALREADY WORKING; THEY ARE USED ALREADY
+
 
 def get_colour_of_team(team_name):
     result = mongo.db.teams.find_one({"name": team_name, "term": get_current_term()})
