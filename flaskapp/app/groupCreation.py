@@ -120,7 +120,7 @@ def alternative_calculation():
         last_entries = current_partition.pop()
         for i in range(0, len(last_entries)):
             current_partition[i].append(last_entries[i])
-    min_group_amount = ceil(interface.get_number_of_players() / float(MAX_GROUP_SIZE))
+    min_group_amount = math.ceil(interface.get_number_of_players() / float(MAX_GROUP_SIZE))
     best_partition = current_partition
     while True:
         biggest_change = -1
