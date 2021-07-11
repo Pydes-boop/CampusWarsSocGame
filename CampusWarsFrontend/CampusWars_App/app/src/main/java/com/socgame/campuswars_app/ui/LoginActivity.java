@@ -13,6 +13,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -21,6 +23,11 @@ import com.socgame.campuswars_app.R;
 import com.socgame.campuswars_app.communication.BackendCom;
 import com.socgame.campuswars_app.communication.FirebaseCom;
 import com.socgame.campuswars_app.communication.HttpSingleton;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public class LoginActivity extends AppCompatActivity {
     /**
      *     The standard Login happens here
@@ -32,11 +39,13 @@ public class LoginActivity extends AppCompatActivity {
      *     written by Daniel and Jonas
      */
 
+    private Context ctx;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        Context ctx = this.getApplicationContext();
+        ctx = this.getApplicationContext();
         FirebaseCom fCom = FirebaseCom.getInstance(ctx);
 
         EditText email = (EditText) findViewById(R.id.editTextTextEmailAddress);
@@ -82,5 +91,35 @@ public class LoginActivity extends AppCompatActivity {
                 }
             });
 
+    }
+
+
+    private Response.Listener<JSONObject> myGroupGet()
+    {
+        return new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    SharedPreferences settings = ctx.getSharedPreferences("userdata", 0);
+                    SharedPreferences.Editor editor = settings.edit();
+                    String teamName = response.getString("name");
+                    editor.putBoolean("team", true);
+                    editor.apply();
+                } catch (JSONException e) {
+                    Log.d("My Group:", e.toString());
+                }
+
+            }
+        };
+    }
+
+    private Response.ErrorListener httpErrorListener() {
+        return new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                //Error Handling
+                Log.d("HTTP", "Error: " + error.getMessage());
+            }
+        };
     }
 }
