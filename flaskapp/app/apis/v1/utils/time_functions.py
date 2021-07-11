@@ -65,18 +65,38 @@ def get_time_as_seconds(hour, minutes):
 
 def get_day_as_string(day):
     """gets the day given as an integer (0 = Monday, 1 = Tuesday, ...) and returns the name of the day of week as
-    a string"""
+    a string
+
+    :param day: the index of the day
+    :type day: int
+
+    :return: the name of the day of the week
+    :rtype: str
+    """
     return calendar.day_name[int(day)]
 
 
 def get_seconds_as_string(seconds):
+    """
+    formats the the seconds that have passed since midnight into the format HH:mm
+
+    :param seconds: the seconds passed since midnight
+    :type seconds: int
+
+    :return: the time in the format "HH:mm"
+    :rtype: str
+    """
     return strftime("%H:%M", gmtime(seconds))
 
 
 def get_current_term():
+    """returns the current term of the academic year we are currently in
+
+    :return: the current term in format "YYS" YY being year, S being season
+    :rtype: str
+    """
     today = datetime.today()
     year = today.year % 100
-    letter = ""
     if START_SUMMER_TERM <= today.month <= END_SUMMER_TERM:
         letter = "S"
     else:
