@@ -3,7 +3,7 @@
 *** modified by Daniel Klitzner for Social Gaming Lab Course at Technical University of Munich
 -->
 
-[![Contributors][contributors-shield]][contributors-url]
+
 <!--
 [![Forks][forks-shield]][forks-url]
 [![Stargazers][stars-shield]][stars-url]
