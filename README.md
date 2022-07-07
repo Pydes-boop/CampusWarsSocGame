@@ -32,11 +32,6 @@
     <a href="https://gitlab.lrz.de/klitzner/socgam21_group18"><strong>Explore the docs »</strong></a>
     <br />
     <br />
-    <a href="https://gitlab.lrz.de/klitzner/socgam21_group18">View Demo</a>
-    ·
-    <a href="https://gitlab.lrz.de/klitzner/socgam21_group18">Report Bug</a>
-    ·
-    <a href="https://gitlab.lrz.de/klitzner/socgam21_group18">Request Feature</a>
     <br />
     (We dont have any so far)
   </p>
@@ -78,14 +73,10 @@
 
 <!-- [![Product Name Screen Shot][product-screenshot]](https://example.com) -->
 
-In this Project we (Daniel Klitzner, Jonas Hack, Marina Weber, Felix Völk & Robin Weiland) are -trying- to create the bestest ever socially mobile game youll experience 
+In this Project we (Daniel Klitzner, Jonas Hack, Marina Weber, Felix Völk & Robin Weiland) created a quiz game with domination mechanics.
+Users are split into teams using a matching algorithmn that utilizes the TUM API, then they fight for lecture halls using GPS.
 
-Here's why this matters to you:
-* Your time should only be spend with the best. Thats us.
-* You need friends. You dont have any. A social mobile game should be able to fix that.
-* Our sketches are immaculate and beautiful, so our game must be too
-
-Of course you dont have to believe my word. Explore the (Still WIP) project yourself and im sure youll be amazed.
+Fight questions (quizzes) are determined using the current lecture of the respective lecture hall.
 
 
 ### Built With
@@ -96,52 +87,10 @@ Of course you dont have to believe my word. Explore the (Still WIP) project your
 * [Google Maps API](https://console.developers.google.com/apis)
 * [Mongo DB](https://www.mongodb.com/de)
 
-
-
-<!-- GETTING STARTED -->
-## Getting Started
-
-We are still getting started ourselfs.
-
-### Prerequisites
-
-Dont worry about it.
-<!--
-* npm
-  ```sh
-  npm install npm@latest -g
-  ```
--->
-### Installation
-
-1. How to install. Im not sure? Try this.
-
-<!-- USAGE EXAMPLES -->
-## Usage
-
-Im sure well get to this later as well.
-
-
-
-<!-- ROADMAP -->
-## Roadmap
-
-See the [open issues](https://gitlab.lrz.de/klitzner/socgam21_group18/-/issues) for a list of proposed features (and known issues).
-
-(Spoiler: We dont have any as we are the best)
-
-
-
 <!-- CONTRIBUTING -->
 ## Contributing
 
-We work alone.
-
-
-<!-- LICENSE -->
-## License
-
-Im not quite sure, TUM probably owns this in some way.
+We work alone. If you have any need for our code, you should really reconsider.
 
 
 <!-- CONTACT -->
@@ -183,7 +132,7 @@ Project Link: [https://github.com/your_username/repo_name](https://github.com/yo
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
 [contributors-shield]: https://img.shields.io/github/contributors/othneildrew/Best-README-Template.svg?style=for-the-badge
-[contributors-url]: https://github.com/othneildrew/Best-README-Template/graphs/contributors
+[contributors-url]: https://github.com/Pydes-boop/CampusWarsSocGame/graphs/contributors 
 [forks-shield]: https://img.shields.io/github/forks/othneildrew/Best-README-Template.svg?style=for-the-badge
 [forks-url]: https://github.com/othneildrew/Best-README-Template/network/members
 [stars-shield]: https://img.shields.io/github/stars/othneildrew/Best-README-Template.svg?style=for-the-badge
