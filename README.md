@@ -36,8 +36,7 @@
     (We dont have any so far)
   </p>
 </p>
-</div>
-
+</div> 
 
 
 <!-- TABLE OF CONTENTS -->
@@ -50,19 +49,10 @@
         <li><a href="#built-with">Built With</a></li>
       </ul>
     </li>
-    <li>
-      <a href="#getting-started">Getting Started</a>
-      <ul>
-        <li><a href="#prerequisites">Prerequisites</a></li>
-        <li><a href="#installation">Installation</a></li>
-      </ul>
-    </li>
-    <li><a href="#usage">Usage</a></li>
-    <li><a href="#roadmap">Roadmap</a></li>
     <li><a href="#contributing">Contributing</a></li>
-    <li><a href="#license">License</a></li>
     <li><a href="#contact">Contact</a></li>
     <li><a href="#acknowledgements">Acknowledgements</a></li>
+    <li><a href="#demo">Demo</a></li>
   </ol>
 </details>
 
@@ -110,6 +100,10 @@ Project Link: [https://github.com/your_username/repo_name](https://github.com/yo
 ## Acknowledgements
 
 * [Our Professor](https://www.in.tum.de/social/team/georggroh/)
+
+## Demo
+
+[![Campus Wars Demo](https://img.youtube.com/vi/V3tVxyCp6qk/0.jpg)](https://www.youtube.com/watch?v=V3tVxyCp6qk) 
 
 <!--
 * [GitHub Emoji Cheat Sheet](https://www.webpagefx.com/tools/emoji-cheat-sheet)
