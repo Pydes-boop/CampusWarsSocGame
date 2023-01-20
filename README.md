@@ -1,6 +1,5 @@
 <!--
 *** Template from https://github.com/othneildrew/Best-README-Template/blob/master/README.md
-*** modified by Daniel Klitzner for Social Gaming Lab Course at Technical University of Munich
 -->
 
 
@@ -63,7 +62,7 @@
 
 <!-- [![Product Name Screen Shot][product-screenshot]](https://example.com) -->
 
-In this Project we (Daniel Klitzner, Jonas Hack, Marina Weber, Felix Völk & Robin Weiland) created a quiz game with domination mechanics.
+In this Project a team of students created a quiz game with domination mechanics.
 Users are split into teams using a matching algorithmn that utilizes the TUM API, then they fight for lecture halls using GPS.
 
 Fight questions (quizzes) are determined using the current lecture of the respective lecture hall.
